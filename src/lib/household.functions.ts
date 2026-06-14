@@ -111,7 +111,7 @@ export const getMyHousehold = createServerFn({ method: "GET" })
 
     const { data: household } = await supabase
       .from("households")
-      .select("id, name, preferred_language")
+      .select("id, name, preferred_language, notify_window_start, notify_window_end")
       .eq("id", membership.household_id)
       .maybeSingle();
     const { data: patient } = await supabase
