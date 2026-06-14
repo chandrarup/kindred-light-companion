@@ -139,6 +139,7 @@ export type Database = {
           log_date: string
           mood: string | null
           notes: string | null
+          sleep_quality: number | null
           updated_at: string
         }
         Insert: {
@@ -150,6 +151,7 @@ export type Database = {
           log_date?: string
           mood?: string | null
           notes?: string | null
+          sleep_quality?: number | null
           updated_at?: string
         }
         Update: {
@@ -161,6 +163,7 @@ export type Database = {
           log_date?: string
           mood?: string | null
           notes?: string | null
+          sleep_quality?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -301,27 +304,39 @@ export type Database = {
       }
       log_symptoms: {
         Row: {
+          antecedent: string | null
           created_at: string
           daily_log_id: string
           id: string
+          intervention_tried: string | null
+          outcome: string | null
           severity: number | null
           symptom: string
+          time_of_day: string | null
           updated_at: string
         }
         Insert: {
+          antecedent?: string | null
           created_at?: string
           daily_log_id: string
           id?: string
+          intervention_tried?: string | null
+          outcome?: string | null
           severity?: number | null
           symptom: string
+          time_of_day?: string | null
           updated_at?: string
         }
         Update: {
+          antecedent?: string | null
           created_at?: string
           daily_log_id?: string
           id?: string
+          intervention_tried?: string | null
+          outcome?: string | null
           severity?: number | null
           symptom?: string
+          time_of_day?: string | null
           updated_at?: string
         }
         Relationships: [
