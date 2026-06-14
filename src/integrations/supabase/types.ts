@@ -63,6 +63,7 @@ export type Database = {
           id: string
           occurred_at: string
           outcome: string | null
+          scheduled_for: string | null
           updated_at: string
         }
         Insert: {
@@ -71,6 +72,7 @@ export type Database = {
           id?: string
           occurred_at?: string
           outcome?: string | null
+          scheduled_for?: string | null
           updated_at?: string
         }
         Update: {
@@ -79,6 +81,7 @@ export type Database = {
           id?: string
           occurred_at?: string
           outcome?: string | null
+          scheduled_for?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -93,30 +96,42 @@ export type Database = {
       }
       cues: {
         Row: {
+          active: boolean
           created_at: string
+          cue_type: string
+          days_of_week: number[]
           deleted_at: string | null
           household_id: string
           id: string
           label: string
           payload: Json
+          schedule_times: string[]
           updated_at: string
         }
         Insert: {
+          active?: boolean
           created_at?: string
+          cue_type?: string
+          days_of_week?: number[]
           deleted_at?: string | null
           household_id: string
           id?: string
           label: string
           payload?: Json
+          schedule_times?: string[]
           updated_at?: string
         }
         Update: {
+          active?: boolean
           created_at?: string
+          cue_type?: string
+          days_of_week?: number[]
           deleted_at?: string | null
           household_id?: string
           id?: string
           label?: string
           payload?: Json
+          schedule_times?: string[]
           updated_at?: string
         }
         Relationships: [
@@ -292,6 +307,8 @@ export type Database = {
           id: string
           min_evidence: number
           name: string
+          notify_window_end: string
+          notify_window_start: string
           pin_hash: string | null
           preferred_language: Database["public"]["Enums"]["app_language"]
           updated_at: string
@@ -303,6 +320,8 @@ export type Database = {
           id?: string
           min_evidence?: number
           name: string
+          notify_window_end?: string
+          notify_window_start?: string
           pin_hash?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
           updated_at?: string
@@ -314,6 +333,8 @@ export type Database = {
           id?: string
           min_evidence?: number
           name?: string
+          notify_window_end?: string
+          notify_window_start?: string
           pin_hash?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
           updated_at?: string
@@ -562,31 +583,43 @@ export type Database = {
       }
       training_content: {
         Row: {
+          action_card_text: string | null
           body: string | null
           created_at: string
           deleted_at: string | null
           id: string
           language: Database["public"]["Enums"]["app_language"]
+          source_attribution: string | null
+          symptom_tag: string | null
           title: string
           updated_at: string
+          video_url: string | null
         }
         Insert: {
+          action_card_text?: string | null
           body?: string | null
           created_at?: string
           deleted_at?: string | null
           id?: string
           language?: Database["public"]["Enums"]["app_language"]
+          source_attribution?: string | null
+          symptom_tag?: string | null
           title: string
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
+          action_card_text?: string | null
           body?: string | null
           created_at?: string
           deleted_at?: string | null
           id?: string
           language?: Database["public"]["Enums"]["app_language"]
+          source_attribution?: string | null
+          symptom_tag?: string | null
           title?: string
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: []
       }
