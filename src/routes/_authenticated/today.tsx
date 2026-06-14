@@ -13,6 +13,7 @@ import { TrainingCards } from "@/components/TrainingCards";
 import { DailyLogReminder } from "@/components/DailyLogReminder";
 import { EpisodeForm } from "@/components/EpisodeForm";
 import { RedFlagCard } from "@/components/RedFlagCard";
+import { isLockedClient } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({ meta: [{ title: "Today — COMPANION" }] }),
@@ -40,6 +41,7 @@ function Today() {
   const [mode, setMode] = useState<"idle" | "tap" | "voice" | "episode">("idle");
   const [submitting, setSubmitting] = useState(false);
   const [logs, setLogs] = useState<RecentLog[]>([]);
+  const [editLockDays, setEditLockDays] = useState(3);
   const [error, setError] = useState<string | null>(null);
   const [insightsKey, setInsightsKey] = useState(0);
   const [notifyWindow, setNotifyWindow] = useState<{ start: string; end: string }>({
@@ -53,6 +55,7 @@ function Today() {
     try {
       const res = await listFn();
       setLogs((res?.logs ?? []) as RecentLog[]);
+      setEditLockDays((res as any)?.editLockDays ?? 3);
       const l = await loggedFn();
       setLoggedToday(!!l?.logged);
     } catch (e: any) {
@@ -166,7 +169,14 @@ function Today() {
                   <li key={l.id} className="rounded border p-3">
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>{new Date(l.created_at).toLocaleString()}</span>
-                      {l.mood && <span>Mood: {l.mood}/5</span>}
+                      <span className="flex items-center gap-2">
+                        {l.mood && <span>Mood: {l.mood}/5</span>}
+                        {isLockedClient(l.created_at, editLockDays) && (
+                          <span title={`Locked after ${editLockDays} days — read-only`} aria-label="locked" className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs">
+                            🔒 locked
+                          </span>
+                        )}
+                      </span>
                     </div>
                     {l.notes && <p className="mt-1">{l.notes}</p>}
                     {l.log_symptoms?.length > 0 && (
