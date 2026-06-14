@@ -7,6 +7,7 @@ import { getMyHousehold } from "@/lib/household.functions";
 import { createDailyLog, listRecentLogs } from "@/lib/daily-log.functions";
 import { DailyLogForm, type DailyLogFormValue } from "@/components/DailyLogForm";
 import { VoiceLogger } from "@/components/VoiceLogger";
+import { InsightsList } from "@/components/InsightsList";
 
 export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({ meta: [{ title: "Today — COMPANION" }] }),
@@ -34,6 +35,7 @@ function Today() {
   const [submitting, setSubmitting] = useState(false);
   const [logs, setLogs] = useState<RecentLog[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [insightsKey, setInsightsKey] = useState(0);
 
   const refreshLogs = useCallback(async () => {
     try {
@@ -68,6 +70,7 @@ function Today() {
       await createFn({ data: v });
       setMode("idle");
       await refreshLogs();
+      setInsightsKey((k) => k + 1);
     } catch (e: any) {
       setError(e?.message ?? "Could not save log");
     } finally {
@@ -137,6 +140,16 @@ function Today() {
                 ))}
               </ul>
             )}
+          </section>
+
+          <section aria-labelledby="insights">
+            <h2 id="insights" className="text-lg font-semibold mb-2">
+              Insights
+            </h2>
+            <p className="text-sm text-muted-foreground mb-3">
+              Patterns we've noticed from your family's logs. Counts only — never diagnoses.
+            </p>
+            <InsightsList refreshKey={insightsKey} />
           </section>
         </div>
       )}
