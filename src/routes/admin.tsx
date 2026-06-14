@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { loadDemoData, resetDemoData } from "@/lib/demo.functions";
+import { loadDemoData, resetDemoData, createDemoSession } from "@/lib/demo.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
@@ -12,6 +12,7 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const load = useServerFn(loadDemoData);
   const reset = useServerFn(resetDemoData);
+  const createSession = useServerFn(createDemoSession);
   const navigate = useNavigate();
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -25,8 +26,15 @@ function AdminPage() {
 
   async function handleLoad() {
     setBusy(true);
-    setStatus("Seeding Rosa Herrera demo household…");
     try {
+      if (!signedIn) {
+        setStatus("Creating demo session…");
+        const { email, password } = await createSession();
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        setSignedIn(true);
+      }
+      setStatus("Seeding Rosa Herrera demo household…");
       await load();
       window.localStorage.setItem("companion.demo", "1");
       setDemoFlag(true);
@@ -69,20 +77,16 @@ function AdminPage() {
       </header>
 
       {signedIn === false && (
-        <div className="rounded-md bg-amber-100 p-3 text-sm text-amber-900">
-          You must be signed in. The signed-in user becomes <b>María Herrera</b>, the
-          primary caregiver in the demo.{" "}
-          <a href="/auth" className="underline">
-            Sign in
-          </a>
-          .
+        <div className="rounded-md bg-muted p-3 text-sm">
+          No sign-in needed — clicking <b>Load Demo Data</b> will create a temporary
+          demo account as <b>María Herrera</b> (primary caregiver).
         </div>
       )}
 
       <div className="flex flex-wrap gap-3">
         <button
           onClick={handleLoad}
-          disabled={busy || signedIn === false}
+          disabled={busy || signedIn === null}
           className="rounded-md bg-primary px-4 py-2 text-primary-foreground font-medium disabled:opacity-50"
         >
           Load Demo Data

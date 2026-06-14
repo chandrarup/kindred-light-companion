@@ -2,6 +2,25 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+/** Create a throwaway demo auth user and return credentials so the client can sign in. */
+export const createDemoSession = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const id = crypto.randomUUID().slice(0, 8);
+  const email = `demo-${id}@demo.companion.app`;
+  const password = crypto.randomUUID() + "Aa1!";
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { demo: true, display_name: "María Herrera" },
+  });
+  if (error || !data?.user) throw new Error(error?.message ?? "createUser failed");
+  await supabaseAdmin
+    .from("users")
+    .upsert({ id: data.user.id, email, display_name: "María Herrera" }, { onConflict: "id" });
+  return { email, password };
+});
+
 /** Wipe any existing demo households and seed a fresh one owned by the current user. */
 export const loadDemoData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
