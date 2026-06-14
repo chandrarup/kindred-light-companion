@@ -63,38 +63,45 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  /* COMPANION warm, low-saturation palette. AAA contrast on text vs background. */
+  --background: oklch(0.985 0.012 80);            /* warm off-white */
+  --foreground: oklch(0.18 0.02 60);              /* near-black warm */
+  --card: oklch(0.975 0.014 75);
+  --card-foreground: oklch(0.18 0.02 60);
+  --popover: oklch(0.985 0.012 80);
+  --popover-foreground: oklch(0.18 0.02 60);
+  --primary: oklch(0.36 0.05 55);                 /* deep warm brown — the single accent */
+  --primary-foreground: oklch(0.985 0.012 80);
+  --secondary: oklch(0.93 0.018 75);
+  --secondary-foreground: oklch(0.22 0.02 60);
+  --muted: oklch(0.93 0.018 75);
+  --muted-foreground: oklch(0.34 0.02 60);        /* AAA on background */
+  --accent: oklch(0.45 0.07 50);                  /* single accent */
+  --accent-foreground: oklch(0.985 0.012 80);
+  --destructive: oklch(0.40 0.13 30);
+  --destructive-foreground: oklch(0.985 0.012 80);
+  --border: oklch(0.86 0.018 75);
+  --input: oklch(0.86 0.018 75);
+  --ring: oklch(0.45 0.07 50);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --sidebar: oklch(0.975 0.014 75);
+  --sidebar-foreground: oklch(0.18 0.02 60);
+  --sidebar-primary: oklch(0.36 0.05 55);
+  --sidebar-primary-foreground: oklch(0.985 0.012 80);
+  --sidebar-accent: oklch(0.93 0.018 75);
+  --sidebar-accent-foreground: oklch(0.22 0.02 60);
+  --sidebar-border: oklch(0.86 0.018 75);
+  --sidebar-ring: oklch(0.45 0.07 50);
+
+  /* COMPANION typography & touch sizing tokens */
+  --text-caregiver-min: 16pt;
+  --text-patient-min: 22pt;
+  --touch-patient-min: 120px;
+  --touch-caregiver-min: 44px;
 }
 
 .dark {
@@ -140,5 +147,32 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: var(--text-caregiver-min);
+    line-height: 1.5;
+  }
+
+  /* Design rule: no animations except the slow photo crossfade. */
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Allow only the deliberate photo crossfade utility. */
+  .photo-crossfade,
+  .photo-crossfade * {
+    transition: opacity 4000ms ease-in-out !important;
+  }
+
+  /* Patient-mode scope: enforce minimum text size and touch targets. */
+  [data-mode="patient"] {
+    font-size: var(--text-patient-min);
+  }
+  [data-mode="patient"] button,
+  [data-mode="patient"] a[role="button"],
+  [data-mode="patient"] [data-touch] {
+    min-height: var(--touch-patient-min);
+    min-width: var(--touch-patient-min);
+    font-size: var(--text-patient-min);
   }
 }
