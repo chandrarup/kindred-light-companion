@@ -20,6 +20,7 @@
     "today": "Hoy",
     "photos": "Fotos",
     "circle": "Círculo",
+    "summary": "Resumen",
     "profile": "Perfil",
     "settings": "Ajustes"
   },
@@ -95,6 +96,34 @@
   "patient": {
     "greeting": "Hola, {name}.",
     "subtitle": "Estás a salvo. Alguien que te quiere está cerca.",
-    "exit": "Salir del Modo paciente"
+    "exit": "Salir del Modo paciente",
+    "wake": "Toca para despertar",
+    "talk": "HABLAR",
+    "people": "MI GENTE",
+    "music": "MI MÚSICA",
+    "talkPrompt": "Estoy aquí contigo. Respira hondo.",
+    "noPeople": "Aún no hay fotos.",
+    "noMusic": "Aún no hay música.",
+    "playTitle": "Reproducir",
+    "prev": "Atrás",
+    "next": "Siguiente"
+  },
+  "summary": {
+    "title": "Resumen para el médico",
+    "subtitle": "Una página con lo que la familia registró. Solo conteos y fechas — nunca un diagnóstico.",
+    "from": "Desde",
+    "to": "Hasta",
+    "generate": "Generar resumen",
+    "generating": "Generando…",
+    "print": "Imprimir / Guardar PDF",
+    "history": "Resúmenes anteriores",
+    "cardTitle": "Resumen de visita",
+    "logs": "registros",
+    "symptomFreq": "Frecuencia de síntomas",
+    "trend": "Tendencia vs periodo anterior",
+    "topPatterns": "Principales patrones antecedente → síntoma",
+    "adherence": "Cumplimiento de recordatorios",
+    "narrative": "Resumen en lenguaje claro",
+    "disclaimer": "Solo conteos y observaciones de los registros de este hogar. No es consejo médico."
   }
 }
