@@ -1,0 +1,99 @@
+{
+  "app": {
+    "name": "COMPANION",
+    "tagline": "Acompañante adaptativo para cuidadores",
+    "demoBanner": "Solo datos sintéticos — no ingrese información real del paciente."
+  },
+  "common": {
+    "next": "Siguiente",
+    "back": "Atrás",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "loading": "Cargando…",
+    "english": "Inglés",
+    "spanish": "Español",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "nav": {
+    "today": "Hoy",
+    "photos": "Fotos",
+    "profile": "Perfil",
+    "settings": "Ajustes"
+  },
+  "mode": {
+    "caregiver": "Modo cuidador",
+    "patient": "Modo paciente",
+    "switchToPatient": "Cambiar a Modo paciente",
+    "switchToCaregiver": "Cambiar a Modo cuidador",
+    "enterPin": "Ingrese el PIN del cuidador",
+    "pinPrompt": "Ingrese el PIN de 4 dígitos para volver al Modo cuidador.",
+    "pinIncorrect": "PIN incorrecto. Intente de nuevo.",
+    "unlock": "Desbloquear"
+  },
+  "auth": {
+    "signInTitle": "Iniciar sesión en COMPANION",
+    "signInSubtitle": "Le enviaremos un enlace seguro por correo electrónico.",
+    "emailLabel": "Correo electrónico",
+    "sendLink": "Enviar enlace",
+    "linkSent": "Revise su correo para el enlace de acceso.",
+    "signOut": "Cerrar sesión"
+  },
+  "onboarding": {
+    "title": "Configurar el hogar",
+    "step": "Paso {n} de {total}",
+    "householdName": "Nombre del hogar",
+    "householdNameHelp": "Por ejemplo: Familia García",
+    "preferredLanguage": "Idioma preferido",
+    "pin": "PIN de cuidador (4 dígitos)",
+    "pinConfirm": "Confirme el PIN",
+    "pinMismatch": "Los PIN no coinciden.",
+    "pinFormat": "El PIN debe tener exactamente 4 dígitos.",
+    "patientHeading": "Sobre el paciente",
+    "patientName": "Nombre del paciente",
+    "patientLanguage": "Idioma principal del paciente",
+    "biography": "Biografía breve",
+    "biographyHelp": "Algunas frases sobre su vida, familia y trabajo.",
+    "dailyRoutines": "Rutinas diarias",
+    "routinesHelp": "Hora de despertar, comidas, paseos, hora de dormir, etc.",
+    "musicHeading": "Preferencias y desencadenantes",
+    "music": "Preferencias musicales",
+    "musicHelp": "Presione Enter para agregar cada elemento.",
+    "triggers": "Desencadenantes conocidos",
+    "triggersHelp": "Sonidos, temas o situaciones a evitar.",
+    "photosHeading": "Fotos familiares",
+    "photosHelp": "Suba algunas caras conocidas. Las mostraremos en Modo paciente más adelante.",
+    "uploadPhotos": "Subir fotos",
+    "review": "Revisar",
+    "submit": "Crear hogar",
+    "submitting": "Creando…",
+    "addItem": "Agregar",
+    "noItems": "Ninguno todavía."
+  },
+  "today": {
+    "title": "Hoy",
+    "placeholder": "Su registro diario aparecerá aquí."
+  },
+  "photos": {
+    "title": "Fotos",
+    "placeholder": "Biblioteca de fotos familiares próximamente."
+  },
+  "profile": {
+    "title": "Perfil del paciente",
+    "biography": "Biografía",
+    "dailyRoutines": "Rutinas diarias",
+    "music": "Música",
+    "triggers": "Desencadenantes"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "household": "Hogar"
+  },
+  "patient": {
+    "greeting": "Hola, {name}.",
+    "subtitle": "Estás a salvo. Alguien que te quiere está cerca.",
+    "exit": "Salir del Modo paciente"
+  }
+}

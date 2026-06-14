@@ -1,0 +1,13 @@
+{
+  "name": "COMPANION",
+  "short_name": "COMPANION",
+  "description": "Adaptive companion for dementia caregivers",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f1e7",
+  "theme_color": "#5a3f2b",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

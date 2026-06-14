@@ -1,0 +1,99 @@
+{
+  "app": {
+    "name": "COMPANION",
+    "tagline": "Adaptive companion for caregivers",
+    "demoBanner": "Synthetic data only — do not enter real patient information."
+  },
+  "common": {
+    "next": "Next",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "loading": "Loading…",
+    "english": "English",
+    "spanish": "Spanish",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "today": "Today",
+    "photos": "Photos",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "mode": {
+    "caregiver": "Caregiver mode",
+    "patient": "Patient mode",
+    "switchToPatient": "Switch to Patient mode",
+    "switchToCaregiver": "Switch to Caregiver mode",
+    "enterPin": "Enter caregiver PIN",
+    "pinPrompt": "Enter the 4-digit PIN to return to Caregiver mode.",
+    "pinIncorrect": "Incorrect PIN. Try again.",
+    "unlock": "Unlock"
+  },
+  "auth": {
+    "signInTitle": "Sign in to COMPANION",
+    "signInSubtitle": "We will email you a secure sign-in link.",
+    "emailLabel": "Email address",
+    "sendLink": "Send sign-in link",
+    "linkSent": "Check your email for a sign-in link.",
+    "signOut": "Sign out"
+  },
+  "onboarding": {
+    "title": "Set up your household",
+    "step": "Step {n} of {total}",
+    "householdName": "Household name",
+    "householdNameHelp": "For example: The Garcia Family",
+    "preferredLanguage": "Preferred language",
+    "pin": "4-digit caregiver PIN",
+    "pinConfirm": "Confirm PIN",
+    "pinMismatch": "PINs do not match.",
+    "pinFormat": "PIN must be exactly 4 digits.",
+    "patientHeading": "About the patient",
+    "patientName": "Patient display name",
+    "patientLanguage": "Patient's primary language",
+    "biography": "Short biography",
+    "biographyHelp": "A few sentences about their life, family, and work.",
+    "dailyRoutines": "Daily routines",
+    "routinesHelp": "Wake time, meals, walks, bedtime, etc.",
+    "musicHeading": "Preferences & triggers",
+    "music": "Music preferences",
+    "musicHelp": "Press Enter to add each item.",
+    "triggers": "Known triggers",
+    "triggersHelp": "Sounds, topics, or situations to avoid.",
+    "photosHeading": "Family photos",
+    "photosHelp": "Upload a few familiar faces. We will show these in Patient mode later.",
+    "uploadPhotos": "Upload photos",
+    "review": "Review",
+    "submit": "Create household",
+    "submitting": "Creating…",
+    "addItem": "Add",
+    "noItems": "None yet."
+  },
+  "today": {
+    "title": "Today",
+    "placeholder": "Your daily log will live here."
+  },
+  "photos": {
+    "title": "Photos",
+    "placeholder": "Family photo library coming next."
+  },
+  "profile": {
+    "title": "Patient profile",
+    "biography": "Biography",
+    "dailyRoutines": "Daily routines",
+    "music": "Music",
+    "triggers": "Triggers"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "household": "Household"
+  },
+  "patient": {
+    "greeting": "Hello, {name}.",
+    "subtitle": "You are safe. Someone who cares about you is nearby.",
+    "exit": "Exit Patient mode"
+  }
+}
