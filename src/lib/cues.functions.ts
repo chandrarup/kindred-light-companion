@@ -111,6 +111,7 @@ export const todaysPendingCues = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const householdId = await getHouseholdId(context.supabase, context.userId);
+    if (!householdId) return { pending: [] };
     const { data: cues } = await context.supabase
       .from("cues")
       .select("id, cue_type, label, schedule_times, days_of_week, active")
