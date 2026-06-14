@@ -135,44 +135,32 @@ export const recomputeFingerprint = createServerFn({ method: "POST" })
       });
     }
 
-    // Upsert each surfaced pattern (matches the partial unique index).
+    // Preserve user dismissals: any (antecedent,symptom) pair previously
+    // soft-deleted by the caregiver stays hidden until they explicitly reset.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    if (surfaced.length > 0) {
-      const rowsToWrite = surfaced.map((s) => ({
-        household_id: householdId,
-        insight: s,
-        deleted_at: null,
-      }));
-      const { error } = await supabaseAdmin
-        .from("fingerprint_insights")
-        .upsert(rowsToWrite, {
-          onConflict:
-            "household_id,(insight->>'kind'),(insight->>'antecedent'),(insight->>'symptom')",
-        });
-      if (error) {
-        // Fallback: try per-row insert; ignore conflicts on the partial index.
-        for (const row of rowsToWrite) {
-          await supabaseAdmin.from("fingerprint_insights").insert(row);
-        }
-      }
-    }
-
-    // Soft-delete previously-surfaced patterns that no longer meet threshold.
-    const surfacedKeys = new Set(surfaced.map((s) => `${s.antecedent}|${s.symptom}`));
-    const { data: existing } = await supabaseAdmin
+    const { data: dismissed } = await supabaseAdmin
       .from("fingerprint_insights")
-      .select("id, insight")
+      .select("insight")
+      .eq("household_id", householdId)
+      .not("deleted_at", "is", null);
+    const dismissedKeys = new Set(
+      (dismissed ?? []).map((r: any) => `${r.insight?.antecedent}|${r.insight?.symptom}`),
+    );
+
+    // Fresh recompute: clear current active rows, then insert what's surfaced
+    // and not dismissed. Avoids partial-unique-index upsert pitfalls.
+    await supabaseAdmin
+      .from("fingerprint_insights")
+      .delete()
       .eq("household_id", householdId)
       .is("deleted_at", null);
-    for (const row of existing ?? []) {
-      const ins = (row as any).insight ?? {};
-      const key = `${ins.antecedent}|${ins.symptom}`;
-      if (!surfacedKeys.has(key)) {
-        await supabaseAdmin
-          .from("fingerprint_insights")
-          .update({ deleted_at: new Date().toISOString() })
-          .eq("id", (row as any).id);
-      }
+
+    const toInsert = surfaced
+      .filter((s) => !dismissedKeys.has(`${s.antecedent}|${s.symptom}`))
+      .map((s) => ({ household_id: householdId, insight: s }));
+    if (toInsert.length > 0) {
+      const { error } = await supabaseAdmin.from("fingerprint_insights").insert(toInsert);
+      if (error) throw new Error(error.message);
     }
 
     return { surfaced: surfaced.length, minEvidence, windowDays: DEFAULT_WINDOW_DAYS };
