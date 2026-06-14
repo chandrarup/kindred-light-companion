@@ -185,36 +185,51 @@ export type Database = {
       }
       episodes: {
         Row: {
+          antecedent: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           description: string | null
           household_id: string
           id: string
+          intervention_tried: string | null
           occurred_at: string
+          outcome: string | null
           severity: number | null
+          symptom: string | null
+          time_of_day: string | null
           updated_at: string
         }
         Insert: {
+          antecedent?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
           household_id: string
           id?: string
+          intervention_tried?: string | null
           occurred_at?: string
+          outcome?: string | null
           severity?: number | null
+          symptom?: string | null
+          time_of_day?: string | null
           updated_at?: string
         }
         Update: {
+          antecedent?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
           household_id?: string
           id?: string
+          intervention_tried?: string | null
           occurred_at?: string
+          outcome?: string | null
           severity?: number | null
+          symptom?: string | null
+          time_of_day?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -275,6 +290,7 @@ export type Database = {
           deleted_at: string | null
           edit_lock_days: number
           id: string
+          min_evidence: number
           name: string
           pin_hash: string | null
           preferred_language: Database["public"]["Enums"]["app_language"]
@@ -285,6 +301,7 @@ export type Database = {
           deleted_at?: string | null
           edit_lock_days?: number
           id?: string
+          min_evidence?: number
           name: string
           pin_hash?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
@@ -295,6 +312,7 @@ export type Database = {
           deleted_at?: string | null
           edit_lock_days?: number
           id?: string
+          min_evidence?: number
           name?: string
           pin_hash?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
