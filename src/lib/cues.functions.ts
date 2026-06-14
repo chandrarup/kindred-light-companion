@@ -23,14 +23,14 @@ async function getHouseholdId(supabase: any, userId: string) {
     .is("deleted_at", null)
     .limit(1)
     .maybeSingle();
-  if (!data) throw new Error("No household for user");
-  return data.household_id as string;
+  return (data?.household_id as string | undefined) ?? null;
 }
 
 export const listCues = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const householdId = await getHouseholdId(context.supabase, context.userId);
+    if (!householdId) return { cues: [] };
     const { data, error } = await context.supabase
       .from("cues")
       .select("id, cue_type, label, schedule_times, days_of_week, active, created_at")
@@ -46,6 +46,7 @@ export const upsertCue = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => upsertSchema.parse(d))
   .handler(async ({ data, context }) => {
     const householdId = await getHouseholdId(context.supabase, context.userId);
+    if (!householdId) throw new Error("No household for user");
     const row = {
       household_id: householdId,
       cue_type: data.cue_type,
@@ -110,6 +111,7 @@ export const todaysPendingCues = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const householdId = await getHouseholdId(context.supabase, context.userId);
+    if (!householdId) return { pending: [] };
     const { data: cues } = await context.supabase
       .from("cues")
       .select("id, cue_type, label, schedule_times, days_of_week, active")
