@@ -29,7 +29,7 @@ export function InsightsList({ refreshKey = 0 }: { refreshKey?: number }) {
     setLoading(true);
     try {
       const res = await listFn();
-      setInsights((res?.insights ?? []) as Insight[]);
+      setInsights((res?.insights ?? []) as unknown as Insight[]);
     } finally {
       setLoading(false);
     }
