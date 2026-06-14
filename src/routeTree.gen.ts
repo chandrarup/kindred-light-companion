@@ -18,6 +18,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPhotosRouteImport } from './routes/_authenticated/photos'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedCuesRouteImport } from './routes/_authenticated/cues'
 
 const PatientRoute = PatientRouteImport.update({
   id: '/patient',
@@ -63,11 +64,17 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCuesRoute = AuthenticatedCuesRouteImport.update({
+  id: '/cues',
+  path: '/cues',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/patient': typeof PatientRoute
+  '/cues': typeof AuthenticatedCuesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/photos': typeof AuthenticatedPhotosRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/patient': typeof PatientRoute
+  '/cues': typeof AuthenticatedCuesRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/photos': typeof AuthenticatedPhotosRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/patient': typeof PatientRoute
+  '/_authenticated/cues': typeof AuthenticatedCuesRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/photos': typeof AuthenticatedPhotosRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/patient'
+    | '/cues'
     | '/onboarding'
     | '/photos'
     | '/profile'
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/patient'
+    | '/cues'
     | '/onboarding'
     | '/photos'
     | '/profile'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/patient'
+    | '/_authenticated/cues'
     | '/_authenticated/onboarding'
     | '/_authenticated/photos'
     | '/_authenticated/profile'
@@ -202,10 +214,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cues': {
+      id: '/_authenticated/cues'
+      path: '/cues'
+      fullPath: '/cues'
+      preLoaderRoute: typeof AuthenticatedCuesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCuesRoute: typeof AuthenticatedCuesRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPhotosRoute: typeof AuthenticatedPhotosRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -214,6 +234,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCuesRoute: AuthenticatedCuesRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPhotosRoute: AuthenticatedPhotosRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
@@ -233,3 +254,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
