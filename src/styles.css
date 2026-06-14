@@ -175,4 +175,19 @@
     min-width: var(--touch-patient-min);
     font-size: var(--text-patient-min);
   }
+
+  /* Visible focus across the app — critical for keyboard users. */
+  :focus-visible {
+    outline: 3px solid hsl(var(--ring, var(--primary)));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* Print: keep only the physician summary card on the page. */
+@media print {
+  body { background: white !important; color: black !important; }
+  header, nav, [role="banner"], .print\:hidden { display: none !important; }
+  main { max-width: none !important; padding: 0 !important; }
+  article { break-inside: avoid; }
 }

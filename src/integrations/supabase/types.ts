@@ -447,6 +447,7 @@ export type Database = {
       }
       media: {
         Row: {
+          audio_path: string | null
           caption: string | null
           created_at: string
           created_by: string | null
@@ -459,6 +460,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          audio_path?: string | null
           caption?: string | null
           created_at?: string
           created_by?: string | null
@@ -471,6 +473,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          audio_path?: string | null
           caption?: string | null
           created_at?: string
           created_by?: string | null
@@ -554,6 +557,7 @@ export type Database = {
           daily_routines: string | null
           deleted_at: string | null
           display_name: string
+          greeting_audio_path: string | null
           household_id: string
           id: string
           known_triggers: string[]
@@ -567,6 +571,7 @@ export type Database = {
           daily_routines?: string | null
           deleted_at?: string | null
           display_name: string
+          greeting_audio_path?: string | null
           household_id: string
           id?: string
           known_triggers?: string[]
@@ -580,6 +585,7 @@ export type Database = {
           daily_routines?: string | null
           deleted_at?: string | null
           display_name?: string
+          greeting_audio_path?: string | null
           household_id?: string
           id?: string
           known_triggers?: string[]
@@ -601,34 +607,47 @@ export type Database = {
         Row: {
           created_at: string
           deleted_at: string | null
+          generated_by: string | null
           household_id: string
           id: string
           period_end: string | null
           period_start: string | null
+          stats: Json | null
           summary: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           deleted_at?: string | null
+          generated_by?: string | null
           household_id: string
           id?: string
           period_end?: string | null
           period_start?: string | null
+          stats?: Json | null
           summary: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           deleted_at?: string | null
+          generated_by?: string | null
           household_id?: string
           id?: string
           period_end?: string | null
           period_start?: string | null
+          stats?: Json | null
           summary?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "physician_summaries_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "physician_summaries_household_id_fkey"
             columns: ["household_id"]

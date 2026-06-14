@@ -13,6 +13,7 @@ const navItems = [
   { to: "/today", key: "nav.today", icon: "☀" },
   { to: "/photos", key: "nav.photos", icon: "▢" },
   { to: "/circle", key: "nav.circle", icon: "♣" },
+  { to: "/summary", key: "nav.summary", icon: "📋" },
   { to: "/profile", key: "nav.profile", icon: "♡" },
   { to: "/settings", key: "nav.settings", icon: "⚙" },
 ] as const;
@@ -79,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-label="primary"
         className="fixed bottom-0 inset-x-0 border-t border-border bg-card"
       >
-        <ul className="mx-auto max-w-3xl grid grid-cols-5">
+        <ul className="mx-auto max-w-3xl grid grid-cols-6">
           {navItems.map((item) => {
             const active = pathname.startsWith(item.to);
             return (
