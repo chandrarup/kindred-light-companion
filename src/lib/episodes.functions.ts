@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ANTECEDENT_OPTIONS, OUTCOME_OPTIONS, SYMPTOM_OPTIONS } from "./daily-log.functions";
+import { requireSection, isLocked } from "./permissions";
 
 /**
  * Red flag signals the app must surface verbatim. The app NEVER interprets
@@ -30,23 +31,12 @@ const createSchema = z.object({
   red_flags: z.array(z.enum(RED_FLAG_IDS as [string, ...string[]])).default([]),
 });
 
-async function getHouseholdId(supabase: any, userId: string) {
-  const { data } = await supabase
-    .from("memberships")
-    .select("household_id")
-    .eq("user_id", userId)
-    .is("deleted_at", null)
-    .limit(1)
-    .maybeSingle();
-  if (!data) throw new Error("No household for user");
-  return data.household_id as string;
-}
 
 export const createEpisode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => createSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const householdId = await getHouseholdId(context.supabase, context.userId);
+    const { householdId } = await requireSection(context.supabase, context.userId, "episodes", "write");
     const description = data.red_flags.length
       ? `${data.description}\n\n[red_flags:${data.red_flags.join(",")}]`
       : data.description;
@@ -85,7 +75,7 @@ export const createEpisode = createServerFn({ method: "POST" })
 export const listRecentEpisodes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const householdId = await getHouseholdId(context.supabase, context.userId);
+    const { householdId } = await requireSection(context.supabase, context.userId, "episodes", "read");
     const { data } = await context.supabase
       .from("episodes")
       .select("id, description, occurred_at, symptom, antecedent, intervention_tried, outcome, severity")
@@ -93,5 +83,45 @@ export const listRecentEpisodes = createServerFn({ method: "GET" })
       .is("deleted_at", null)
       .order("occurred_at", { ascending: false })
       .limit(10);
-    return { episodes: data ?? [] };
+    const { data: hh } = await context.supabase
+      .from("households")
+      .select("edit_lock_days")
+      .eq("id", householdId)
+      .maybeSingle();
+    return { episodes: data ?? [], editLockDays: hh?.edit_lock_days ?? 3 };
+  });
+
+const updateEpisodeSchema = z.object({
+  id: z.string().uuid(),
+  description: z.string().min(1).max(2000),
+  intervention_tried: z.string().max(500).nullable().optional(),
+  outcome: z.enum(OUTCOME_OPTIONS).nullable().optional(),
+});
+
+export const updateEpisode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => updateEpisodeSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { householdId } = await requireSection(context.supabase, context.userId, "episodes", "write");
+    const { data: row } = await context.supabase
+      .from("episodes")
+      .select("id, household_id, created_at")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!row || row.household_id !== householdId) throw new Error("Not found");
+    if (await isLocked(context.supabase, householdId, row.created_at)) {
+      const err: any = new Error("This episode is locked and can no longer be edited.");
+      err.status = 423;
+      throw err;
+    }
+    const { error } = await context.supabase
+      .from("episodes")
+      .update({
+        description: data.description,
+        intervention_tried: data.intervention_tried ?? null,
+        outcome: data.outcome ?? null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
