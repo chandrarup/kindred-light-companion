@@ -198,6 +198,42 @@ export type Database = {
           },
         ]
       }
+      demo_responses: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          keywords: string[]
+          label: string
+          mode: string
+          priority: number
+          tag: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          label: string
+          mode?: string
+          priority?: number
+          tag?: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          label?: string
+          mode?: string
+          priority?: number
+          tag?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       episodes: {
         Row: {
           antecedent: string | null
@@ -362,6 +398,7 @@ export type Database = {
           deleted_at: string | null
           edit_lock_days: number
           id: string
+          is_demo: boolean
           min_evidence: number
           name: string
           notify_window_end: string
@@ -375,6 +412,7 @@ export type Database = {
           deleted_at?: string | null
           edit_lock_days?: number
           id?: string
+          is_demo?: boolean
           min_evidence?: number
           name: string
           notify_window_end?: string
@@ -388,6 +426,7 @@ export type Database = {
           deleted_at?: string | null
           edit_lock_days?: number
           id?: string
+          is_demo?: boolean
           min_evidence?: number
           name?: string
           notify_window_end?: string
