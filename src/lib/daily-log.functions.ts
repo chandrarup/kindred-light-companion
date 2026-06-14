@@ -95,6 +95,15 @@ export const createDailyLog = createServerFn({ method: "POST" })
       if (sErr) throw new Error(sErr.message);
     }
 
+    // Recompute the trigger fingerprint after a confirmed log.
+    // Best-effort: do not fail the save if recompute throws.
+    try {
+      const { recomputeFingerprintInline } = await import("./fingerprint.server");
+      await recomputeFingerprintInline(supabase, userId);
+    } catch (e) {
+      console.error("fingerprint recompute failed:", e);
+    }
+
     return { id: log.id as string };
   });
 
