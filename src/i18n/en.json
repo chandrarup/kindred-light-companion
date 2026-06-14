@@ -20,6 +20,7 @@
     "today": "Today",
     "photos": "Photos",
     "circle": "Circle",
+    "summary": "Summary",
     "profile": "Profile",
     "settings": "Settings"
   },
@@ -95,6 +96,34 @@
   "patient": {
     "greeting": "Hello, {name}.",
     "subtitle": "You are safe. Someone who cares about you is nearby.",
-    "exit": "Exit Patient mode"
+    "exit": "Exit Patient mode",
+    "wake": "Touch to wake",
+    "talk": "TALK",
+    "people": "MY PEOPLE",
+    "music": "MY MUSIC",
+    "talkPrompt": "I'm here with you. Take a breath.",
+    "noPeople": "No photos yet.",
+    "noMusic": "No music yet.",
+    "playTitle": "Play",
+    "prev": "Back",
+    "next": "Next"
+  },
+  "summary": {
+    "title": "Physician summary",
+    "subtitle": "A one-page snapshot of what your family logged. Counts and dates only — never a diagnosis.",
+    "from": "From",
+    "to": "To",
+    "generate": "Generate summary",
+    "generating": "Generating…",
+    "print": "Print / Save PDF",
+    "history": "Previous summaries",
+    "cardTitle": "Visit summary",
+    "logs": "logs",
+    "symptomFreq": "Symptom frequency",
+    "trend": "Trend vs prior period",
+    "topPatterns": "Top antecedent → symptom patterns",
+    "adherence": "Cue adherence",
+    "narrative": "Plain-language summary",
+    "disclaimer": "Counts and observations only, drawn from this household's logs. Not medical advice."
   }
 }
