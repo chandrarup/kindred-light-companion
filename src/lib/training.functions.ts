@@ -67,7 +67,7 @@ export const listSurfacedTraining = createServerFn({ method: "GET" })
       .from("training_content")
       .select("id, title, body, video_url, source_attribution, action_card_text, symptom_tag")
       .in("symptom_tag", tags)
-      .eq("language", language)
+      .eq("language", language as "en" | "es")
       .is("deleted_at", null);
 
     const cards = (rows ?? []).map((r: any) => ({
