@@ -65,11 +65,11 @@ function Onboarding() {
       if (pin !== pinConfirm) return setError(t("onboarding.pinMismatch"));
     }
     if (step === 2 && !patientName.trim()) return setError(t("onboarding.patientName"));
-    setStep((s) => Math.min(5, (s + 1) as Step));
+    setStep((s) => (Math.min(5, s + 1) as Step));
   }
   function back() {
     setError(null);
-    setStep((s) => Math.max(1, (s - 1) as Step));
+    setStep((s) => (Math.max(1, s - 1) as Step));
   }
 
   async function submit() {
