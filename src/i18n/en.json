@@ -19,6 +19,7 @@
   "nav": {
     "today": "Today",
     "photos": "Photos",
+    "circle": "Circle",
     "profile": "Profile",
     "settings": "Settings"
   },

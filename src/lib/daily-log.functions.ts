@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSection, isLocked } from "./permissions";
 
 const SYMPTOMS = [
   "forgetfulness",
@@ -67,7 +68,7 @@ export const createDailyLog = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => createLogSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const householdId = await getHouseholdId(supabase, userId);
+    const { householdId } = await requireSection(supabase, userId, "symptom_logs", "write");
 
     const { data: log, error: lErr } = await supabase
       .from("daily_logs")
@@ -111,7 +112,7 @@ export const listRecentLogs = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const householdId = await getHouseholdId(supabase, userId);
+    const { householdId } = await requireSection(supabase, userId, "symptom_logs", "read");
     const { data, error } = await supabase
       .from("daily_logs")
       .select("id, log_date, mood, sleep_quality, notes, created_at, log_symptoms(symptom, time_of_day, antecedent, outcome)")
@@ -120,14 +121,19 @@ export const listRecentLogs = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(10);
     if (error) throw new Error(error.message);
-    return { logs: data ?? [] };
+    const { data: hh } = await supabase
+      .from("households")
+      .select("edit_lock_days")
+      .eq("id", householdId)
+      .maybeSingle();
+    return { logs: data ?? [], editLockDays: hh?.edit_lock_days ?? 3 };
   });
 
 export const hasLoggedToday = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const householdId = await getHouseholdId(supabase, userId);
+    const { householdId } = await requireSection(supabase, userId, "symptom_logs", "read");
     const today = new Date().toISOString().slice(0, 10);
     const { count } = await supabase
       .from("daily_logs")
@@ -136,6 +142,42 @@ export const hasLoggedToday = createServerFn({ method: "GET" })
       .eq("log_date", today)
       .is("deleted_at", null);
     return { logged: (count ?? 0) > 0 };
+  });
+
+const updateLogSchema = z.object({
+  id: z.string().uuid(),
+  mood: z.number().int().min(1).max(5).nullable().optional(),
+  sleep_quality: z.number().int().min(1).max(5).nullable().optional(),
+  notes: z.string().max(4000).nullable().optional(),
+});
+
+export const updateDailyLog = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => updateLogSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { householdId } = await requireSection(supabase, userId, "symptom_logs", "write");
+    const { data: row } = await supabase
+      .from("daily_logs")
+      .select("id, household_id, created_at")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!row || row.household_id !== householdId) throw new Error("Not found");
+    if (await isLocked(supabase, householdId, row.created_at)) {
+      const err: any = new Error("This log is locked and can no longer be edited.");
+      err.status = 423;
+      throw err;
+    }
+    const { error } = await supabase
+      .from("daily_logs")
+      .update({
+        mood: data.mood != null ? String(data.mood) : null,
+        sleep_quality: data.sleep_quality ?? null,
+        notes: data.notes ?? null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 const extractInput = z.object({ transcript: z.string().min(1).max(4000) });

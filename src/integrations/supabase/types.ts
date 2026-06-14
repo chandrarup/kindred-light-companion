@@ -299,6 +299,63 @@ export type Database = {
           },
         ]
       }
+      household_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          household_id: string
+          id: string
+          invited_by: string | null
+          permissions: Json
+          role: Database["public"]["Enums"]["membership_role"]
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          household_id: string
+          id?: string
+          invited_by?: string | null
+          permissions?: Json
+          role: Database["public"]["Enums"]["membership_role"]
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          household_id?: string
+          id?: string
+          invited_by?: string | null
+          permissions?: Json
+          role?: Database["public"]["Enums"]["membership_role"]
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_invitations_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "household_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       households: {
         Row: {
           created_at: string
@@ -686,6 +743,14 @@ export type Database = {
       is_household_member: {
         Args: { _household_id: string; _user_id: string }
         Returns: boolean
+      }
+      is_record_locked: {
+        Args: { _created_at: string; _household_id: string }
+        Returns: boolean
+      }
+      member_section_access: {
+        Args: { _household_id: string; _section: string; _user_id: string }
+        Returns: string
       }
     }
     Enums: {
