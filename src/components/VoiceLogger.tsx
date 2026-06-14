@@ -105,7 +105,7 @@ export function VoiceLogger({
         mood: res.mood ?? null,
         sleep_quality: null,
         notes: res.summary ?? transcript,
-        symptoms: res.symptoms.map((s) => ({
+        symptoms: res.symptoms.map((s: any) => ({
           symptom: s.symptom,
           time_of_day: s.time_of_day ?? null,
           antecedent: s.antecedent ?? null,
