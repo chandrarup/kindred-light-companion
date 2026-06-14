@@ -8,6 +8,7 @@ import { createDailyLog, hasLoggedToday, listRecentLogs } from "@/lib/daily-log.
 import { DailyLogForm, type DailyLogFormValue } from "@/components/DailyLogForm";
 import { VoiceLogger } from "@/components/VoiceLogger";
 import { InsightsList } from "@/components/InsightsList";
+import { AskCompanion } from "@/components/AskCompanion";
 import { CuesPanel } from "@/components/CuesPanel";
 import { TrainingCards } from "@/components/TrainingCards";
 import { DailyLogReminder } from "@/components/DailyLogReminder";
@@ -207,6 +208,8 @@ function Today() {
             </p>
             <InsightsList refreshKey={insightsKey} />
           </section>
+
+          <AskCompanion mode="caregiver" />
         </div>
       )}
 
