@@ -1,13 +1,18 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
 import { useT } from "@/i18n/I18nProvider";
 import { getMyHousehold } from "@/lib/household.functions";
-import { createDailyLog, listRecentLogs } from "@/lib/daily-log.functions";
+import { createDailyLog, hasLoggedToday, listRecentLogs } from "@/lib/daily-log.functions";
 import { DailyLogForm, type DailyLogFormValue } from "@/components/DailyLogForm";
 import { VoiceLogger } from "@/components/VoiceLogger";
 import { InsightsList } from "@/components/InsightsList";
+import { CuesPanel } from "@/components/CuesPanel";
+import { TrainingCards } from "@/components/TrainingCards";
+import { DailyLogReminder } from "@/components/DailyLogReminder";
+import { EpisodeForm } from "@/components/EpisodeForm";
+import { RedFlagCard } from "@/components/RedFlagCard";
 
 export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({ meta: [{ title: "Today — COMPANION" }] }),
@@ -30,21 +35,30 @@ function Today() {
   const fn = useServerFn(getMyHousehold);
   const createFn = useServerFn(createDailyLog);
   const listFn = useServerFn(listRecentLogs);
+  const loggedFn = useServerFn(hasLoggedToday);
   const [patientName, setPatientName] = useState<string | null>(null);
-  const [mode, setMode] = useState<"idle" | "tap" | "voice">("idle");
+  const [mode, setMode] = useState<"idle" | "tap" | "voice" | "episode">("idle");
   const [submitting, setSubmitting] = useState(false);
   const [logs, setLogs] = useState<RecentLog[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [insightsKey, setInsightsKey] = useState(0);
+  const [notifyWindow, setNotifyWindow] = useState<{ start: string; end: string }>({
+    start: "09:00",
+    end: "20:00",
+  });
+  const [loggedToday, setLoggedToday] = useState(false);
+  const [activeFlags, setActiveFlags] = useState<string[]>([]);
 
   const refreshLogs = useCallback(async () => {
     try {
       const res = await listFn();
       setLogs((res?.logs ?? []) as RecentLog[]);
+      const l = await loggedFn();
+      setLoggedToday(!!l?.logged);
     } catch (e: any) {
       setError(e?.message ?? "Could not load logs");
     }
-  }, [listFn]);
+  }, [listFn, loggedFn]);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,6 +70,13 @@ function Today() {
         return;
       }
       setPatientName(res.patient?.display_name ?? null);
+      const hh = res.household as any;
+      if (hh?.notify_window_start && hh?.notify_window_end) {
+        setNotifyWindow({
+          start: String(hh.notify_window_start).slice(0, 5),
+          end: String(hh.notify_window_end).slice(0, 5),
+        });
+      }
       refreshLogs();
     })();
     return () => {
@@ -83,6 +104,8 @@ function Today() {
       <h1 className="text-2xl font-semibold mb-2">{t("today.title")}</h1>
       {patientName && <p className="text-muted-foreground mb-4">— {patientName}</p>}
 
+      <RedFlagCard flags={activeFlags} />
+
       {error && (
         <div className="mb-4 rounded border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
           {error}
@@ -91,6 +114,14 @@ function Today() {
 
       {mode === "idle" && (
         <div className="space-y-6">
+          <DailyLogReminder
+            windowStart={notifyWindow.start}
+            windowEnd={notifyWindow.end}
+            alreadyLoggedToday={loggedToday}
+          />
+
+          <CuesPanel />
+
           <div className="grid sm:grid-cols-2 gap-3">
             <button
               type="button"
@@ -106,7 +137,22 @@ function Today() {
             >
               🎤 Voice log
             </button>
+            <button
+              type="button"
+              onClick={() => setMode("episode")}
+              className="rounded-lg border-2 border-destructive/40 text-destructive px-6 py-6 text-xl font-semibold min-h-20"
+            >
+              ⚠ Something new happened
+            </button>
+            <Link
+              to="/cues"
+              className="rounded-lg border-2 border-border px-6 py-6 text-xl font-semibold min-h-20 flex items-center justify-center text-center"
+            >
+              ⏰ Cues & reminders
+            </Link>
           </div>
+
+          <TrainingCards refreshKey={insightsKey} />
 
           <section aria-labelledby="recent-logs">
             <h2 id="recent-logs" className="text-lg font-semibold mb-2">
@@ -174,6 +220,27 @@ function Today() {
               <DailyLogForm submitting={submitting} onSubmit={handleSave} />
             </div>
           </details>
+        </div>
+      )}
+
+      {mode === "episode" && (
+        <div className="space-y-4">
+          <button
+            type="button"
+            onClick={() => setMode("idle")}
+            className="text-sm underline"
+          >
+            ← Back
+          </button>
+          <h2 className="text-xl font-semibold">Log a new episode</h2>
+          <EpisodeForm
+            onCancel={() => setMode("idle")}
+            onSaved={(res) => {
+              setMode("idle");
+              setInsightsKey((k) => k + 1);
+              if (res.red_flags.length > 0) setActiveFlags(res.red_flags);
+            }}
+          />
         </div>
       )}
     </AppShell>

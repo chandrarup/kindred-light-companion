@@ -123,6 +123,21 @@ export const listRecentLogs = createServerFn({ method: "GET" })
     return { logs: data ?? [] };
   });
 
+export const hasLoggedToday = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const householdId = await getHouseholdId(supabase, userId);
+    const today = new Date().toISOString().slice(0, 10);
+    const { count } = await supabase
+      .from("daily_logs")
+      .select("id", { count: "exact", head: true })
+      .eq("household_id", householdId)
+      .eq("log_date", today)
+      .is("deleted_at", null);
+    return { logged: (count ?? 0) > 0 };
+  });
+
 const extractInput = z.object({ transcript: z.string().min(1).max(4000) });
 
 export const extractLogFromTranscript = createServerFn({ method: "POST" })
