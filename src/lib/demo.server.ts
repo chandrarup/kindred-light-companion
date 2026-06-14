@@ -35,8 +35,10 @@ async function getOrCreateUser(admin: any, email: string, displayName: string) {
     password: crypto.randomUUID(),
   });
   if (error || !created?.user) throw new Error(error?.message ?? "createUser failed");
-  // handle_new_auth_user trigger creates public.users row
-  await admin.from("users").update({ display_name: displayName }).eq("id", created.user.id);
+  // Ensure a public.users row exists (in case the trigger isn't attached) and set name.
+  await admin
+    .from("users")
+    .upsert({ id: created.user.id, email, display_name: displayName }, { onConflict: "id" });
   return created.user.id as string;
 }
 
