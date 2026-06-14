@@ -13,7 +13,7 @@ async function getHouseholdAndLang(supabase: any, userId: string) {
     .is("deleted_at", null)
     .limit(1)
     .maybeSingle();
-  if (!m) throw new Error("No household for user");
+  if (!m) return null;
   const householdId = m.household_id as string;
   const { data: p } = await supabase
     .from("patient_profile")
@@ -31,7 +31,9 @@ export const listSurfacedTraining = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const { householdId, language } = await getHouseholdAndLang(supabase, userId);
+    const ctx = await getHouseholdAndLang(supabase, userId);
+    if (!ctx) return { cards: [] };
+    const { householdId, language } = ctx;
     const since = new Date(Date.now() - WEEK_MS).toISOString();
 
     const { data: logs } = await supabase
