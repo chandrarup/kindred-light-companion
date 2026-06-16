@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, isRedirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyRole } from "@/lib/role.functions";
 
@@ -13,7 +13,8 @@ export const Route = createFileRoute("/_authenticated")({
       if (r?.role === "clinician" && !location.pathname.startsWith("/summary")) {
         throw redirect({ to: "/summary" });
       }
-    } catch {
+    } catch (e) {
+      if (isRedirect(e)) throw e;
       // ignore role lookup failures so the user can still load the app
     }
     return { user: data.user };
