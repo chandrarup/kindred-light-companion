@@ -398,6 +398,8 @@ export type Database = {
           deleted_at: string | null
           edit_lock_days: number
           id: string
+          intake_capture_mode: string
+          intake_progress: Json
           is_demo: boolean
           min_evidence: number
           name: string
@@ -412,6 +414,8 @@ export type Database = {
           deleted_at?: string | null
           edit_lock_days?: number
           id?: string
+          intake_capture_mode?: string
+          intake_progress?: Json
           is_demo?: boolean
           min_evidence?: number
           name: string
@@ -426,6 +430,8 @@ export type Database = {
           deleted_at?: string | null
           edit_lock_days?: number
           id?: string
+          intake_capture_mode?: string
+          intake_progress?: Json
           is_demo?: boolean
           min_evidence?: number
           name?: string
@@ -591,46 +597,100 @@ export type Database = {
       }
       patient_profile: {
         Row: {
+          address_as: string | null
           biography: string | null
+          calming_strategies: string[]
+          conditions: string[]
           created_at: string
+          culture_faith: string | null
           daily_routines: string | null
           deleted_at: string | null
+          diagnosis_date: string | null
+          diagnosis_type: string | null
+          dislikes: string[]
           display_name: string
           greeting_audio_path: string | null
+          hometown: string | null
           household_id: string
           id: string
+          key_people: Json
           known_triggers: string[]
           language: Database["public"]["Enums"]["app_language"]
+          languages: string[]
+          life_events: string[]
+          likes: string[]
+          medication_names: string[]
           music_preferences: string[]
+          preferred_name: string | null
+          profession: string | null
+          referral_consent: boolean
+          stage_self_select: string | null
           updated_at: string
+          zip_code: string | null
         }
         Insert: {
+          address_as?: string | null
           biography?: string | null
+          calming_strategies?: string[]
+          conditions?: string[]
           created_at?: string
+          culture_faith?: string | null
           daily_routines?: string | null
           deleted_at?: string | null
+          diagnosis_date?: string | null
+          diagnosis_type?: string | null
+          dislikes?: string[]
           display_name: string
           greeting_audio_path?: string | null
+          hometown?: string | null
           household_id: string
           id?: string
+          key_people?: Json
           known_triggers?: string[]
           language?: Database["public"]["Enums"]["app_language"]
+          languages?: string[]
+          life_events?: string[]
+          likes?: string[]
+          medication_names?: string[]
           music_preferences?: string[]
+          preferred_name?: string | null
+          profession?: string | null
+          referral_consent?: boolean
+          stage_self_select?: string | null
           updated_at?: string
+          zip_code?: string | null
         }
         Update: {
+          address_as?: string | null
           biography?: string | null
+          calming_strategies?: string[]
+          conditions?: string[]
           created_at?: string
+          culture_faith?: string | null
           daily_routines?: string | null
           deleted_at?: string | null
+          diagnosis_date?: string | null
+          diagnosis_type?: string | null
+          dislikes?: string[]
           display_name?: string
           greeting_audio_path?: string | null
+          hometown?: string | null
           household_id?: string
           id?: string
+          key_people?: Json
           known_triggers?: string[]
           language?: Database["public"]["Enums"]["app_language"]
+          languages?: string[]
+          life_events?: string[]
+          likes?: string[]
+          medication_names?: string[]
           music_preferences?: string[]
+          preferred_name?: string | null
+          profession?: string | null
+          referral_consent?: boolean
+          stage_self_select?: string | null
           updated_at?: string
+          zip_code?: string | null
         }
         Relationships: [
           {
