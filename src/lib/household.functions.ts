@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSection } from "./permissions";
 
 const langSchema = z.enum(["en", "es"]);
 
@@ -111,12 +112,12 @@ export const getMyHousehold = createServerFn({ method: "GET" })
 
     const { data: household } = await supabase
       .from("households")
-      .select("id, name, preferred_language, notify_window_start, notify_window_end")
+      .select("id, name, preferred_language, notify_window_start, notify_window_end, reminder_time, reminder_enabled, edit_lock_days")
       .eq("id", membership.household_id)
       .maybeSingle();
     const { data: patient } = await supabase
       .from("patient_profile")
-      .select("display_name, language, biography, daily_routines, music_preferences, known_triggers")
+      .select("display_name, language, biography, daily_routines, music_preferences, known_triggers, calming_strategies")
       .eq("household_id", membership.household_id)
       .maybeSingle();
     return { household, patient, role: membership.role };
@@ -148,4 +149,29 @@ export const verifyHouseholdPin = createServerFn({ method: "POST" })
 
     const ok = await verifyPin(data.pin, household?.pin_hash ?? null);
     return { ok };
+  });
+
+const settingsSchema = z.object({
+  reminder_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  reminder_enabled: z.boolean().optional(),
+  edit_lock_days: z.number().int().min(0).max(30).optional(),
+  notify_window_start: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  notify_window_end: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+});
+
+export const updateHouseholdSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => settingsSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { householdId } = await requireSection(context.supabase, context.userId, "symptom_logs", "write");
+    const patch: Record<string, any> = {};
+    if (data.reminder_time !== undefined) patch.reminder_time = data.reminder_time;
+    if (data.reminder_enabled !== undefined) patch.reminder_enabled = data.reminder_enabled;
+    if (data.edit_lock_days !== undefined) patch.edit_lock_days = data.edit_lock_days;
+    if (data.notify_window_start !== undefined) patch.notify_window_start = data.notify_window_start;
+    if (data.notify_window_end !== undefined) patch.notify_window_end = data.notify_window_end;
+    if (Object.keys(patch).length === 0) return { ok: true };
+    const { error } = await context.supabase.from("households").update(patch as any).eq("id", householdId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

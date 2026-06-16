@@ -146,6 +146,7 @@ export type Database = {
       }
       daily_logs: {
         Row: {
+          caregiver_distress: number | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
@@ -154,10 +155,13 @@ export type Database = {
           log_date: string
           mood: string | null
           notes: string | null
+          quick_ok: boolean
+          sleep_hours: number | null
           sleep_quality: number | null
           updated_at: string
         }
         Insert: {
+          caregiver_distress?: number | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -166,10 +170,13 @@ export type Database = {
           log_date?: string
           mood?: string | null
           notes?: string | null
+          quick_ok?: boolean
+          sleep_hours?: number | null
           sleep_quality?: number | null
           updated_at?: string
         }
         Update: {
+          caregiver_distress?: number | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -178,6 +185,8 @@ export type Database = {
           log_date?: string
           mood?: string | null
           notes?: string | null
+          quick_ok?: boolean
+          sleep_hours?: number | null
           sleep_quality?: number | null
           updated_at?: string
         }
@@ -237,6 +246,7 @@ export type Database = {
       episodes: {
         Row: {
           antecedent: string | null
+          caregiver_distress: number | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
@@ -253,6 +263,7 @@ export type Database = {
         }
         Insert: {
           antecedent?: string | null
+          caregiver_distress?: number | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -269,6 +280,7 @@ export type Database = {
         }
         Update: {
           antecedent?: string | null
+          caregiver_distress?: number | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -407,6 +419,8 @@ export type Database = {
           notify_window_start: string
           pin_hash: string | null
           preferred_language: Database["public"]["Enums"]["app_language"]
+          reminder_enabled: boolean
+          reminder_time: string
           updated_at: string
         }
         Insert: {
@@ -423,6 +437,8 @@ export type Database = {
           notify_window_start?: string
           pin_hash?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
+          reminder_enabled?: boolean
+          reminder_time?: string
           updated_at?: string
         }
         Update: {
@@ -439,6 +455,8 @@ export type Database = {
           notify_window_start?: string
           pin_hash?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
+          reminder_enabled?: boolean
+          reminder_time?: string
           updated_at?: string
         }
         Relationships: []
@@ -446,6 +464,7 @@ export type Database = {
       log_symptoms: {
         Row: {
           antecedent: string | null
+          caregiver_distress: number | null
           created_at: string
           daily_log_id: string
           id: string
@@ -458,6 +477,7 @@ export type Database = {
         }
         Insert: {
           antecedent?: string | null
+          caregiver_distress?: number | null
           created_at?: string
           daily_log_id: string
           id?: string
@@ -470,6 +490,7 @@ export type Database = {
         }
         Update: {
           antecedent?: string | null
+          caregiver_distress?: number | null
           created_at?: string
           daily_log_id?: string
           id?: string

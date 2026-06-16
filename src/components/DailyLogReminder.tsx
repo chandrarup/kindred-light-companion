@@ -10,13 +10,19 @@ import { useEffect, useRef, useState } from "react";
  * upgrade path to background web push later.
  */
 export function DailyLogReminder({
+  reminderTime,
   windowStart,
   windowEnd,
+  enabled,
   alreadyLoggedToday,
+  onOpen,
 }: {
+  reminderTime: string; // "HH:MM"
   windowStart: string; // "HH:MM"
   windowEnd: string;   // "HH:MM"
+  enabled: boolean;
   alreadyLoggedToday: boolean;
+  onOpen?: () => void;
 }) {
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const firedKey = useRef<string | null>(null);
@@ -26,38 +32,49 @@ export function DailyLogReminder({
   }, []);
 
   useEffect(() => {
-    if (alreadyLoggedToday) return;
+    if (alreadyLoggedToday || !enabled) return;
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
     const t = setInterval(() => {
       const now = new Date();
       const hhmm = now.toTimeString().slice(0, 5);
       const day = now.toISOString().slice(0, 10);
-      if (hhmm < windowStart || hhmm > windowEnd) return;
+      if (hhmm < reminderTime || hhmm < windowStart || hhmm > windowEnd) return;
       if (firedKey.current === day) return;
       try {
-        new Notification("COMPANION", {
-          body: "Don't forget to log today's notes.",
+        const n = new Notification("COMPANION", {
+          body: "Time for today's check-in.",
           tag: `companion-daily-${day}`,
+          silent: false,
         });
+        n.onclick = () => { window.focus(); onOpen?.(); };
         firedKey.current = day;
       } catch {}
     }, 60 * 1000);
     return () => clearInterval(t);
-  }, [windowStart, windowEnd, alreadyLoggedToday]);
+  }, [windowStart, windowEnd, reminderTime, alreadyLoggedToday, enabled, onOpen]);
 
-  if (alreadyLoggedToday) return null;
+  if (alreadyLoggedToday || !enabled) return null;
 
   const inWindow = (() => {
     const hhmm = new Date().toTimeString().slice(0, 5);
-    return hhmm >= windowStart && hhmm <= windowEnd;
+    return hhmm >= reminderTime && hhmm >= windowStart && hhmm <= windowEnd;
   })();
   if (!inWindow) return null;
 
   return (
     <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3 my-3 flex flex-wrap items-center gap-2">
       <span className="flex-1">
-        Reminder: log today's notes for your loved one.
+        Time for today's check-in.
       </span>
+      {onOpen && (
+        <button
+          type="button"
+          onClick={onOpen}
+          className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm min-h-10"
+        >
+          Check in
+        </button>
+      )}
       {permission !== "granted" && typeof Notification !== "undefined" && (
         <button
           type="button"

@@ -46,6 +46,9 @@ const symptomEntry = z.object({
 const createLogSchema = z.object({
   mood: z.number().int().min(1).max(5).optional().nullable(),
   sleep_quality: z.number().int().min(1).max(5).optional().nullable(),
+  sleep_hours: z.number().min(0).max(24).optional().nullable(),
+  caregiver_distress: z.number().int().min(0).max(4).optional().nullable(),
+  quick_ok: z.boolean().optional().default(false),
   notes: z.string().max(4000).optional().nullable(),
   symptoms: z.array(symptomEntry).max(20).default([]),
 });
@@ -77,6 +80,9 @@ export const createDailyLog = createServerFn({ method: "POST" })
         created_by: userId,
         mood: data.mood != null ? String(data.mood) : null,
         sleep_quality: data.sleep_quality ?? null,
+        sleep_hours: data.sleep_hours ?? null,
+        caregiver_distress: data.caregiver_distress ?? null,
+        quick_ok: data.quick_ok ?? false,
         notes: data.notes ?? null,
       })
       .select("id")
