@@ -20,6 +20,7 @@
   "nav": {
     "today": "Today",
     "photos": "Photos",
+    "learn": "Learn",
     "circle": "Circle",
     "summary": "Summary",
     "profile": "Profile",
@@ -103,7 +104,14 @@
     "windowStart": "Don't remind before",
     "windowEnd": "Don't remind after",
     "editLockDays": "Edit window (days)",
-    "editLockHelp": "After this many days, daily logs and symptom entries become read-only."
+    "editLockHelp": "After this many days, daily logs and symptom entries become read-only.",
+    "musicProvider": "Music streaming",
+    "musicProviderHelp": "Connect your family's existing subscription. We only store song picks — the provider streams the audio.",
+    "providerApple": "Apple Music",
+    "providerSpotify": "Spotify",
+    "providerAmazon": "Amazon / Prime Music",
+    "providerUpload": "Upload my own audio",
+    "providerNone": "Not set"
   },
   "patient": {
     "greeting": "Hello, {name}.",
@@ -116,9 +124,37 @@
     "talkPrompt": "I'm here with you. Take a breath.",
     "noPeople": "No photos yet.",
     "noMusic": "No music yet.",
+    "openInProvider": "Play on streaming app",
     "playTitle": "Play",
     "prev": "Back",
     "next": "Next"
+  },
+  "music": {
+    "playNameMusic": "Play {name}'s music",
+    "theirs": "their",
+    "noSongs": "No songs saved yet. Add favorites in Patient profile.",
+    "noProviderHint": "Pick a streaming service in Settings to play full songs.",
+    "playing": "Playing: {song}",
+    "pickASong": "Pick a song to play",
+    "didItHelp": "Did it help?",
+    "helped": "Helped",
+    "noChange": "No change",
+    "worse": "Worse",
+    "notThisSong": "Not this song — skip in future"
+  },
+  "learn": {
+    "title": "Learn",
+    "lead": "Short videos and one tip per topic. We bring the right lesson when a pattern shows up.",
+    "queuedHeading": "Picked for you this week",
+    "browseHeading": "Browse all lessons",
+    "all": "All",
+    "seenThisWeek": "seen {n}× this week",
+    "saveAction": "Save this tip",
+    "saved": "Saved",
+    "iTriedThis": "I tried this",
+    "thanks": "Thanks — this helps the patterns get smarter.",
+    "source": "Source",
+    "empty": "No lessons here yet."
   },
   "summary": {
     "title": "Physician summary",
