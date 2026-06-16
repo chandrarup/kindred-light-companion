@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { getCallerMembership } from "./permissions";
 
 const WEEK_MS = 7 * 24 * 3600 * 1000;
 const THRESHOLD = 3;
@@ -88,6 +89,28 @@ export const listAllTraining = createServerFn({ method: "GET" })
       .is("deleted_at", null)
       .order("symptom_tag");
     return { items: data ?? [] };
+  });
+
+export const recordTrainingFeedback = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({
+      training_id: z.string().uuid(),
+      helped: z.enum(["helped", "no_change", "worse"]).optional().nullable(),
+      action_saved: z.boolean().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const m = await getCallerMembership(context.supabase, context.userId);
+    const { error } = await context.supabase.from("training_feedback").insert({
+      household_id: m.household_id,
+      training_id: data.training_id,
+      user_id: context.userId,
+      helped: data.helped ?? null,
+      action_saved: data.action_saved ?? false,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 // re-export for convenience

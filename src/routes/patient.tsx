@@ -6,6 +6,7 @@ import { useMode } from "@/lib/mode-context";
 import { PinDialog } from "@/components/PinDialog";
 import { verifyHouseholdPin } from "@/lib/household.functions";
 import { getPatientBundle, getDueCues } from "@/lib/patient.functions";
+import { buildProviderSearchUrl } from "@/lib/music.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/patient")({
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/patient")({
 });
 
 type Photo = { id: string; caption: string | null; url: string; audio_url: string | null };
-type Bundle = { name: string; language: string; music: string[]; greeting_audio_url: string | null; photos: Photo[] };
+type Bundle = { name: string; language: string; music: string[]; music_provider: string | null; greeting_audio_url: string | null; photos: Photo[] };
 
 function speak(text: string, lang = "en-US") {
   try {
@@ -233,6 +234,7 @@ function PatientPage() {
   // music
   const currentSong = bundle.music[musicIdx];
   const isUrl = currentSong && /^https?:\/\//i.test(currentSong);
+  const providerUrl = !isUrl ? buildProviderSearchUrl(bundle.music_provider, currentSong ?? "") : null;
   return (
     <div data-mode="patient" className="min-h-dvh bg-background text-foreground p-6 flex flex-col">
       <BackBar onBack={() => setView("menu")} label={t("patient.music")} />
@@ -243,6 +245,17 @@ function PatientPage() {
           <p className="text-center" style={{ fontSize: "32pt", fontWeight: 600 }}>{currentSong}</p>
           {isUrl ? (
             <audio ref={audioRef} src={currentSong} controls autoPlay className="w-full max-w-md" />
+          ) : providerUrl ? (
+            <a
+              href={providerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-2xl bg-primary text-primary-foreground px-8 py-6 text-center"
+              style={{ fontSize: "26pt", minHeight: 120 }}
+              data-touch
+            >
+              ▶ {t("patient.openInProvider")}
+            </a>
           ) : (
             <button
               type="button"

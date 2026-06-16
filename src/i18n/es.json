@@ -20,6 +20,7 @@
   "nav": {
     "today": "Hoy",
     "photos": "Fotos",
+    "learn": "Aprender",
     "circle": "Círculo",
     "summary": "Resumen",
     "profile": "Perfil",
@@ -103,7 +104,14 @@
     "windowStart": "No recordar antes de",
     "windowEnd": "No recordar después de",
     "editLockDays": "Ventana para editar (días)",
-    "editLockHelp": "Después de estos días, los registros diarios y síntomas quedan en solo lectura."
+    "editLockHelp": "Después de estos días, los registros diarios y síntomas quedan en solo lectura.",
+    "musicProvider": "Música en streaming",
+    "musicProviderHelp": "Conecte la suscripción de la familia. Solo guardamos las canciones — el proveedor reproduce el audio.",
+    "providerApple": "Apple Music",
+    "providerSpotify": "Spotify",
+    "providerAmazon": "Amazon / Prime Music",
+    "providerUpload": "Subir mi propio audio",
+    "providerNone": "Sin elegir"
   },
   "patient": {
     "greeting": "Hola, {name}.",
@@ -116,9 +124,37 @@
     "talkPrompt": "Estoy aquí contigo. Respira hondo.",
     "noPeople": "Aún no hay fotos.",
     "noMusic": "Aún no hay música.",
+    "openInProvider": "Abrir en la app de música",
     "playTitle": "Reproducir",
     "prev": "Atrás",
     "next": "Siguiente"
+  },
+  "music": {
+    "playNameMusic": "Pon la música de {name}",
+    "theirs": "su",
+    "noSongs": "Aún no hay canciones. Agréguelas en el perfil del paciente.",
+    "noProviderHint": "Elija un servicio de música en Ajustes para reproducir canciones completas.",
+    "playing": "Sonando: {song}",
+    "pickASong": "Elija una canción",
+    "didItHelp": "¿Ayudó?",
+    "helped": "Ayudó",
+    "noChange": "Sin cambio",
+    "worse": "Peor",
+    "notThisSong": "Esta no — saltarla en el futuro"
+  },
+  "learn": {
+    "title": "Aprender",
+    "lead": "Videos breves y un consejo por tema. Le traemos la lección cuando aparece un patrón.",
+    "queuedHeading": "Elegido para usted esta semana",
+    "browseHeading": "Ver todas las lecciones",
+    "all": "Todas",
+    "seenThisWeek": "visto {n}× esta semana",
+    "saveAction": "Guardar este consejo",
+    "saved": "Guardado",
+    "iTriedThis": "Lo probé",
+    "thanks": "Gracias — esto mejora las recomendaciones.",
+    "source": "Fuente",
+    "empty": "Aún no hay lecciones aquí."
   },
   "summary": {
     "title": "Resumen para el médico",

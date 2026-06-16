@@ -12,7 +12,7 @@ export const getPatientBundle = createServerFn({ method: "GET" })
     const [{ data: patient }, { data: photos }] = await Promise.all([
       context.supabase
         .from("patient_profile")
-        .select("display_name, language, music_preferences, greeting_audio_path")
+        .select("display_name, language, music_preferences, music_disliked, music_provider, greeting_audio_path")
         .eq("household_id", householdId)
         .maybeSingle(),
       context.supabase
@@ -44,7 +44,10 @@ export const getPatientBundle = createServerFn({ method: "GET" })
     return {
       name: patient?.display_name ?? "",
       language: patient?.language ?? "en",
-      music: (patient?.music_preferences ?? []) as string[],
+      music: (((patient as any)?.music_preferences ?? []) as string[]).filter(
+        (s) => !(((patient as any)?.music_disliked ?? []) as string[]).includes(s),
+      ),
+      music_provider: ((patient as any)?.music_provider ?? null) as string | null,
       greeting_audio_url: await sign(patient?.greeting_audio_path ?? null),
       photos: signedPhotos.filter((p) => p.url),
     };

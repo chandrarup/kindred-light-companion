@@ -6,6 +6,8 @@ import {
   SYMPTOM_OPTIONS,
 } from "@/lib/daily-log.functions";
 import { RED_FLAGS, createEpisode } from "@/lib/episodes.functions";
+import { MUSIC_TRIGGER_SYMPTOMS } from "@/lib/music.functions";
+import { MusicTrigger } from "@/components/MusicTrigger";
 
 const TIMES_OF_DAY = ["morning", "afternoon", "evening", "night"] as const;
 type Step = "symptom" | "when" | "antecedent" | "intervention" | "outcome" | "distress" | "flags" | "review";
@@ -117,6 +119,12 @@ export function EpisodeForm({
       {step === "intervention" && (
         <section className="space-y-3">
           <h3 className="text-xl font-semibold">What did you try?</h3>
+          {MUSIC_TRIGGER_SYMPTOMS.includes(symptom) && (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
+              <p className="text-sm font-medium">Try music — often helps at early signs.</p>
+              <MusicTrigger />
+            </div>
+          )}
           {calmingSuggestions.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {calmingSuggestions.map((s) => (

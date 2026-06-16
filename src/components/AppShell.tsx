@@ -12,9 +12,9 @@ import { verifyHouseholdPin } from "@/lib/household.functions";
 const navItems = [
   { to: "/today", key: "nav.today", icon: "☀" },
   { to: "/photos", key: "nav.photos", icon: "▢" },
+  { to: "/learn", key: "nav.learn", icon: "▶" },
   { to: "/circle", key: "nav.circle", icon: "♣" },
   { to: "/summary", key: "nav.summary", icon: "📋" },
-  { to: "/profile", key: "nav.profile", icon: "♡" },
   { to: "/settings", key: "nav.settings", icon: "⚙" },
 ] as const;
 

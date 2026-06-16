@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useT } from "@/i18n/I18nProvider";
 import { getMyHousehold, updateHouseholdSettings } from "@/lib/household.functions";
+import { getMusicSettings, updateMusicProvider } from "@/lib/music.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — COMPANION" }] }),
@@ -15,6 +16,9 @@ function SettingsPage() {
   const { t } = useT();
   const getHh = useServerFn(getMyHousehold);
   const saveHh = useServerFn(updateHouseholdSettings);
+  const getMusic = useServerFn(getMusicSettings);
+  const saveMusic = useServerFn(updateMusicProvider);
+  const [musicProvider, setMusicProvider] = useState<string | "">("");
   const [reminderTime, setReminderTime] = useState("18:00");
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [editLockDays, setEditLockDays] = useState(2);
@@ -35,9 +39,13 @@ function SettingsPage() {
       if (typeof hh.edit_lock_days === "number") setEditLockDays(hh.edit_lock_days);
       if (hh.notify_window_start) setWindowStart(String(hh.notify_window_start).slice(0, 5));
       if (hh.notify_window_end) setWindowEnd(String(hh.notify_window_end).slice(0, 5));
+      try {
+        const ms: any = await getMusic();
+        if (ms?.provider) setMusicProvider(ms.provider);
+      } catch {}
     })();
     return () => { cancel = true; };
-  }, [getHh]);
+  }, [getHh, getMusic]);
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
@@ -111,6 +119,31 @@ function SettingsPage() {
         >
           {t("intake.dashboard.edit")} →
         </Link>
+      </section>
+
+      <section className="space-y-2 mb-6">
+        <h2 className="font-medium">{t("settings.musicProvider")}</h2>
+        <p className="text-sm text-muted-foreground">{t("settings.musicProviderHelp")}</p>
+        <div className="grid grid-cols-2 gap-2 max-w-md">
+          {([
+            ["apple", t("settings.providerApple")],
+            ["spotify", t("settings.providerSpotify")],
+            ["amazon", t("settings.providerAmazon")],
+            ["upload", t("settings.providerUpload")],
+          ] as const).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={async () => {
+                setMusicProvider(key);
+                try { await saveMusic({ data: { provider: key } }); } catch {}
+              }}
+              className={`rounded-md border-2 px-3 py-3 text-sm min-h-12 ${musicProvider === key ? "border-primary bg-primary/10" : "border-border"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="space-y-1 opacity-70">
