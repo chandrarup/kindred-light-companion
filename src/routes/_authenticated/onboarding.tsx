@@ -172,6 +172,7 @@ function Step1({ onDone }: { onDone: () => void }) {
   const { t, lang } = useT();
   const start = useServerFn(startIntake);
   const attach = useServerFn(attachPhotos);
+  const save = useServerFn(saveIntakeStep);
   const [householdName, setHouseholdName] = useState("");
   const [pref, setPref] = useState<Lang>(lang);
   const [pin, setPin] = useState("");
@@ -243,7 +244,6 @@ function Step1({ onDone }: { onDone: () => void }) {
       if (music.length) patch.music_preferences = music;
       if (greetingPath) patch.greeting_audio_path = greetingPath;
       if (Object.keys(patch).length) {
-        const save = useServerFnSync(saveIntakeStep);
         await save({ data: { step: 1, patch } });
       }
 
