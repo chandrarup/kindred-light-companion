@@ -28,6 +28,8 @@ const createSchema = z.object({
   antecedent: z.enum(ANTECEDENT_OPTIONS).nullable().optional(),
   intervention_tried: z.string().max(500).nullable().optional(),
   outcome: z.enum(OUTCOME_OPTIONS).nullable().optional(),
+  time_of_day: z.enum(["morning", "afternoon", "evening", "night"]).nullable().optional(),
+  caregiver_distress: z.number().int().min(0).max(4).nullable().optional(),
   red_flags: z.array(z.enum(RED_FLAG_IDS as [string, ...string[]])).default([]),
 });
 
@@ -52,6 +54,8 @@ export const createEpisode = createServerFn({ method: "POST" })
         antecedent: data.antecedent ?? null,
         intervention_tried: data.intervention_tried ?? null,
         outcome: data.outcome ?? null,
+        time_of_day: data.time_of_day ?? null,
+        caregiver_distress: data.caregiver_distress ?? null,
       })
       .select("id")
       .single();

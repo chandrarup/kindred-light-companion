@@ -111,12 +111,12 @@ export const getMyHousehold = createServerFn({ method: "GET" })
 
     const { data: household } = await supabase
       .from("households")
-      .select("id, name, preferred_language, notify_window_start, notify_window_end")
+      .select("id, name, preferred_language, notify_window_start, notify_window_end, reminder_time, reminder_enabled, edit_lock_days")
       .eq("id", membership.household_id)
       .maybeSingle();
     const { data: patient } = await supabase
       .from("patient_profile")
-      .select("display_name, language, biography, daily_routines, music_preferences, known_triggers")
+      .select("display_name, language, biography, daily_routines, music_preferences, known_triggers, calming_strategies")
       .eq("household_id", membership.household_id)
       .maybeSingle();
     return { household, patient, role: membership.role };
