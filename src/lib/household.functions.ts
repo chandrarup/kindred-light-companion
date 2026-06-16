@@ -164,14 +164,14 @@ export const updateHouseholdSettings = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => settingsSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { householdId } = await requireSection(context.supabase, context.userId, "symptom_logs", "write");
-    const patch: Record<string, unknown> = {};
+    const patch: Record<string, any> = {};
     if (data.reminder_time !== undefined) patch.reminder_time = data.reminder_time;
     if (data.reminder_enabled !== undefined) patch.reminder_enabled = data.reminder_enabled;
     if (data.edit_lock_days !== undefined) patch.edit_lock_days = data.edit_lock_days;
     if (data.notify_window_start !== undefined) patch.notify_window_start = data.notify_window_start;
     if (data.notify_window_end !== undefined) patch.notify_window_end = data.notify_window_end;
     if (Object.keys(patch).length === 0) return { ok: true };
-    const { error } = await context.supabase.from("households").update(patch).eq("id", householdId);
+    const { error } = await context.supabase.from("households").update(patch as any).eq("id", householdId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
