@@ -45,12 +45,16 @@ function Today() {
   const [editLockDays, setEditLockDays] = useState(3);
   const [error, setError] = useState<string | null>(null);
   const [insightsKey, setInsightsKey] = useState(0);
+  const [calming, setCalming] = useState<string[]>([]);
+  const [reminderTime, setReminderTime] = useState<string>("18:00");
+  const [reminderEnabled, setReminderEnabled] = useState<boolean>(true);
   const [notifyWindow, setNotifyWindow] = useState<{ start: string; end: string }>({
     start: "09:00",
     end: "20:00",
   });
   const [loggedToday, setLoggedToday] = useState(false);
   const [activeFlags, setActiveFlags] = useState<string[]>([]);
+  const [oneTapSaving, setOneTapSaving] = useState(false);
 
   const refreshLogs = useCallback(async () => {
     try {
@@ -81,6 +85,10 @@ function Today() {
           end: String(hh.notify_window_end).slice(0, 5),
         });
       }
+      if (hh?.reminder_time) setReminderTime(String(hh.reminder_time).slice(0, 5));
+      if (typeof hh?.reminder_enabled === "boolean") setReminderEnabled(hh.reminder_enabled);
+      const pat = (res as any).patient;
+      if (Array.isArray(pat?.calming_strategies)) setCalming(pat.calming_strategies);
       refreshLogs();
     })();
     return () => {
@@ -103,6 +111,21 @@ function Today() {
     }
   }
 
+  async function handleGoodDay() {
+    if (oneTapSaving) return;
+    setOneTapSaving(true);
+    setError(null);
+    try {
+      await createFn({ data: { mood: 5, sleep_quality: null, sleep_hours: null, caregiver_distress: null, notes: "Good day — nothing to report", symptoms: [], quick_ok: true } });
+      await refreshLogs();
+      setInsightsKey((k) => k + 1);
+    } catch (e: any) {
+      setError(e?.message ?? "Could not save");
+    } finally {
+      setOneTapSaving(false);
+    }
+  }
+
   return (
     <AppShell>
       <h1 className="text-2xl font-semibold mb-2">{t("today.title")}</h1>
@@ -119,34 +142,49 @@ function Today() {
       {mode === "idle" && (
         <div className="space-y-6">
           <DailyLogReminder
+            reminderTime={reminderTime}
             windowStart={notifyWindow.start}
             windowEnd={notifyWindow.end}
+            enabled={reminderEnabled}
             alreadyLoggedToday={loggedToday}
+            onOpen={() => setMode("tap")}
           />
 
           <CuesPanel />
+
+          {/* Daily check-in: one-tap "good day" first */}
+          {!loggedToday && (
+            <button
+              type="button"
+              onClick={handleGoodDay}
+              disabled={oneTapSaving}
+              className="w-full rounded-2xl bg-primary text-primary-foreground px-6 py-8 text-2xl font-semibold min-h-24 disabled:opacity-60"
+            >
+              {oneTapSaving ? "Saving…" : "✓ Good day — nothing to report"}
+            </button>
+          )}
 
           <div className="grid sm:grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setMode("tap")}
-              className="rounded-lg bg-primary text-primary-foreground px-6 py-6 text-xl font-semibold min-h-20"
-            >
-              ＋ Log today
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("voice")}
               className="rounded-lg border-2 border-primary text-primary px-6 py-6 text-xl font-semibold min-h-20"
             >
-              🎤 Voice log
+              ＋ Quick check-in
             </button>
             <button
               type="button"
               onClick={() => setMode("episode")}
               className="rounded-lg border-2 border-destructive/40 text-destructive px-6 py-6 text-xl font-semibold min-h-20"
             >
-              ⚠ Something new happened
+              ⚠ Log a symptom
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("voice")}
+              className="rounded-lg border-2 border-border px-6 py-6 text-xl font-semibold min-h-20"
+            >
+              🎤 Voice log
             </button>
             <Link
               to="/cues"
@@ -169,7 +207,7 @@ function Today() {
                 {logs.map((l) => (
                   <li key={l.id} className="rounded border p-3">
                     <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>{new Date(l.created_at).toLocaleString()}</span>
+                      <span>logged at {new Date(l.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
                       <span className="flex items-center gap-2">
                         {l.mood && <span>Mood: {l.mood}/5</span>}
                         {isLockedClient(l.created_at, editLockDays) && (
@@ -214,7 +252,15 @@ function Today() {
       )}
 
       {mode === "tap" && (
-        <DailyLogForm submitting={submitting} onSubmit={handleSave} onCancel={() => setMode("idle")} />
+        <DailyLogForm
+          submitting={submitting}
+          onSubmit={handleSave}
+          onCancel={() => setMode("idle")}
+          onAnySymptomsYes={async (snap) => {
+            await handleSave(snap);
+            setMode("episode");
+          }}
+        />
       )}
 
       {mode === "voice" && (
@@ -245,8 +291,9 @@ function Today() {
           >
             ← Back
           </button>
-          <h2 className="text-xl font-semibold">Log a new episode</h2>
+          <h2 className="text-xl font-semibold">Log a symptom</h2>
           <EpisodeForm
+            calmingSuggestions={calming}
             onCancel={() => setMode("idle")}
             onSaved={(res) => {
               setMode("idle");
