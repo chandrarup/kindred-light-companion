@@ -95,7 +95,14 @@
     "patientProfile": "Patient profile",
     "editPatientProfile": "Edit any field added during setup.",
     "caregiverWellbeing": "Caregiver wellbeing (coming soon)",
-    "caregiverWellbeingHelp": "Optional check-ins about how you are doing will live here."
+    "caregiverWellbeingHelp": "Optional check-ins about how you are doing will live here.",
+    "dailyCheckin": "Daily check-in reminder",
+    "reminderEnabled": "Send me a daily reminder",
+    "reminderTime": "Reminder time",
+    "windowStart": "Don't remind before",
+    "windowEnd": "Don't remind after",
+    "editLockDays": "Edit window (days)",
+    "editLockHelp": "After this many days, daily logs and symptom entries become read-only."
   },
   "patient": {
     "greeting": "Hello, {name}.",
