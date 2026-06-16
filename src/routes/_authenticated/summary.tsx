@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
 import { useT } from "@/i18n/I18nProvider";
@@ -85,7 +85,7 @@ function SummaryPage() {
     }
   }
 
-  async function submitConcern(e: React.FormEvent) {
+  async function submitConcern(e: FormEvent) {
     e.preventDefault();
     const text = newConcern.trim();
     if (!text) return;
@@ -325,7 +325,7 @@ export function PhysicianSummaryView({ s }: { s: Summary }) {
   );
 }
 
-function Card({ title, children, accent = false }: { title: string; children: React.ReactNode; accent?: boolean }) {
+function Card({ title, children, accent = false }: { title: string; children: ReactNode; accent?: boolean }) {
   return (
     <section
       className={`rounded-xl border bg-card p-4 print:border print:rounded-none print:p-3 print:break-inside-avoid ${
