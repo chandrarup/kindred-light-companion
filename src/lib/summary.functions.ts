@@ -19,11 +19,22 @@ function tally(rows: { symptom?: string | null }[]): Counts {
   return c;
 }
 
+const RED_FLAG_RE = /\[red_flags:([^\]]+)\]/;
+
+function bucketTimeOfDay(iso: string | null | undefined): "morning" | "afternoon" | "evening" | "night" | null {
+  if (!iso) return null;
+  const h = new Date(iso).getHours();
+  if (h >= 5 && h < 12) return "morning";
+  if (h >= 12 && h < 17) return "afternoon";
+  if (h >= 17 && h < 22) return "evening";
+  return "night";
+}
+
 async function gatherStats(supabase: any, householdId: string, start: string, end: string) {
   // Symptoms from daily logs within the period
   const { data: logs } = await supabase
     .from("daily_logs")
-    .select("id, log_date, log_symptoms(symptom, time_of_day, antecedent, outcome, intervention_tried)")
+    .select("id, log_date, sleep_hours, sleep_quality, caregiver_distress, quick_ok, log_symptoms(symptom, time_of_day, antecedent, outcome, intervention_tried, created_at)")
     .eq("household_id", householdId)
     .gte("log_date", start)
     .lte("log_date", end)
@@ -63,7 +74,7 @@ async function gatherStats(supabase: any, householdId: string, start: string, en
   const prevStart = new Date(Date.parse(start) - 86400000 - ms).toISOString().slice(0, 10);
   const { data: prevLogs } = await supabase
     .from("daily_logs")
-    .select("id, log_symptoms(symptom)")
+    .select("id, sleep_hours, caregiver_distress, log_symptoms(symptom, created_at)")
     .eq("household_id", householdId)
     .gte("log_date", prevStart)
     .lte("log_date", prevEnd)
@@ -83,13 +94,157 @@ async function gatherStats(supabase: any, householdId: string, start: string, en
   const done = (cueEvents ?? []).filter((e: any) => e.status === "done").length;
   const adherence = total > 0 ? Math.round((done / total) * 100) : null;
 
+  // Episodes in period (for red flags, distress, time-of-day, interventions)
+  const { data: episodes } = await supabase
+    .from("episodes")
+    .select("id, symptom, antecedent, intervention_tried, outcome, time_of_day, occurred_at, caregiver_distress, description, severity")
+    .eq("household_id", householdId)
+    .gte("occurred_at", `${start}T00:00:00Z`)
+    .lte("occurred_at", `${end}T23:59:59Z`)
+    .is("deleted_at", null);
+
+  // Red flags (parsed from episode description tag)
+  const redFlagEvents: { occurred_at: string; flags: string[] }[] = [];
+  for (const e of episodes ?? []) {
+    const m = (e.description ?? "").match(RED_FLAG_RE);
+    if (m) redFlagEvents.push({ occurred_at: e.occurred_at, flags: m[1].split(",").filter(Boolean) });
+  }
+  const nearCrises = (episodes ?? []).filter((e: any) => (e.severity ?? 0) >= 4).length;
+
+  // Combined per-symptom occurrences (logs + episodes) for first-seen and time-of-day
+  type Occ = { symptom: string; at: string; time_of_day: string | null };
+  const occurrences: Occ[] = [];
+  for (const s of allSymptoms) {
+    occurrences.push({
+      symptom: s.symptom,
+      at: s.created_at ?? s.log_date,
+      time_of_day: s.time_of_day ?? bucketTimeOfDay(s.created_at),
+    });
+  }
+  for (const e of episodes ?? []) {
+    if (!e.symptom) continue;
+    occurrences.push({
+      symptom: e.symptom,
+      at: e.occurred_at,
+      time_of_day: e.time_of_day ?? bucketTimeOfDay(e.occurred_at),
+    });
+  }
+
+  // First-seen-this-period per symptom
+  const firstSeen: Record<string, string> = {};
+  for (const o of occurrences) {
+    if (!firstSeen[o.symptom] || o.at < firstSeen[o.symptom]) firstSeen[o.symptom] = o.at;
+  }
+
+  // New symptoms = present this period AND zero in prior period
+  const newSymptoms = Object.keys(symptomCounts)
+    .filter((s) => !(prevCounts[s] > 0))
+    .map((s) => ({ symptom: s, first_seen: firstSeen[s] ?? null, count: symptomCounts[s] }));
+
+  // Escalations = count this period > prior (and prior > 0)
+  const escalations = Object.keys(symptomCounts)
+    .filter((s) => (prevCounts[s] ?? 0) > 0 && symptomCounts[s] > (prevCounts[s] ?? 0))
+    .map((s) => ({ symptom: s, now: symptomCounts[s], before: prevCounts[s] ?? 0 }));
+
+  // Time-of-day heatmap: { symptom: { morning, afternoon, evening, night } }
+  const tod: Record<string, Record<string, number>> = {};
+  for (const o of occurrences) {
+    if (!o.time_of_day) continue;
+    tod[o.symptom] = tod[o.symptom] ?? { morning: 0, afternoon: 0, evening: 0, night: 0 };
+    tod[o.symptom][o.time_of_day] = (tod[o.symptom][o.time_of_day] ?? 0) + 1;
+  }
+
+  // Intervention effectiveness (interventions in logs + episodes)
+  type IRow = { intervention: string; tried: number; helped: number };
+  const interventions: Record<string, IRow> = {};
+  const allActs = [
+    ...allSymptoms.map((s) => ({ tried: s.intervention_tried, outcome: s.outcome })),
+    ...(episodes ?? []).map((e: any) => ({ tried: e.intervention_tried, outcome: e.outcome })),
+  ];
+  for (const a of allActs) {
+    const name = (a.tried ?? "").trim();
+    if (!name) continue;
+    interventions[name] = interventions[name] ?? { intervention: name, tried: 0, helped: 0 };
+    interventions[name].tried++;
+    if (a.outcome === "helped") interventions[name].helped++;
+  }
+  const interventionRanking = Object.values(interventions)
+    .sort((a, b) => b.helped - a.helped || b.tried - a.tried)
+    .slice(0, 6);
+
+  // Sleep trend (current vs prior, average hours)
+  const avg = (xs: (number | null | undefined)[]) => {
+    const vals = xs.filter((v): v is number => typeof v === "number");
+    return vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : null;
+  };
+  const sleep = {
+    current_avg: avg((logs ?? []).map((l: any) => l.sleep_hours)),
+    prior_avg: avg((prevLogs ?? []).map((l: any) => l.sleep_hours)),
+    nights_under_6: (logs ?? []).filter((l: any) => typeof l.sleep_hours === "number" && l.sleep_hours < 6).length,
+    total_nights: (logs ?? []).filter((l: any) => typeof l.sleep_hours === "number").length,
+  };
+
+  // Caregiver distress trend (from episodes + daily_logs)
+  const distressSeries: { date: string; value: number }[] = [];
+  for (const l of logs ?? []) {
+    if (typeof l.caregiver_distress === "number") distressSeries.push({ date: l.log_date, value: l.caregiver_distress });
+  }
+  for (const e of episodes ?? []) {
+    if (typeof e.caregiver_distress === "number")
+      distressSeries.push({ date: (e.occurred_at as string).slice(0, 10), value: e.caregiver_distress });
+  }
+  distressSeries.sort((a, b) => a.date.localeCompare(b.date));
+  const distressCurrent = avg(distressSeries.map((d) => d.value));
+  const priorDistress = avg((prevLogs ?? []).map((l: any) => l.caregiver_distress));
+  const distressRising =
+    typeof distressCurrent === "number" && typeof priorDistress === "number" && distressCurrent - priorDistress >= 0.5;
+
+  // Patient profile footer (medication names + active cues)
+  const { data: profile } = await supabase
+    .from("patient_profile")
+    .select("medication_names, conditions, display_name")
+    .eq("household_id", householdId)
+    .maybeSingle();
+  const { data: activeCues } = await supabase
+    .from("cues")
+    .select("id, title")
+    .eq("household_id", householdId)
+    .is("deleted_at", null)
+    .eq("enabled", true);
+
+  // Concerns flagged for this visit (unresolved)
+  const { data: concerns } = await supabase
+    .from("caregiver_concerns")
+    .select("id, text, created_at")
+    .eq("household_id", householdId)
+    .is("deleted_at", null)
+    .is("resolved_at", null)
+    .order("created_at", { ascending: false });
+
   return {
     period_start: start,
     period_end: end,
     prior_period: { start: prevStart, end: prevEnd },
     log_count: (logs ?? []).length,
+    episode_count: (episodes ?? []).length,
     symptom_counts: symptomCounts,
     prior_symptom_counts: prevCounts,
+    new_symptoms: newSymptoms,
+    escalations,
+    red_flag_events: redFlagEvents,
+    near_crises: nearCrises,
+    time_of_day: tod,
+    intervention_ranking: interventionRanking,
+    sleep,
+    distress: {
+      series: distressSeries,
+      current_avg: distressCurrent,
+      prior_avg: priorDistress,
+      rising: distressRising,
+    },
+    medications: profile?.medication_names ?? [],
+    active_cues: (activeCues ?? []).map((c: any) => c.title),
+    concerns: (concerns ?? []).map((c: any) => c.text),
     top_patterns: topPatterns,
     cue_adherence_pct: adherence,
     cue_events_total: total,
