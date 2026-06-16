@@ -95,7 +95,14 @@
     "patientProfile": "Perfil del paciente",
     "editPatientProfile": "Edite cualquier campo del registro inicial.",
     "caregiverWellbeing": "Bienestar del cuidador (próximamente)",
-    "caregiverWellbeingHelp": "Próximamente: chequeos opcionales sobre cómo se encuentra."
+    "caregiverWellbeingHelp": "Próximamente: chequeos opcionales sobre cómo se encuentra.",
+    "dailyCheckin": "Recordatorio diario",
+    "reminderEnabled": "Enviarme un recordatorio diario",
+    "reminderTime": "Hora del recordatorio",
+    "windowStart": "No recordar antes de",
+    "windowEnd": "No recordar después de",
+    "editLockDays": "Ventana para editar (días)",
+    "editLockHelp": "Después de estos días, los registros diarios y síntomas quedan en solo lectura."
   },
   "patient": {
     "greeting": "Hola, {name}.",
