@@ -207,10 +207,10 @@ async function gatherStats(supabase: any, householdId: string, start: string, en
     .maybeSingle();
   const { data: activeCues } = await supabase
     .from("cues")
-    .select("id, title")
+    .select("id, label")
     .eq("household_id", householdId)
     .is("deleted_at", null)
-    .eq("enabled", true);
+    .eq("active", true);
 
   // Concerns flagged for this visit (unresolved)
   const { data: concerns } = await supabase
@@ -243,7 +243,7 @@ async function gatherStats(supabase: any, householdId: string, start: string, en
       rising: distressRising,
     },
     medications: profile?.medication_names ?? [],
-    active_cues: (activeCues ?? []).map((c: any) => c.title),
+    active_cues: (activeCues ?? []).map((c: any) => c.label),
     concerns: (concerns ?? []).map((c: any) => c.text),
     top_patterns: topPatterns,
     cue_adherence_pct: adherence,
