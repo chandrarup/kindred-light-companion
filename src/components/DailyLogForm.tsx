@@ -1,9 +1,4 @@
 import { useState } from "react";
-import {
-  SYMPTOM_OPTIONS,
-  ANTECEDENT_OPTIONS,
-  OUTCOME_OPTIONS,
-} from "@/lib/daily-log.functions";
 
 export type SymptomEntry = {
   symptom: string;
@@ -16,8 +11,12 @@ export type SymptomEntry = {
 export type DailyLogFormValue = {
   mood: number | null;
   sleep_quality: number | null;
+  sleep_hours: number | null;
+  caregiver_distress: number | null;
   notes: string;
   symptoms: SymptomEntry[];
+  quick_ok?: boolean;
+  any_symptoms?: boolean;
 };
 
 const MOOD_FACES = ["😖", "😕", "😐", "🙂", "😊"];
@@ -64,35 +63,31 @@ export function DailyLogForm({
   onSubmit,
   onCancel,
   submitLabel = "Save log",
+  onAnySymptomsYes,
 }: {
   initial?: Partial<DailyLogFormValue>;
   submitting?: boolean;
   onSubmit: (v: DailyLogFormValue) => void;
   onCancel?: () => void;
   submitLabel?: string;
+  onAnySymptomsYes?: (snapshot: DailyLogFormValue) => void;
 }) {
   const [mood, setMood] = useState<number | null>(initial?.mood ?? null);
   const [sleep, setSleep] = useState<number | null>(initial?.sleep_quality ?? null);
+  const [hours, setHours] = useState<string>(initial?.sleep_hours != null ? String(initial.sleep_hours) : "");
+  const [distress, setDistress] = useState<number | null>(initial?.caregiver_distress ?? null);
   const [notes, setNotes] = useState(initial?.notes ?? "");
-  const [symptoms, setSymptoms] = useState<SymptomEntry[]>(initial?.symptoms ?? []);
+  const [symptoms] = useState<SymptomEntry[]>(initial?.symptoms ?? []);
 
-  function toggleSymptom(name: string) {
-    setSymptoms((cur) => {
-      const idx = cur.findIndex((s) => s.symptom === name);
-      if (idx >= 0) return cur.filter((_, i) => i !== idx);
-      return [
-        ...cur,
-        { symptom: name, time_of_day: null, antecedent: null, intervention_tried: null, outcome: null },
-      ];
-    });
-  }
-
-  function updateSymptom(name: string, patch: Partial<SymptomEntry>) {
-    setSymptoms((cur) => cur.map((s) => (s.symptom === name ? { ...s, ...patch } : s)));
-  }
-
-  function fmtLabel(s: string) {
-    return s.replace(/_/g, " ");
+  function snapshot(): DailyLogFormValue {
+    return {
+      mood,
+      sleep_quality: sleep,
+      sleep_hours: hours ? Number(hours) : null,
+      caregiver_distress: distress,
+      notes,
+      symptoms,
+    };
   }
 
   return (
@@ -100,7 +95,7 @@ export function DailyLogForm({
       className="space-y-6"
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ mood, sleep_quality: sleep, notes, symptoms });
+        onSubmit(snapshot());
       }}
     >
       <fieldset>
@@ -116,97 +111,30 @@ export function DailyLogForm({
           labels={["1", "2", "3", "4", "5"]}
           ariaLabel="Sleep quality 1 to 5"
         />
+        <label className="block mt-2 text-sm">
+          Hours of sleep (optional)
+          <input
+            type="number"
+            inputMode="decimal"
+            min={0}
+            max={24}
+            step="0.5"
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+            className="mt-1 w-32 rounded border px-2 py-2 min-h-10"
+          />
+        </label>
       </fieldset>
 
       <fieldset>
-        <legend className="font-medium mb-2">Symptoms observed</legend>
-        <div className="grid grid-cols-2 gap-2">
-          {SYMPTOM_OPTIONS.map((sym) => {
-            const checked = symptoms.some((s) => s.symptom === sym);
-            return (
-              <label
-                key={sym}
-                className={`flex items-center gap-2 rounded-md border-2 p-3 cursor-pointer min-h-12 ${
-                  checked ? "border-primary bg-primary/10" : "border-border"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  className="h-5 w-5"
-                  checked={checked}
-                  onChange={() => toggleSymptom(sym)}
-                />
-                <span className="capitalize">{fmtLabel(sym)}</span>
-              </label>
-            );
-          })}
-        </div>
+        <legend className="font-medium mb-2">How hard was today on you? (optional)</legend>
+        <Scale
+          value={distress != null ? distress + 1 : null}
+          onChange={(v) => setDistress(v == null ? null : v - 1)}
+          labels={["0", "1", "2", "3", "4"]}
+          ariaLabel="Caregiver distress 0 to 4"
+        />
       </fieldset>
-
-      {symptoms.length > 0 && (
-        <fieldset className="space-y-4">
-          <legend className="font-medium mb-2">Details for each symptom</legend>
-          {symptoms.map((s) => (
-            <div key={s.symptom} className="rounded-md border p-3 space-y-2">
-              <div className="font-medium capitalize">{fmtLabel(s.symptom)}</div>
-              <div className="grid sm:grid-cols-2 gap-2">
-                <label className="text-sm">
-                  Time of day
-                  <input
-                    type="text"
-                    value={s.time_of_day ?? ""}
-                    onChange={(e) => updateSymptom(s.symptom, { time_of_day: e.target.value || null })}
-                    placeholder="e.g. morning, 6pm"
-                    className="mt-1 w-full rounded border px-2 py-2 min-h-10"
-                  />
-                </label>
-                <label className="text-sm">
-                  Antecedent
-                  <select
-                    value={s.antecedent ?? ""}
-                    onChange={(e) => updateSymptom(s.symptom, { antecedent: e.target.value || null })}
-                    className="mt-1 w-full rounded border px-2 py-2 min-h-10 bg-background"
-                  >
-                    <option value="">—</option>
-                    {ANTECEDENT_OPTIONS.map((a) => (
-                      <option key={a} value={a}>
-                        {fmtLabel(a)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="text-sm sm:col-span-2">
-                  Intervention tried
-                  <input
-                    type="text"
-                    value={s.intervention_tried ?? ""}
-                    onChange={(e) =>
-                      updateSymptom(s.symptom, { intervention_tried: e.target.value || null })
-                    }
-                    placeholder="What did you try?"
-                    className="mt-1 w-full rounded border px-2 py-2 min-h-10"
-                  />
-                </label>
-                <label className="text-sm">
-                  Outcome
-                  <select
-                    value={s.outcome ?? ""}
-                    onChange={(e) => updateSymptom(s.symptom, { outcome: e.target.value || null })}
-                    className="mt-1 w-full rounded border px-2 py-2 min-h-10 bg-background"
-                  >
-                    <option value="">—</option>
-                    {OUTCOME_OPTIONS.map((o) => (
-                      <option key={o} value={o}>
-                        {fmtLabel(o)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </div>
-          ))}
-        </fieldset>
-      )}
 
       <label className="block">
         <span className="font-medium">Notes (optional)</span>
@@ -218,14 +146,38 @@ export function DailyLogForm({
         />
       </label>
 
+      {onAnySymptomsYes && (
+        <fieldset>
+          <legend className="font-medium mb-2">Any symptoms today?</legend>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => onAnySymptomsYes(snapshot())}
+              className="rounded-md border-2 border-destructive/50 text-destructive px-4 py-3 font-medium min-h-12"
+            >
+              Yes — log episode
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="rounded-md bg-primary text-primary-foreground px-4 py-3 font-medium min-h-12 disabled:opacity-50"
+            >
+              {submitting ? "Saving…" : "No — save"}
+            </button>
+          </div>
+        </fieldset>
+      )}
+
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="flex-1 rounded-md bg-primary text-primary-foreground px-4 py-3 font-medium min-h-12 disabled:opacity-50"
-        >
-          {submitting ? "Saving…" : submitLabel}
-        </button>
+        {!onAnySymptomsYes && (
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex-1 rounded-md bg-primary text-primary-foreground px-4 py-3 font-medium min-h-12 disabled:opacity-50"
+          >
+            {submitting ? "Saving…" : submitLabel}
+          </button>
+        )}
         {onCancel && (
           <button
             type="button"
