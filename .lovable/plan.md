@@ -1,71 +1,99 @@
 
-# COMPANION — Slice 1
+# Rebuild COMPANION intake / onboarding flow
 
-Build the foundation: PWA shell, magic-link auth, PIN-protected mode toggle, and onboarding that provisions a household + patient profile with photo uploads. Synthetic data only.
+Patient-first, resumable, bilingual (en/es), 6th-grade reading level, all strings via `src/i18n/{en,es}.json`. Existing app logic (cues, episodes, daily log, summary, patient mode, auth) stays untouched.
 
-Stack note: this project is **TanStack Start + React + Vite + Lovable Cloud (Supabase under the hood)**. Server-side AI calls will use TanStack server functions (not Supabase Edge Functions) — they're the supported pattern here and keep keys server-only the same way. Confirm if you'd prefer literal Edge Functions instead.
+## 1. Data model changes (one migration)
 
-## 1. Enable Lovable Cloud
-Provision Supabase (DB, auth, storage) before any backend work.
+Extend `public.patient_profile` with the new fields (all nullable so partial save works):
 
-## 2. Database (migration)
-Tables, all with `id uuid pk`, `created_at`, `updated_at`, and `deleted_at` on user-facing ones:
-- `households` — name, `preferred_language` (`en`/`es`), `edit_lock_days int default 3`, `pin_hash`
-- `users` — mirrors `auth.users` (id, email, display_name, preferred_language)
-- `memberships` — user_id, household_id, role enum (`primary_caregiver|family|friend|clinician`), `permissions jsonb`
-- `patient_profile` — household_id, display_name, language, biography, daily_routines (text), music_preferences (text[]), known_triggers (text[])
-- `media` — household_id, storage_path, kind (`photo`), caption, tags
-- Stubs (created now, populated later slices): `daily_logs, log_symptoms, episodes, cues, cue_events, fingerprint_insights, training_content, physician_summaries, audit_log`
-- `app_role` enum + `user_roles` table + `has_role()` SECURITY DEFINER fn (per platform rules — roles never on profiles)
-- RLS on all tables; policies scoped via `memberships` (user can access rows for households they belong to). Explicit `GRANT`s for `authenticated` + `service_role`.
-- Storage bucket `family-photos` (private) with RLS keyed to household membership.
-- Trigger: on `auth.users` insert → create `users` row.
+- `preferred_name text`, `address_as text`
+- `languages text[] default '{}'` (keeps existing single `language` for Patient Mode default)
+- `likes text[] default '{}'`, `dislikes text[] default '{}'`, `calming_strategies text[] default '{}'`
+- `key_people jsonb default '[]'` — `[{name, relationship, contact_method, contact_value}]`
+- `culture_faith text`, `profession text`, `hometown text`, `life_events text[] default '{}'`
+- `diagnosis_type text`, `diagnosis_date date`, `stage_self_select text` (enum-as-text: `good_days`, `mixed`, `mostly_hard`)
+- `medication_names text[] default '{}'` (names only — never dosing; enforce via CHECK that values stay short)
+- `conditions text[] default '{}'`
+- `zip_code text`, `referral_consent boolean default false`
 
-## 3. Auth
-- `/auth` route: Supabase magic-link (`signInWithOtp`, `emailRedirectTo = origin`).
-- Managed `_authenticated/route.tsx` gate (already provided by integration) protects app routes.
-- After sign-in: if user has no membership → redirect to `/onboarding`, else `/today`.
+Extend `public.households` with intake progress:
 
-## 4. i18n
-- `src/i18n/en.json` + `src/i18n/es.json`. Lightweight `useT()` hook reading from a context seeded by `patient_profile.language` (or household preferred_language); language toggle in header. Zero hardcoded UI strings.
+- `intake_progress jsonb default '{"step1":false,"step2":false,"step3":false}'`
+- `intake_capture_mode text default 'guided'` (`'guided' | 'form'`)
 
-## 5. Design system (`src/styles.css`)
-- Warm low-saturation palette + single accent token; AAA contrast pairs for light theme.
-- Tokens: `--text-caregiver-min: 16pt`, `--text-patient-min: 22pt`, `--touch-patient-min: 120px`.
-- Disable all transitions globally except a `.photo-crossfade` utility.
-- Never encode state in color alone — pair with icon + label (enforced in shared components).
+No new tables. No RLS changes (existing household-scoped policies already cover these columns). Add `GRANT`s only if new columns require nothing extra (they don't — column-level grants inherit table grants).
 
-## 6. PWA shell
-- `public/manifest.webmanifest` (name, short_name, theme/bg colors, standalone, icons).
-- Manifest + theme-color tags in `__root.tsx` head. **No service worker** this slice (per PWA skill: installability ≠ offline).
-- App layout under `_authenticated/`: top bar (language toggle + mode switch button) + bottom nav (Today, Photos, Profile, Settings — placeholders for now besides what this slice builds).
+A separate `caregiver_wellbeing` placeholder table is **not** created now — only a TODO comment in the caregiver profile section in Settings, as requested.
 
-## 7. Mode toggle + PIN
-- Zustand (or React context) `useMode()` → `'caregiver' | 'patient'`, persisted to localStorage.
-- Switching **into Caregiver** requires PIN entry; verified via server function `verifyHouseholdPin` that compares against `households.pin_hash` (bcrypt). Set during onboarding.
-- Patient mode: stub full-screen route `/patient` that just shows patient name + greeting at 22pt+ (full ambient UI later).
+## 2. Server functions
 
-## 8. Onboarding flow (`/onboarding`)
-Multi-step form, one server fn `completeOnboarding` writing atomically:
-1. Household name + preferred language + 4-digit PIN (confirm).
-2. Patient: display name, language, biography (textarea), daily routines (textarea).
-3. Music preferences (chip input → text[]), known triggers (chip input → text[]).
-4. Upload family photos → `family-photos/{household_id}/...` → insert `media` rows.
-5. Review → submit. Creates `household`, `membership` (primary_caregiver), `patient_profile`, `media`.
+In `src/lib/household.functions.ts` (or a new `src/lib/intake.functions.ts` to keep diffs small):
 
-Demo-data banner across the app: "Synthetic data only — do not enter real PHI."
+- `startIntake({ householdName, preferredLanguage, pin, patient: { displayName, preferredName, addressAs, languages } })` — replaces the old monolithic `completeOnboarding`. Creates household + membership + patient_profile with **Step 1 fields only**, marks `intake_progress.step1 = true`. Returns `householdId`.
+- `saveIntakeStep({ step: 1|2|3, patch })` — partial update; merges into `patient_profile` / `households`, flips the matching `intake_progress.stepN` flag. Validates each step's fields independently with Zod.
+- `setCaptureMode({ mode })` — persists guided vs form.
+- `getIntakeState()` — returns `{ progress, captureMode, patient, household }` for resume.
+- Keep `getMyHousehold` so existing redirect logic works.
 
-## 9. Verification before declaring done
-- Build passes.
-- Sign-in via magic link → onboarding → lands on `/today` placeholder.
-- Mode toggle prompts PIN; wrong PIN rejected, right PIN switches.
-- Photos visible in storage; `patient_profile` row populated; RLS blocks other households (spot-check via SQL).
-- Language toggle flips all visible strings between en/es.
+Step 1 minimum to unlock the app: household name, PIN, patient `displayName`. Everything else (photos, music, greeting audio, languages) is optional inside Step 1 too — they can be added later from Settings.
 
-## Technical details
-- Server fns: `src/lib/onboarding.functions.ts`, `src/lib/auth.functions.ts` (PIN verify/set). Admin client imported inside handlers only.
-- `attachSupabaseAuth` already wired in `src/start.ts`.
-- Photo upload from client uses browser supabase client + signed paths under user's household.
-- No AI calls this slice — server-fn AI pattern arrives with later slices.
+Photos and greeting-audio upload paths stay client-side via `supabase.storage` (same pattern as current onboarding), then a small server fn `attachMedia({ paths, captions })` inserts `media` rows / sets `patient_profile.greeting_audio_path`.
 
-Confirm and I'll build it.
+## 3. Routing & UX
+
+Replace `src/routes/_authenticated/onboarding.tsx` with a resumable shell:
+
+- On mount, call `getIntakeState`. If `step1=false` → start at Step 1. If `step1=true` → land on a **"Continue intake"** dashboard listing Step 2 and Step 3 as optional cards with "Resume" / "Skip for now" / "Done" states. App is fully usable from this point: a "Go to app" button routes to `/today`.
+- The route guard in `src/routes/_authenticated/route.tsx` only redirects to `/onboarding` when **Step 1 is incomplete**. Once Step 1 is done, `/onboarding` is reachable but never forced.
+- After Step 1 submit: navigate to `/patient` (Patient Mode) once, to show the photos+music payoff, then bounce back to the intake dashboard via a "Back to setup" button.
+
+Each step screen offers a **mode toggle** at the top: *Guided conversation* (default) | *Form*.
+
+### Guided conversation mode
+
+- One question at a time, large type, with `Skip`, `Back`, `Next` controls and a voice-or-type input (reuse `VoiceLogger` for capture; transcript fills the field).
+- Question script lives in `src/i18n/{en,es}.json` under `intake.guided.*`, keyed by field. Example prompts: "What did {name} do for work?", "What's a song {name} loves?", "What helps when {name} gets upset?".
+- Answers map directly to `patient_profile` fields. Multi-value fields (music, likes, dislikes, calming, life events, key people) loop: "Anything else?" until user taps Skip.
+- Every question has a visible **Skip** button. Skipping records nothing and moves on.
+
+### Form mode
+
+- Same fields rendered as a compact tap/select form per step (mirrors the existing Step 2/3 form pattern with `ChipInput`, `LanguagePicker`, textareas).
+- Submit at bottom of each step calls `saveIntakeStep`.
+
+### Step contents (recap)
+
+- **Step 1 — Patient essentials (REQUIRED to start):** preferred name, address-as, languages (en/es multiselect), photos with optional captions (who/when/where), music preferences (chips), optional caregiver greeting audio.
+- **Step 2 — Routines & preferences (resumable):** wake/meal/sleep routines (uses existing `daily_routines` text + new `life_events` array for historical patterns), likes, dislikes, calming strategies, key people (name/relationship/contact).
+- **Step 3 — Background & care basics (resumable):** culture/faith, profession, hometown, life events, diagnosis type + date, stage self-select with plain-language options, medication names, conditions, ZIP + referral consent toggle.
+
+Autosave: each step's form/guided answers debounce-save (1.5s) via `saveIntakeStep` so the user can close the tab any time.
+
+## 4. Settings — post-onboarding edits
+
+In `src/routes/_authenticated/settings.tsx`, add a **"Patient profile"** section that renders the same field groups (organized by Step 1/2/3 headings) reusing the form-mode components from intake, and binds to `saveIntakeStep`. Add an empty **"Caregiver wellbeing (coming soon)"** card as the placeholder for the future optional caregiver burden/depression questions — no fields, no DB.
+
+## 5. i18n
+
+Add to `src/i18n/en.json` and `src/i18n/es.json`:
+
+- `intake.modeToggle.guided`, `intake.modeToggle.form`, `intake.skip`, `intake.resume`, `intake.continueLater`, `intake.step1.title`…`step3.title`, `intake.dashboard.*`
+- `intake.fields.*` for every new field label + help text
+- `intake.guided.*` prompt strings, written at ~6th-grade reading level, with `{name}` interpolation
+
+Existing `onboarding.*` keys remain only where reused; obsolete ones removed.
+
+## 6. Out of scope (explicit)
+
+- No changes to cues, episodes, daily logs, summary charts, patient mode logic (only its data source now has more photos/music available).
+- No caregiver wellbeing fields or table — placeholder only.
+- No changes to auth, RLS, or storage bucket configuration.
+
+## Technical notes
+
+- Validation: per-step Zod schemas in the server fn; clients also validate before submit.
+- Skipped guided answers are simply omitted from the patch — they do not write `null` over existing data.
+- `intake_progress` is the single source of truth for "where can the user resume"; the gate in `_authenticated/route.tsx` only checks `step1`.
+- Greeting audio: capture via `MediaRecorder` (webm/m4a), upload to `family-photos` bucket under `<householdId>/greeting-<uuid>.webm`, then set `patient_profile.greeting_audio_path`.
+- Medication CHECK constraint: `char_length(unnest) <= 80` enforced via trigger (Postgres CHECK can't unnest arrays) to keep entries to names only.

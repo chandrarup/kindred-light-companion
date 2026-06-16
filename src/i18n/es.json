@@ -91,7 +91,11 @@
   "settings": {
     "title": "Ajustes",
     "language": "Idioma",
-    "household": "Hogar"
+    "household": "Hogar",
+    "patientProfile": "Perfil del paciente",
+    "editPatientProfile": "Edite cualquier campo del registro inicial.",
+    "caregiverWellbeing": "Bienestar del cuidador (próximamente)",
+    "caregiverWellbeingHelp": "Próximamente: chequeos opcionales sobre cómo se encuentra."
   },
   "patient": {
     "greeting": "Hola, {name}.",
@@ -125,5 +129,124 @@
     "adherence": "Cumplimiento de recordatorios",
     "narrative": "Resumen en lenguaje claro",
     "disclaimer": "Solo conteos y observaciones de los registros de este hogar. No es consejo médico."
+  },
+  "intake": {
+    "modeToggle": {
+      "guided": "Conversación guiada",
+      "form": "Formulario rápido"
+    },
+    "skip": "Omitir",
+    "skipQuestion": "Omitir esta pregunta",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "saveContinueLater": "Guardar y continuar después",
+    "addAnother": "Agregar otro",
+    "doneAdding": "Listo",
+    "anythingElse": "¿Algo más para agregar?",
+    "step1": {
+      "title": "Datos esenciales del paciente",
+      "lead": "Solo lo básico para configurar el Modo paciente. Toma unos 5 minutos.",
+      "complete": "Paso 1 completo",
+      "submit": "Guardar y ver el Modo paciente"
+    },
+    "step2": {
+      "title": "Rutinas y preferencias",
+      "lead": "Nos ayuda a sugerir recordatorios suaves y calmar lo que les molesta."
+    },
+    "step3": {
+      "title": "Antecedentes y cuidado básico",
+      "lead": "Un poco de historia de vida y datos de cuidado. Nada se comparte sin su permiso."
+    },
+    "dashboard": {
+      "title": "Complete el resto cuando quiera",
+      "lead": "La app ya funciona. Cada sección puede hacerse ahora, después u omitirse.",
+      "resume": "Continuar",
+      "start": "Empezar",
+      "done": "Listo",
+      "goToApp": "Ir a la app",
+      "edit": "Editar"
+    },
+    "fields": {
+      "householdName": "Nombre del hogar",
+      "householdNameHelp": "Por ejemplo: Familia García",
+      "preferredLanguage": "Su idioma",
+      "pin": "PIN de cuidador (4 dígitos)",
+      "pinConfirm": "Confirme el PIN",
+      "displayName": "Nombre del paciente",
+      "preferredName": "Nombre preferido o apodo",
+      "addressAs": "Cómo le gusta que le llamen",
+      "addressAsHelp": "Mamá, Papá, Sra. López, Abuelo, etc.",
+      "languages": "Idiomas que entiende",
+      "photos": "Algunas fotos familiares",
+      "photosHelp": "Caras que ama. Se ven en el Modo paciente.",
+      "caption": "Pie de foto opcional — quién, cuándo, dónde",
+      "music": "Música que ama",
+      "musicHelp": "Artistas, canciones, himnos, géneros. Enter para agregar.",
+      "greeting": "Un saludo breve suyo (opcional)",
+      "greetingHelp": "Grabe una frase cálida. Se escucha en el Modo paciente.",
+      "record": "Grabar",
+      "stop": "Detener",
+      "rerecord": "Volver a grabar",
+      "play": "Reproducir",
+      "wakeMealsSleep": "Despertar, comidas y sueño",
+      "wakeMealsSleepHelp": "Ej.: despierta a las 7, almuerza al mediodía, siesta a las 2, duerme a las 9.",
+      "historicalRoutine": "Un patrón de toda la vida",
+      "historicalRoutineHelp": "Ej.: salía del trabajo a las 3 PM por 31 años.",
+      "likes": "Cosas que disfruta",
+      "dislikes": "Cosas a evitar",
+      "calming": "Qué le calma cuando se molesta",
+      "keyPeople": "Personas clave",
+      "keyPeopleHelp": "Nombre, relación y mejor forma de contactarles.",
+      "personName": "Nombre",
+      "personRelationship": "Relación",
+      "personContact": "Cómo contactar",
+      "cultureFaith": "Cultura, fe o tradición",
+      "profession": "Su trabajo o profesión",
+      "hometown": "Ciudad natal",
+      "lifeEvents": "Algunos eventos importantes de su vida",
+      "lifeEventsHelp": "Matrimonio, hijos, servicio militar, mudanzas — historias que cuenta.",
+      "diagnosisType": "Diagnóstico (en palabras simples)",
+      "diagnosisDate": "¿Cuándo le diagnosticaron?",
+      "stage": "¿Cuál se parece más a un día típico?",
+      "stageGood": "Días buenos en su mayoría — lúcido y participativo",
+      "stageMixed": "Algunos buenos, algunos difíciles",
+      "stageHard": "Días difíciles en su mayoría — necesita mucha ayuda",
+      "medications": "Medicamentos actuales (solo nombres)",
+      "medicationsHelp": "Solo nombres — nunca dosis ni instrucciones.",
+      "conditions": "Otras condiciones importantes",
+      "zip": "Código postal",
+      "referral": "¿Podemos sugerirle programas locales de confianza?"
+    },
+    "guided": {
+      "preferredName": "¿Cómo le gusta que le llamen a {name}?",
+      "addressAs": "¿Cómo le gusta a {name} que se dirijan a él/ella? (Mamá, Sra. López, etc.)",
+      "languages": "¿Qué idiomas entiende {name}?",
+      "photos": "Agregue fotos de personas que {name} ama.",
+      "music": "¿Cuál es una canción o artista que {name} ama?",
+      "greeting": "¿Quiere grabar un saludo breve para que {name} lo escuche?",
+      "wakeMealsSleep": "Cuénteme un día normal de {name} — despertar, comidas, sueño.",
+      "historicalRoutine": "¿Algún patrón de mucho tiempo? ¿Algo que hizo por años?",
+      "likes": "¿Qué disfruta mucho {name}?",
+      "dislikes": "¿Qué cosa no le gusta hacer a {name}?",
+      "calming": "¿Qué ayuda cuando {name} se molesta?",
+      "keyPeople": "¿Quién es una persona importante en la vida de {name}?",
+      "cultureFaith": "¿Alguna cultura, fe o tradición importante para {name}?",
+      "profession": "¿En qué trabajó {name}?",
+      "hometown": "¿De dónde es {name}?",
+      "lifeEvents": "¿Algún evento importante del que {name} le encanta hablar?",
+      "diagnosisType": "¿Qué diagnóstico dio el médico, en palabras simples?",
+      "diagnosisDate": "¿Más o menos cuándo fue ese diagnóstico?",
+      "stage": "¿Cuál se parece más a un día típico de {name}?",
+      "medications": "¿Cuál es el nombre de un medicamento que toma {name}?",
+      "conditions": "¿Alguna otra condición de salud importante?",
+      "zip": "¿Cuál es el código postal de {name}?",
+      "referral": "¿Está bien si le sugerimos programas locales de confianza?"
+    },
+    "errors": {
+      "patientName": "Por favor ingrese un nombre.",
+      "householdName": "Por favor ingrese un nombre de hogar.",
+      "pinFormat": "El PIN debe tener exactamente 4 dígitos.",
+      "pinMismatch": "Los PIN no coinciden."
+    }
   }
 }

@@ -91,7 +91,11 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
-    "household": "Household"
+    "household": "Household",
+    "patientProfile": "Patient profile",
+    "editPatientProfile": "Edit any field added during setup.",
+    "caregiverWellbeing": "Caregiver wellbeing (coming soon)",
+    "caregiverWellbeingHelp": "Optional check-ins about how you are doing will live here."
   },
   "patient": {
     "greeting": "Hello, {name}.",
@@ -125,5 +129,124 @@
     "adherence": "Cue adherence",
     "narrative": "Plain-language summary",
     "disclaimer": "Counts and observations only, drawn from this household's logs. Not medical advice."
+  },
+  "intake": {
+    "modeToggle": {
+      "guided": "Guided conversation",
+      "form": "Quick form"
+    },
+    "skip": "Skip",
+    "skipQuestion": "Skip this question",
+    "next": "Next",
+    "back": "Back",
+    "saveContinueLater": "Save and continue later",
+    "addAnother": "Add another",
+    "doneAdding": "Done",
+    "anythingElse": "Anything else to add?",
+    "step1": {
+      "title": "Patient essentials",
+      "lead": "Just the basics so we can set up Patient Mode. Takes about 5 minutes.",
+      "complete": "Step 1 complete",
+      "submit": "Save and see Patient Mode"
+    },
+    "step2": {
+      "title": "Routines & preferences",
+      "lead": "Helps us suggest gentle reminders and calm what upsets them."
+    },
+    "step3": {
+      "title": "Background & care basics",
+      "lead": "A little life story plus care basics. None of this is shared without your okay."
+    },
+    "dashboard": {
+      "title": "Set up the rest when you're ready",
+      "lead": "The app already works. Each section below can be done now, later, or skipped.",
+      "resume": "Resume",
+      "start": "Start",
+      "done": "Done",
+      "goToApp": "Go to the app",
+      "edit": "Edit"
+    },
+    "fields": {
+      "householdName": "Household name",
+      "householdNameHelp": "For example: The Garcia Family",
+      "preferredLanguage": "Your language",
+      "pin": "4-digit caregiver PIN",
+      "pinConfirm": "Confirm PIN",
+      "displayName": "Patient's name",
+      "preferredName": "Preferred name or nickname",
+      "addressAs": "How they like to be addressed",
+      "addressAsHelp": "Mom, Dad, Mrs. Lee, Abuelo, etc.",
+      "languages": "Languages they understand",
+      "photos": "A few familiar photos",
+      "photosHelp": "Faces they love. Shown in Patient Mode.",
+      "caption": "Optional caption — who, when, where",
+      "music": "Music they love",
+      "musicHelp": "Artists, songs, hymns, genres. Press Enter to add.",
+      "greeting": "A short greeting from you (optional)",
+      "greetingHelp": "Record one warm sentence. Plays in Patient Mode.",
+      "record": "Record",
+      "stop": "Stop",
+      "rerecord": "Re-record",
+      "play": "Play",
+      "wakeMealsSleep": "Wake, meals, and sleep",
+      "wakeMealsSleepHelp": "For example: wakes around 7, lunch at noon, naps at 2, bed by 9.",
+      "historicalRoutine": "A long-time pattern",
+      "historicalRoutineHelp": "For example: left work at 3 PM for 31 years.",
+      "likes": "Things they enjoy",
+      "dislikes": "Things to avoid",
+      "calming": "What calms them when upset",
+      "keyPeople": "Key people",
+      "keyPeopleHelp": "Name, relationship, and best way to reach them.",
+      "personName": "Name",
+      "personRelationship": "Relationship",
+      "personContact": "How to reach them",
+      "cultureFaith": "Culture, faith, or background",
+      "profession": "Their work or profession",
+      "hometown": "Hometown",
+      "lifeEvents": "A few key life events",
+      "lifeEventsHelp": "Marriage, kids, military service, big moves — anything they tell stories about.",
+      "diagnosisType": "Diagnosis (plain language)",
+      "diagnosisDate": "When were they diagnosed?",
+      "stage": "Which sounds most like a typical day?",
+      "stageGood": "Mostly good days — clear and engaged",
+      "stageMixed": "Some good, some hard",
+      "stageHard": "Mostly hard days — needs a lot of help",
+      "medications": "Current medications (names only)",
+      "medicationsHelp": "Names only — never dose or instructions.",
+      "conditions": "Other major conditions",
+      "zip": "ZIP code",
+      "referral": "Okay to refer you to nearby trusted programs?"
+    },
+    "guided": {
+      "preferredName": "What does {name} like to be called?",
+      "addressAs": "How does {name} like to be addressed? (Mom, Mrs. Lee, etc.)",
+      "languages": "Which languages does {name} understand?",
+      "photos": "Add a few photos of people {name} loves.",
+      "music": "What's a song or artist {name} loves?",
+      "greeting": "Want to record a short hello for {name} to hear?",
+      "wakeMealsSleep": "Walk me through a normal day for {name} — wake, meals, sleep.",
+      "historicalRoutine": "Any long-time pattern from before? Something they did for years?",
+      "likes": "What's one thing {name} really enjoys?",
+      "dislikes": "What's one thing {name} doesn't want to do?",
+      "calming": "What helps when {name} gets upset?",
+      "keyPeople": "Who's one important person in {name}'s life?",
+      "cultureFaith": "Any culture, faith, or background that matters to {name}?",
+      "profession": "What did {name} do for work?",
+      "hometown": "Where is {name} from?",
+      "lifeEvents": "Any big life event {name} loves to talk about?",
+      "diagnosisType": "What diagnosis did the doctor give, in plain words?",
+      "diagnosisDate": "About when was that diagnosis?",
+      "stage": "Which sounds most like a typical day for {name}?",
+      "medications": "What's the name of one medication {name} takes?",
+      "conditions": "Any other major health condition?",
+      "zip": "What's {name}'s ZIP code?",
+      "referral": "Okay if we suggest nearby trusted programs?"
+    },
+    "errors": {
+      "patientName": "Please enter a name.",
+      "householdName": "Please enter a household name.",
+      "pinFormat": "PIN must be exactly 4 digits.",
+      "pinMismatch": "PINs do not match."
+    }
   }
 }
