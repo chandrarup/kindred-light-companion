@@ -56,6 +56,54 @@ export type Database = {
           },
         ]
       }
+      caregiver_concerns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          household_id: string
+          id: string
+          resolved_at: string | null
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          household_id: string
+          id?: string
+          resolved_at?: string | null
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          household_id?: string
+          id?: string
+          resolved_at?: string | null
+          text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caregiver_concerns_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caregiver_concerns_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cue_events: {
         Row: {
           created_at: string
@@ -877,6 +925,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_clinician_member: {
+        Args: { _household_id: string; _user_id: string }
         Returns: boolean
       }
       is_household_member: {

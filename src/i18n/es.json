@@ -14,7 +14,8 @@
     "english": "Inglés",
     "spanish": "Español",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "delete": "Eliminar"
   },
   "nav": {
     "today": "Hoy",
@@ -122,20 +123,40 @@
   "summary": {
     "title": "Resumen para el médico",
     "subtitle": "Una página con lo que la familia registró. Solo conteos y fechas — nunca un diagnóstico.",
+      "clinicianSubtitle": "Resumen de solo lectura. Solo conteos y fechas.",
     "from": "Desde",
     "to": "Hasta",
     "generate": "Generar resumen",
+      "oneTap": "Preparar visita al médico",
     "generating": "Generando…",
     "print": "Imprimir / Guardar PDF",
     "history": "Resúmenes anteriores",
     "cardTitle": "Resumen de visita",
     "logs": "registros",
+      "episodes": "episodios",
     "symptomFreq": "Frecuencia de síntomas",
     "trend": "Tendencia vs periodo anterior",
     "topPatterns": "Principales patrones antecedente → síntoma",
     "adherence": "Cumplimiento de recordatorios",
     "narrative": "Resumen en lenguaje claro",
-    "disclaimer": "Solo conteos y observaciones de los registros de este hogar. No es consejo médico."
+      "disclaimer": "Solo conteos y observaciones de los registros de este hogar. No es consejo médico.",
+      "sinceLast": "Desde la última visita",
+      "behaviorTrends": "Tendencias de comportamiento",
+      "timeOfDay": "Hora del día",
+      "whatsWorking": "Qué está ayudando",
+      "sleepRoutine": "Sueño y rutina",
+      "sleep": "Sueño",
+      "caregiverWellbeing": "Bienestar del cuidador",
+      "concernsCard": "Temas para hablar",
+      "concernsTitle": "Preguntas para el médico",
+      "concernsHint": "Anote cualquier cosa que quiera mencionar en la próxima visita. La incluiremos en el resumen.",
+      "concernsPlaceholder": "Añadir una pregunta o inquietud…",
+      "noConcerns": "No hay preguntas añadidas.",
+      "markAsked": "Marcar como hecho",
+      "add": "Añadir",
+      "meds": "Medicamentos actuales (solo nombres)",
+      "activeCues": "Recordatorios activos",
+      "medsDisclaimer": "Los nombres se listan como referencia. La app nunca guarda ni muestra dosis."
   },
   "intake": {
     "modeToggle": {
