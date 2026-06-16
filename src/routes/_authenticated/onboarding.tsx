@@ -39,6 +39,7 @@ function OnboardingPage() {
   const { t, lang, setLang } = useT();
   const navigate = useNavigate();
   const stateFn = useServerFn(getIntakeState);
+  const captureModeFn = useServerFn(setCaptureMode);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<Progress>({ step1: false, step2: false, step3: false });
   const [captureMode, setMode] = useState<Mode>("guided");
@@ -99,8 +100,7 @@ function OnboardingPage() {
             patientName={patientName}
             onCaptureMode={async (m) => {
               setMode(m);
-              const fn = useServerFnSync(setCaptureMode);
-              await fn({ data: { mode: m } });
+              await captureModeFn({ data: { mode: m } });
             }}
             onClose={async () => {
               await refresh();
@@ -111,11 +111,6 @@ function OnboardingPage() {
       </main>
     </div>
   );
-}
-
-// Helper to call a server fn outside a component render (we already have hook value)
-function useServerFnSync<T extends (...args: any) => any>(fn: T): T {
-  return useServerFn(fn) as T;
 }
 
 // ============================================================================
