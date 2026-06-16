@@ -664,6 +664,73 @@ export type Database = {
           },
         ]
       }
+      music_sessions: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          ended_at: string | null
+          episode_id: string | null
+          helped: string | null
+          household_id: string
+          id: string
+          provider: string | null
+          song_label: string | null
+          started_at: string
+          started_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          ended_at?: string | null
+          episode_id?: string | null
+          helped?: string | null
+          household_id: string
+          id?: string
+          provider?: string | null
+          song_label?: string | null
+          started_at?: string
+          started_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          ended_at?: string | null
+          episode_id?: string | null
+          helped?: string | null
+          household_id?: string
+          id?: string
+          provider?: string | null
+          song_label?: string | null
+          started_at?: string
+          started_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "music_sessions_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "music_sessions_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "music_sessions_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_profile: {
         Row: {
           address_as: string | null
@@ -689,7 +756,9 @@ export type Database = {
           life_events: string[]
           likes: string[]
           medication_names: string[]
+          music_disliked: string[]
           music_preferences: string[]
+          music_provider: string | null
           preferred_name: string | null
           profession: string | null
           referral_consent: boolean
@@ -721,7 +790,9 @@ export type Database = {
           life_events?: string[]
           likes?: string[]
           medication_names?: string[]
+          music_disliked?: string[]
           music_preferences?: string[]
+          music_provider?: string | null
           preferred_name?: string | null
           profession?: string | null
           referral_consent?: boolean
@@ -753,7 +824,9 @@ export type Database = {
           life_events?: string[]
           likes?: string[]
           medication_names?: string[]
+          music_disliked?: string[]
           music_preferences?: string[]
+          music_provider?: string | null
           preferred_name?: string | null
           profession?: string | null
           referral_consent?: boolean
@@ -833,6 +906,7 @@ export type Database = {
           deleted_at: string | null
           id: string
           language: Database["public"]["Enums"]["app_language"]
+          self_hosted: boolean
           source_attribution: string | null
           symptom_tag: string | null
           title: string
@@ -846,6 +920,7 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           language?: Database["public"]["Enums"]["app_language"]
+          self_hosted?: boolean
           source_attribution?: string | null
           symptom_tag?: string | null
           title: string
@@ -859,6 +934,7 @@ export type Database = {
           deleted_at?: string | null
           id?: string
           language?: Database["public"]["Enums"]["app_language"]
+          self_hosted?: boolean
           source_attribution?: string | null
           symptom_tag?: string | null
           title?: string
@@ -866,6 +942,67 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
+      }
+      training_feedback: {
+        Row: {
+          action_saved: boolean
+          created_at: string
+          deleted_at: string | null
+          helped: string | null
+          household_id: string
+          id: string
+          training_id: string
+          tried_at: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          action_saved?: boolean
+          created_at?: string
+          deleted_at?: string | null
+          helped?: string | null
+          household_id: string
+          id?: string
+          training_id: string
+          tried_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          action_saved?: boolean
+          created_at?: string
+          deleted_at?: string | null
+          helped?: string | null
+          household_id?: string
+          id?: string
+          training_id?: string
+          tried_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_feedback_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_feedback_training_id_fkey"
+            columns: ["training_id"]
+            isOneToOne: false
+            referencedRelation: "training_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
