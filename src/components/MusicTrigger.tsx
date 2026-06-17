@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { Music, Play } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import {
   buildProviderSearchUrl,

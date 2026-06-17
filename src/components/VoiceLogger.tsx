@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { Mic as MicIcon } from "lucide-react";
 import { extractLogFromTranscript } from "@/lib/daily-log.functions";
 import { DailyLogForm, type DailyLogFormValue } from "./DailyLogForm";
 
