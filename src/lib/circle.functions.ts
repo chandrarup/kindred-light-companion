@@ -28,7 +28,15 @@ export const DEFAULT_PERMISSIONS: Record<Role, Record<string, "read" | "write">>
 export const listCircle = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const m = await getCallerMembership(context.supabase, context.userId);
+    let m: Awaited<ReturnType<typeof getCallerMembership>>;
+    try {
+      m = await getCallerMembership(context.supabase, context.userId);
+    } catch (error) {
+      if (error instanceof Error && error.message === "No household for user") {
+        return { myRole: "", members: [], invites: [] };
+      }
+      throw error;
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: members }, { data: invites }] = await Promise.all([
       supabaseAdmin
