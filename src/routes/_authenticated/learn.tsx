@@ -8,6 +8,9 @@ import { listAllTraining, recordTrainingFeedback } from "@/lib/training.function
 
 export const Route = createFileRoute("/_authenticated/learn")({
   head: () => ({ meta: [{ title: "Learn — COMPANION" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    tag: typeof s.tag === "string" ? s.tag : undefined,
+  }),
   component: LearnPage,
 });
 
@@ -27,7 +30,12 @@ function LearnPage() {
   const listFn = useServerFn(listAllTraining);
   const feedbackFn = useServerFn(recordTrainingFeedback);
   const [items, setItems] = useState<Item[]>([]);
-  const [filter, setFilter] = useState<string>("all");
+  const search = Route.useSearch();
+  const [filter, setFilter] = useState<string>(search.tag ?? "all");
+
+  useEffect(() => {
+    if (search.tag) setFilter(search.tag);
+  }, [search.tag]);
 
   useEffect(() => {
     (async () => {
