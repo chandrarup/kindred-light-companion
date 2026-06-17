@@ -9,7 +9,7 @@ export function DemoBanner() {
       className="w-full bg-secondary text-secondary-foreground border-b border-border px-4 py-2 text-center"
       style={{ fontSize: "14pt" }}
     >
-      ⚠ {t("app.demoBanner")}
+      {t("app.demoBanner")}
     </div>
   );
 }
