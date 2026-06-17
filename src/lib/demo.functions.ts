@@ -85,6 +85,7 @@ export const askCompanion = createServerFn({ method: "POST" })
         answer: hit.answer as string,
         tag: hit.tag as string,
         label: hit.label as string,
+        video_tag: LABEL_TO_VIDEO_TAG[hit.label as string] ?? null,
         cached: true,
       };
     }
@@ -97,6 +98,7 @@ export const askCompanion = createServerFn({ method: "POST" })
           : "I don't have an answer for that yet. For anything clinical, please ask Dr. Alvarez.",
       tag: "fallback",
       label: null,
+      video_tag: null,
       cached: false,
     };
   });
