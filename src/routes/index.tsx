@@ -20,9 +20,14 @@ function Index() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (cancelled) return;
-      navigate({ to: data.session ? "/today" : "/auth", replace: true });
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (cancelled) return;
+        navigate({ to: data.session ? "/today" : "/auth", replace: true });
+      } catch (error) {
+        console.error(error);
+        if (!cancelled) navigate({ to: "/auth", replace: true });
+      }
     })();
     return () => {
       cancelled = true;
