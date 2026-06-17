@@ -33,7 +33,11 @@ export const listCircle = createServerFn({ method: "GET" })
       m = await getCallerMembership(context.supabase, context.userId);
     } catch (error) {
       if (error instanceof Error && error.message === "No household for user") {
-        return { myRole: "", members: [], invites: [] };
+        return {
+          myRole: "",
+          members: [],
+          invites: [],
+        };
       }
       throw error;
     }
