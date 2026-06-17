@@ -57,7 +57,14 @@ export const getPatientBundle = createServerFn({ method: "GET" })
 export const getDueCues = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const m = await getCallerMembership(context.supabase, context.userId);
+    const { data: m } = await context.supabase
+      .from("memberships")
+      .select("household_id")
+      .eq("user_id", context.userId)
+      .is("deleted_at", null)
+      .limit(1)
+      .maybeSingle();
+    if (!m) return { cues: [] };
     const { data } = await context.supabase
       .from("cues")
       .select("id, label, cue_type, schedule_times, days_of_week")
