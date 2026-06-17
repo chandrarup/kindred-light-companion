@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { motion } from "framer-motion";
+import { Mic, Users, Music, ChevronLeft, ChevronRight, Play, Check } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { useMode } from "@/lib/mode-context";
 import { PinDialog } from "@/components/PinDialog";
@@ -185,34 +187,37 @@ function PatientPage() {
             </p>
           )}
           <div className="w-full max-w-md mx-auto flex flex-col gap-4">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => speak(t("patient.talkPrompt"), lang)}
               className="btn-neo-cream w-full"
               data-touch
             >
-              <span className="icon" aria-hidden>🎤</span>
+              <Mic className="icon" size={32} strokeWidth={1.75} aria-hidden />
               <span>{t("patient.talk")}</span>
-            </button>
+            </motion.button>
             <div className="grid grid-cols-2 gap-4">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 type="button"
                 onClick={() => setView("people")}
                 className="btn-neo-cream"
                 data-touch
               >
-                <span className="icon" aria-hidden>👥</span>
+                <Users className="icon" size={32} strokeWidth={1.75} aria-hidden />
                 <span>{t("patient.people")}</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 type="button"
                 onClick={() => { setMusicIdx(0); setView("music"); }}
                 className="btn-neo-cream"
                 data-touch
               >
-                <span className="icon" aria-hidden>♪</span>
+                <Music className="icon" size={32} strokeWidth={1.75} aria-hidden />
                 <span>{t("patient.music")}</span>
-              </button>
+              </motion.button>
             </div>
             <button
               type="button"
@@ -293,11 +298,11 @@ function PatientPage() {
               href={providerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-2xl bg-primary text-primary-foreground px-8 py-6 text-center"
+              className="rounded-2xl bg-primary text-primary-foreground px-8 py-6 text-center inline-flex items-center justify-center gap-3"
               style={{ fontSize: "26pt", minHeight: 120 }}
               data-touch
             >
-              ▶ {t("patient.openInProvider")}
+              <Play size={28} strokeWidth={2} /> {t("patient.openInProvider")}
             </a>
           ) : (
             <button
@@ -312,10 +317,10 @@ function PatientPage() {
           )}
           <div className="flex gap-4">
             <BigButton onClick={() => setMusicIdx((i) => (i - 1 + bundle.music.length) % bundle.music.length)}>
-              ‹ {t("patient.prev")}
+              <ChevronLeft size={28} strokeWidth={2} /> {t("patient.prev")}
             </BigButton>
             <BigButton onClick={() => setMusicIdx((i) => (i + 1) % bundle.music.length)}>
-              {t("patient.next")} ›
+              {t("patient.next")} <ChevronRight size={28} strokeWidth={2} />
             </BigButton>
           </div>
         </div>
@@ -344,11 +349,11 @@ function BackBar({ onBack, label }: { onBack: () => void; label: string }) {
       <button
         type="button"
         onClick={onBack}
-        className="px-6 py-4 rounded-lg border border-border min-h-11"
+        className="px-6 py-4 rounded-xl border border-border min-h-11 inline-flex items-center"
         style={{ fontSize: "22pt" }}
         data-touch
       >
-        ‹
+        <ChevronLeft size={28} strokeWidth={2} />
       </button>
       <h2 style={{ fontSize: "26pt", fontWeight: 600 }}>{label}</h2>
       <span className="w-12" aria-hidden />
@@ -366,11 +371,11 @@ function FullScreenCue({ label, lang, onDone }: { label: string; lang: string; o
       <button
         type="button"
         onClick={onDone}
-        className="rounded-2xl bg-primary text-primary-foreground"
+        className="rounded-2xl bg-primary text-primary-foreground inline-flex items-center justify-center gap-3"
         style={{ minHeight: 160, minWidth: 220, fontSize: "40pt", fontWeight: 700, padding: "1.5rem 2.5rem" }}
         data-touch
       >
-        ✓ Done
+        <Check size={40} strokeWidth={2} /> Done
       </button>
     </div>
   );

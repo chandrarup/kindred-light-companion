@@ -1,3 +1,9 @@
+const INDIGO = "#4F46E5";
+const INDIGO_SOFT = "rgba(79,70,229,0.10)";
+const EMERALD = "#059669";
+const MUTED_INK = "#64748B";
+const GRID_INK = "#E2E8F0";
+
 type Counts = Record<string, number>;
 
 export function SymptomBarChart({ counts }: { counts: Counts }) {
@@ -9,10 +15,10 @@ export function SymptomBarChart({ counts }: { counts: Counts }) {
       {entries.map(([label, v]) => (
         <div key={label} className="grid grid-cols-[10rem_1fr_2.5rem] items-center gap-2 text-sm">
           <span className="capitalize text-foreground">{label.replace(/_/g, " ")}</span>
-          <div className="h-4 rounded bg-muted">
+          <div className="h-2.5 rounded-full" style={{ background: INDIGO_SOFT }}>
             <div
-              className="h-4 rounded bg-primary"
-              style={{ width: `${Math.max(4, (v / max) * 100)}%` }}
+              className="h-2.5 rounded-full"
+              style={{ width: `${Math.max(4, (v / max) * 100)}%`, background: INDIGO }}
               aria-hidden
             />
           </div>
@@ -29,19 +35,37 @@ export function TrendLine({ current, prior }: { current: Counts; prior: Counts }
   series.sort((a, b) => b.now + b.before - (a.now + a.before));
   if (series.length === 0) return <p className="text-sm text-muted-foreground">Not enough data to compare.</p>;
   const max = Math.max(1, ...series.flatMap((s) => [s.now, s.before]));
+  const padL = 8;
+  const padR = 8;
+  const padT = 8;
+  const padB = 28;
   const w = 320;
-  const h = 120;
-  const step = series.length > 1 ? w / (series.length - 1) : w;
+  const h = 140;
+  const innerW = w - padL - padR;
+  const innerH = h - padT - padB;
+  const step = series.length > 1 ? innerW / (series.length - 1) : innerW;
   const path = (vals: number[]) =>
-    vals.map((v, i) => `${i === 0 ? "M" : "L"} ${i * step} ${h - (v / max) * h}`).join(" ");
+    vals
+      .map((v, i) => {
+        const x = padL + i * step;
+        const y = padT + innerH - (v / max) * innerH;
+        return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
+      })
+      .join(" ");
   return (
     <div>
-      <svg viewBox={`0 0 ${w} ${h + 24}`} className="w-full h-auto" role="img" aria-label="Trend vs prior period">
-        <path d={path(series.map((s) => s.before))} fill="none" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="4 3" />
-        <path d={path(series.map((s) => s.now))} fill="none" stroke="hsl(var(--primary))" strokeWidth={2.5} />
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" role="img" aria-label="Trend vs prior period">
+        <line x1={padL} x2={w - padR} y1={padT + innerH} y2={padT + innerH} stroke={GRID_INK} strokeWidth={0.5} />
+        <path d={path(series.map((s) => s.before))} fill="none" stroke={MUTED_INK} strokeWidth={1.5} strokeDasharray="4 3" strokeLinecap="round" />
+        <path d={path(series.map((s) => s.now))} fill="none" stroke={INDIGO} strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round" />
+        {series.map((s, i) => {
+          const x = padL + i * step;
+          const y = padT + innerH - (s.now / max) * innerH;
+          return <circle key={`d-${s.label}`} cx={x} cy={y} r={2.5} fill={INDIGO} />;
+        })}
         {series.map((s, i) => (
-          <text key={s.label} x={i * step} y={h + 16} fontSize={9} textAnchor="middle" fill="currentColor">
-            {s.label.slice(0, 5)}
+          <text key={s.label} x={padL + i * step} y={h - 8} fontSize={9} textAnchor="middle" fill={MUTED_INK}>
+            {s.label.replace(/_/g, " ").slice(0, 8)}
           </text>
         ))}
       </svg>
@@ -100,12 +124,13 @@ export function TimeOfDayHeatmap({ tod }: { tod: Record<string, Record<string, n
               <td className="pr-3 py-1 capitalize">{sym.replace(/_/g, " ")}</td>
               {BUCKETS.map((k) => {
                 const v = b[k] ?? 0;
-                const alpha = v === 0 ? 0 : 0.15 + (v / max) * 0.75;
+                const alpha = v === 0 ? 0.04 : 0.15 + (v / max) * 0.75;
+                const fg = v === 0 ? MUTED_INK : alpha > 0.55 ? "#FFFFFF" : INDIGO;
                 return (
                   <td key={k} className="px-1 py-1">
                     <div
-                      className="h-7 w-12 rounded grid place-items-center tabular-nums"
-                      style={{ backgroundColor: `hsl(var(--primary) / ${alpha})` }}
+                      className="h-9 w-14 rounded-lg grid place-items-center tabular-nums text-xs font-medium"
+                      style={{ backgroundColor: `rgba(79,70,229,${alpha})`, color: fg }}
                     >
                       {v > 0 ? v : ""}
                     </div>
@@ -134,8 +159,8 @@ export function InterventionRanking({
           <li key={i.intervention} className="grid grid-cols-[1fr_auto] gap-2 items-center">
             <div>
               <div className="font-medium">{i.intervention}</div>
-              <div className="h-2 rounded bg-muted mt-1">
-                <div className="h-2 rounded bg-primary" style={{ width: `${pct}%` }} aria-hidden />
+              <div className="h-2 rounded-full mt-1" style={{ background: "rgba(5,150,105,0.10)" }}>
+                <div className="h-2 rounded-full" style={{ width: `${pct}%`, background: EMERALD }} aria-hidden />
               </div>
             </div>
             <div className="tabular-nums text-muted-foreground text-right">
@@ -199,7 +224,7 @@ export function DistressTrend({
   return (
     <div>
       <svg viewBox={`0 0 ${w} ${h + 12}`} className="w-full h-auto" role="img" aria-label="Caregiver strain trend">
-        <path d={path} fill="none" stroke="hsl(var(--primary))" strokeWidth={2.5} />
+        <path d={path} fill="none" stroke={INDIGO} strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <div className="text-sm text-muted-foreground">
         Avg {current ?? "—"} (prior {prior ?? "—"}) on 0–4 scale

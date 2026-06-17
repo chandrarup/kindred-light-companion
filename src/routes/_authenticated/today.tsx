@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { motion } from "framer-motion";
+import { Check, Plus, AlertTriangle, Mic, CalendarClock, Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useT } from "@/i18n/I18nProvider";
 import { getMyHousehold } from "@/lib/household.functions";
@@ -140,7 +142,12 @@ function Today() {
       )}
 
       {mode === "idle" && (
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
+        >
           <DailyLogReminder
             reminderTime={reminderTime}
             windowStart={notifyWindow.start}
@@ -154,44 +161,62 @@ function Today() {
 
           {/* Daily check-in: one-tap "good day" first */}
           {!loggedToday && (
-            <button
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={handleGoodDay}
               disabled={oneTapSaving}
-              className="w-full rounded-2xl bg-primary text-primary-foreground px-6 py-8 text-2xl font-semibold min-h-24 disabled:opacity-60"
+              className="w-full rounded-[20px] bg-primary text-primary-foreground px-6 py-7 text-xl font-medium min-h-24 disabled:opacity-60 shadow-[0_8px_24px_-8px_rgba(79,70,229,0.6)] inline-flex items-center justify-center gap-3"
             >
-              {oneTapSaving ? "Saving…" : "✓ Good day — nothing to report"}
-            </button>
+              <Check size={22} strokeWidth={2} />
+              {oneTapSaving ? "Saving…" : "Good day — nothing to report"}
+            </motion.button>
           )}
 
           <div className="grid sm:grid-cols-2 gap-3">
-            <button
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => setMode("tap")}
-              className="rounded-lg border-2 border-primary text-primary px-6 py-6 text-xl font-semibold min-h-20"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 inline-flex items-center gap-3 text-left"
             >
-              ＋ Quick check-in
-            </button>
-            <button
+              <Plus size={22} strokeWidth={1.75} className="text-primary" />
+              Quick check-in
+            </motion.button>
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => setMode("episode")}
-              className="rounded-lg border-2 border-destructive/40 text-destructive px-6 py-6 text-xl font-semibold min-h-20"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 inline-flex items-center gap-3 text-left"
             >
-              ⚠ Log a symptom
-            </button>
-            <button
+              <AlertTriangle size={22} strokeWidth={1.75} style={{ color: "#D97706" }} />
+              Log a symptom
+            </motion.button>
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => setMode("voice")}
-              className="rounded-lg border-2 border-border px-6 py-6 text-xl font-semibold min-h-20"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 inline-flex items-center gap-3 text-left"
             >
-              🎤 Voice log
-            </button>
+              <Mic size={22} strokeWidth={1.75} className="text-primary" />
+              Voice log
+            </motion.button>
+            <motion.div variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} whileHover={{ y: -2 }}>
             <Link
               to="/cues"
-              className="rounded-lg border-2 border-border px-6 py-6 text-xl font-semibold min-h-20 flex items-center justify-center text-center"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 flex items-center gap-3"
             >
-              ⏰ Cues & reminders
+              <CalendarClock size={22} strokeWidth={1.75} className="text-primary" />
+              Cues & reminders
             </Link>
+            </motion.div>
           </div>
 
           <TrainingCards refreshKey={insightsKey} />
@@ -212,7 +237,7 @@ function Today() {
                         {l.mood && <span>Mood: {l.mood}/5</span>}
                         {isLockedClient(l.created_at, editLockDays) && (
                           <span title={`Locked after ${editLockDays} days — read-only`} aria-label="locked" className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs">
-                            🔒 locked
+                            <Lock size={12} strokeWidth={2} /> locked
                           </span>
                         )}
                       </span>
@@ -248,7 +273,7 @@ function Today() {
           </section>
 
           <AskCompanion mode="caregiver" />
-        </div>
+        </motion.div>
       )}
 
       {mode === "tap" && (
