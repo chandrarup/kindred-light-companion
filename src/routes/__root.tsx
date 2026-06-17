@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "COMPANION" },
       { name: "description", content: "Adaptive AI companion for dementia caregivers." },
-      { name: "theme-color", content: "#5a3f2b" },
+      { name: "theme-color", content: "#4F46E5" },
       { property: "og:title", content: "COMPANION" },
       { property: "og:description", content: "Adaptive AI companion for dementia caregivers." },
       { property: "og:type", content: "website" },

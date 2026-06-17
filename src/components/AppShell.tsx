@@ -1,5 +1,15 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
+import { motion } from "framer-motion";
+import {
+  Sun,
+  Image as ImageIcon,
+  PlayCircle,
+  Users,
+  ClipboardList,
+  Settings as SettingsIcon,
+  Heart,
+} from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { useMode } from "@/lib/mode-context";
 import { LanguageToggle } from "./LanguageToggle";
@@ -10,12 +20,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { verifyHouseholdPin } from "@/lib/household.functions";
 
 const navItems = [
-  { to: "/today", key: "nav.today", icon: "☀" },
-  { to: "/photos", key: "nav.photos", icon: "▢" },
-  { to: "/learn", key: "nav.learn", icon: "▶" },
-  { to: "/circle", key: "nav.circle", icon: "♣" },
-  { to: "/summary", key: "nav.summary", icon: "📋" },
-  { to: "/settings", key: "nav.settings", icon: "⚙" },
+  { to: "/today", key: "nav.today", Icon: Sun },
+  { to: "/photos", key: "nav.photos", Icon: ImageIcon },
+  { to: "/learn", key: "nav.learn", Icon: PlayCircle },
+  { to: "/circle", key: "nav.circle", Icon: Users },
+  { to: "/summary", key: "nav.summary", Icon: ClipboardList },
+  { to: "/settings", key: "nav.settings", Icon: SettingsIcon },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -64,15 +74,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="border-b border-border bg-card">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span aria-hidden className="text-2xl">◐</span>
-            <span className="font-semibold tracking-wide">{t("app.name")}</span>
+            <Heart aria-hidden size={22} strokeWidth={1.75} className="text-primary" />
+            <span className="font-semibold tracking-tight">{t("app.name")}</span>
           </div>
           <div className="flex items-center gap-2">
             <LanguageToggle />
             <button
               type="button"
               onClick={handleModeButton}
-              className="px-3 py-2 rounded-md bg-accent text-accent-foreground"
+              className="px-3 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium active:scale-[0.97] transition-transform"
               data-touch
               aria-label={mode === "caregiver" ? t("mode.switchToPatient") : t("mode.switchToCaregiver")}
             >
@@ -81,7 +91,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={signOut}
-              className="px-3 py-2 rounded-md border border-border bg-background"
+              className="px-3 py-2 rounded-xl border border-border bg-background text-sm font-medium"
               data-touch
             >
               {t("auth.signOut")}
@@ -99,23 +109,29 @@ export function AppShell({ children }: { children: ReactNode }) {
         <ul className="mx-auto max-w-3xl grid grid-cols-6">
           {navItems.map((item) => {
             const active = pathname.startsWith(item.to);
+            const { Icon } = item;
             return (
-              <li key={item.to}>
+              <li key={item.to} className="relative">
                 <Link
                   to={item.to}
                   data-touch
                   aria-current={active ? "page" : undefined}
                   className={
-                    "flex flex-col items-center justify-center py-3 gap-1 " +
-                    (active ? "text-primary font-semibold" : "text-muted-foreground")
+                    "flex flex-col items-center justify-center py-3 gap-1 text-xs transition-colors " +
+                    (active ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground")
                   }
                 >
-                  <span aria-hidden className="text-xl">
-                    {item.icon}
-                  </span>
+                  <Icon aria-hidden size={22} strokeWidth={1.75} />
                   <span>{t(item.key)}</span>
-                  {active && <span aria-hidden className="block h-0.5 w-8 bg-primary" />}
                 </Link>
+                {active && (
+                  <motion.span
+                    layoutId="nav-active-indicator"
+                    aria-hidden
+                    className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-10 rounded-full bg-primary"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
               </li>
             );
           })}

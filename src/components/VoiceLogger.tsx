@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { Mic as MicIcon } from "lucide-react";
 import { extractLogFromTranscript } from "@/lib/daily-log.functions";
 import { DailyLogForm, type DailyLogFormValue } from "./DailyLogForm";
 
@@ -162,7 +163,7 @@ export function VoiceLogger({
           }`}
           style={{ width: 120, height: 120 }}
         >
-          {listening ? "■" : "🎤"}
+          {listening ? <span aria-hidden style={{ width: 28, height: 28, background: "currentColor", borderRadius: 4, display: "block" }} /> : <MicIcon size={44} strokeWidth={1.75} aria-hidden />}
         </button>
         <span className="text-sm text-muted-foreground">
           {listening ? "Listening… tap to stop" : "Tap and speak one sentence"}
