@@ -26,8 +26,12 @@ function AuthPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!cancelled && data.session) navigate({ to: "/today", replace: true });
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!cancelled && data.session) navigate({ to: "/today", replace: true });
+      } catch (error) {
+        console.error(error);
+      }
     })();
     return () => {
       cancelled = true;
@@ -38,16 +42,21 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setBusy(false);
-    if (error) {
-      setError(error.message);
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setSent(true);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Unable to sign in right now.");
+    } finally {
+      setBusy(false);
     }
-    setSent(true);
   }
 
   return (
