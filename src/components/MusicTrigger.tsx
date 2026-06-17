@@ -105,8 +105,8 @@ export function MusicTrigger({ episodeId }: { episodeId?: string | null }) {
         <p className="text-sm font-medium">{t("music.pickASong")}</p>
         <div className="flex flex-wrap gap-2">
           {settings.songs.map((s) => (
-            <button key={s} type="button" onClick={() => play(s)} className="rounded-full border-2 border-border px-3 py-2 text-sm min-h-10">
-              ▶ {s}
+            <button key={s} type="button" onClick={() => play(s)} className="rounded-full border border-border px-3 py-2 text-sm min-h-10 inline-flex items-center gap-2">
+              <Play size={14} strokeWidth={2} /> {s}
             </button>
           ))}
         </div>
@@ -121,7 +121,7 @@ export function MusicTrigger({ episodeId }: { episodeId?: string | null }) {
       onClick={oneTap}
       className="w-full rounded-2xl bg-primary text-primary-foreground px-4 py-4 text-lg font-semibold min-h-16"
     >
-      ♪ {t("music.playNameMusic", { name: settings.name || t("music.theirs") })}
+      <span className="inline-flex items-center justify-center gap-2"><Music size={20} strokeWidth={1.75} /> {t("music.playNameMusic", { name: settings.name || t("music.theirs") })}</span>
       {!settings.provider && <span className="block text-xs font-normal mt-1 opacity-80">{t("music.noProviderHint")}</span>}
     </button>
   );

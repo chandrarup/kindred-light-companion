@@ -162,7 +162,7 @@ export function VoiceLogger({
           }`}
           style={{ width: 120, height: 120 }}
         >
-          {listening ? "■" : "🎤"}
+          {listening ? <span aria-hidden style={{ width: 28, height: 28, background: "currentColor", borderRadius: 4, display: "block" }} /> : <MicIcon size={44} strokeWidth={1.75} aria-hidden />}
         </button>
         <span className="text-sm text-muted-foreground">
           {listening ? "Listening… tap to stop" : "Tap and speak one sentence"}
