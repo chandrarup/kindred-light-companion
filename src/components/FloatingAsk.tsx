@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircleQuestion, X, Send, Loader2 } from "lucide-react";
+import { MessageCircleQuestion, X, Send, Loader2, PlayCircle } from "lucide-react";
 import { askCompanion } from "@/lib/demo.functions";
 import { useT } from "@/i18n/I18nProvider";
 
-type Answer = { answer: string; tag: string; cached: boolean };
+type Answer = { answer: string; tag: string; cached: boolean; video_tag?: string | null };
 
 export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "patient" }) {
   const ask = useServerFn(askCompanion);
@@ -15,6 +16,8 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
   const [a, setA] = useState<Answer | null>(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const demoMode =
+    typeof window !== "undefined" && window.localStorage.getItem("companion.demo") === "1";
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 60);
@@ -149,8 +152,23 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
                   </div>
                 )}
                 {a && (
-                  <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-[15px] leading-relaxed text-slate-800">
-                    {a.answer}
+                  <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-[15px] leading-relaxed text-slate-800 space-y-3">
+                    {demoMode && a.cached && (
+                      <span className="inline-block rounded-full bg-amber-200 px-2 py-0.5 text-xs font-medium text-amber-900">
+                        demo · {a.tag}
+                      </span>
+                    )}
+                    <p>{a.answer}</p>
+                    {mode === "caregiver" && a.video_tag && (
+                      <Link
+                        to="/learn"
+                        search={{ tag: a.video_tag }}
+                        onClick={() => setOpen(false)}
+                        className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                      >
+                        <PlayCircle size={16} /> Watch (2 min)
+                      </Link>
+                    )}
                   </div>
                 )}
               </div>

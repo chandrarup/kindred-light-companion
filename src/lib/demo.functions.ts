@@ -57,6 +57,15 @@ const askSchema = z.object({
   mode: z.enum(["caregiver", "patient"]).default("caregiver"),
 });
 
+/** Maps cached-response labels to Learn video symptom_tags so the chat can offer "Watch (2 min)". */
+const LABEL_TO_VIDEO_TAG: Record<string, string> = {
+  afternoon_insight: "agitation",
+  what_to_do_now: "agitation",
+  repetition: "repetition",
+  appetite: "appetite_change",
+  sleep: "sleep",
+};
+
 export const askCompanion = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => askSchema.parse(d))
   .handler(async ({ data }) => {
@@ -85,6 +94,7 @@ export const askCompanion = createServerFn({ method: "POST" })
         answer: hit.answer as string,
         tag: hit.tag as string,
         label: hit.label as string,
+        video_tag: LABEL_TO_VIDEO_TAG[hit.label as string] ?? null,
         cached: true,
       };
     }
@@ -97,6 +107,7 @@ export const askCompanion = createServerFn({ method: "POST" })
           : "I don't have an answer for that yet. For anything clinical, please ask Dr. Alvarez.",
       tag: "fallback",
       label: null,
+      video_tag: null,
       cached: false,
     };
   });
