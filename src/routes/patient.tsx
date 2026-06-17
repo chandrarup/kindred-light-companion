@@ -138,50 +138,93 @@ function PatientPage() {
         type="button"
         onClick={wake}
         aria-label={t("patient.wake")}
-        className="min-h-dvh w-full bg-background text-foreground flex flex-col items-center justify-center p-6 text-center"
+        className="relative min-h-dvh w-full overflow-hidden text-left"
       >
-        {photo ? (
-          <>
-            <img
-              src={photo.url}
-              alt={photo.caption ?? ""}
-              className="max-h-[70vh] max-w-full rounded-2xl object-cover shadow-xl"
-            />
-            {photo.caption && (
-              <p className="mt-6" style={{ fontSize: "32pt", fontWeight: 600 }}>
-                {photo.caption}
-              </p>
-            )}
-          </>
-        ) : (
-          <p style={{ fontSize: "32pt", fontWeight: 600 }}>
-            {t("patient.greeting", { name: bundle.name || "…" })}
-          </p>
+        {photo && (
+          <div
+            className="patient-photo-bg photo-crossfade"
+            style={{ backgroundImage: `url(${photo.url})` }}
+            aria-hidden
+          />
         )}
+        <div className="patient-scrim" aria-hidden />
+        <div className="relative z-10 flex min-h-dvh flex-col justify-between p-8">
+          <p className="patient-greeting" style={{ fontSize: "32pt" }}>
+            {t("patient.greeting", { name: bundle.name || "" })}
+          </p>
+          {photo?.caption && (
+            <p className="patient-caption text-center" style={{ fontSize: "26pt" }}>
+              {photo.caption}
+            </p>
+          )}
+        </div>
       </button>
     );
   }
 
   if (view === "menu") {
+    const photo = bundle.photos[slide];
     return (
-      <div data-mode="patient" className="min-h-dvh bg-background text-foreground flex flex-col items-center justify-center p-6 gap-6">
-        <p className="mb-2 text-center" style={{ fontSize: "32pt", fontWeight: 600 }}>
-          {t("patient.greeting", { name: bundle.name || "" })}
-        </p>
-        <div className="grid gap-6 w-full max-w-md">
-          <BigButton onClick={() => speak(t("patient.talkPrompt"), lang)}>{t("patient.talk")}</BigButton>
-          <BigButton onClick={() => setView("people")}>{t("patient.people")}</BigButton>
-          <BigButton onClick={() => { setMusicIdx(0); setView("music"); }}>{t("patient.music")}</BigButton>
+      <div data-mode="patient" className="relative min-h-dvh overflow-hidden">
+        {photo && (
+          <div
+            className="patient-photo-bg"
+            style={{ backgroundImage: `url(${photo.url})` }}
+            aria-hidden
+          />
+        )}
+        <div className="patient-scrim" aria-hidden />
+        <div className="relative z-10 flex min-h-dvh flex-col p-6">
+          <p className="patient-greeting" style={{ fontSize: "32pt" }}>
+            {t("patient.greeting", { name: bundle.name || "" })}
+          </p>
+          <div className="flex-1" />
+          {photo?.caption && (
+            <p className="patient-caption text-center mb-6" style={{ fontSize: "22pt" }}>
+              {photo.caption}
+            </p>
+          )}
+          <div className="w-full max-w-md mx-auto flex flex-col gap-4">
+            <button
+              type="button"
+              onClick={() => speak(t("patient.talkPrompt"), lang)}
+              className="btn-neo-cream w-full"
+              data-touch
+            >
+              <span className="icon" aria-hidden>🎤</span>
+              <span>{t("patient.talk")}</span>
+            </button>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setView("people")}
+                className="btn-neo-cream"
+                data-touch
+              >
+                <span className="icon" aria-hidden>👥</span>
+                <span>{t("patient.people")}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMusicIdx(0); setView("music"); }}
+                className="btn-neo-cream"
+                data-touch
+              >
+                <span className="icon" aria-hidden>♪</span>
+                <span>{t("patient.music")}</span>
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPinOpen(true)}
+              className="mt-4 self-center rounded-2xl px-6 py-3 min-h-11"
+              style={{ fontSize: "16pt", background: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(8px)" }}
+              data-touch
+            >
+              {t("patient.exit")}
+            </button>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setPinOpen(true)}
-          className="mt-8 px-6 py-4 rounded-lg border border-border min-h-11"
-          style={{ fontSize: "18pt" }}
-          data-touch
-        >
-          {t("patient.exit")}
-        </button>
         <PinDialog
           open={pinOpen}
           onCancel={() => setPinOpen(false)}

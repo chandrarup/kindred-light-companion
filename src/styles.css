@@ -63,80 +63,108 @@
 
 :root {
   --radius: 0.625rem;
-  /* COMPANION warm, low-saturation palette. AAA contrast on text vs background. */
-  --background: oklch(0.985 0.012 80);            /* warm off-white */
-  --foreground: oklch(0.18 0.02 60);              /* near-black warm */
-  --card: oklch(0.975 0.014 75);
-  --card-foreground: oklch(0.18 0.02 60);
-  --popover: oklch(0.985 0.012 80);
-  --popover-foreground: oklch(0.18 0.02 60);
-  --primary: oklch(0.36 0.05 55);                 /* deep warm brown — the single accent */
-  --primary-foreground: oklch(0.985 0.012 80);
-  --secondary: oklch(0.93 0.018 75);
-  --secondary-foreground: oklch(0.22 0.02 60);
-  --muted: oklch(0.93 0.018 75);
-  --muted-foreground: oklch(0.34 0.02 60);        /* AAA on background */
-  --accent: oklch(0.45 0.07 50);                  /* single accent */
-  --accent-foreground: oklch(0.985 0.012 80);
-  --destructive: oklch(0.40 0.13 30);
-  --destructive-foreground: oklch(0.985 0.012 80);
-  --border: oklch(0.86 0.018 75);
-  --input: oklch(0.86 0.018 75);
-  --ring: oklch(0.45 0.07 50);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.975 0.014 75);
-  --sidebar-foreground: oklch(0.18 0.02 60);
-  --sidebar-primary: oklch(0.36 0.05 55);
-  --sidebar-primary-foreground: oklch(0.985 0.012 80);
-  --sidebar-accent: oklch(0.93 0.018 75);
-  --sidebar-accent-foreground: oklch(0.22 0.02 60);
-  --sidebar-border: oklch(0.86 0.018 75);
-  --sidebar-ring: oklch(0.45 0.07 50);
+  /* COMPANION shared design tokens. Warm neutrals + four semantic accents.
+   * Primary violet, teal=positive, amber=gentle flag, blue=info/sleep. */
+  --c-violet: #534AB7;
+  --c-violet-600: #443BA0;
+  --c-violet-300: #B7B2E4;
+  --c-teal: #0F6E56;
+  --c-amber: #BA7517;
+  --c-blue: #185FA5;
+  --c-surface-cool: #F4F6F8;     /* clinical bg */
+  --c-surface-warm: #FBF9F5;     /* warm card / cream */
+  --c-ink: #1F2330;
+  --c-ink-soft: #4A5063;
+  --c-line: #E3E6EC;
+  --c-cream-icon: #8A5A2B;
+  --c-cream-label: #3D3527;
+
+  --background: var(--c-surface-cool);
+  --foreground: var(--c-ink);
+  --card: #FFFFFF;
+  --card-foreground: var(--c-ink);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--c-ink);
+  --primary: var(--c-violet);
+  --primary-foreground: #FFFFFF;
+  --secondary: #ECEEF3;
+  --secondary-foreground: var(--c-ink);
+  --muted: #ECEEF3;
+  --muted-foreground: var(--c-ink-soft);
+  --accent: var(--c-violet);
+  --accent-foreground: #FFFFFF;
+  --destructive: #B5341F;
+  --destructive-foreground: #FFFFFF;
+  --border: var(--c-line);
+  --input: var(--c-line);
+  --ring: var(--c-violet);
+  --chart-1: var(--c-violet);
+  --chart-2: var(--c-teal);
+  --chart-3: var(--c-blue);
+  --chart-4: var(--c-amber);
+  --chart-5: var(--c-violet-300);
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: var(--c-ink);
+  --sidebar-primary: var(--c-violet);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #ECEEF3;
+  --sidebar-accent-foreground: var(--c-ink);
+  --sidebar-border: var(--c-line);
+  --sidebar-ring: var(--c-violet);
 
   /* COMPANION typography & touch sizing tokens */
   --text-caregiver-min: 16pt;
   --text-patient-min: 22pt;
   --touch-patient-min: 120px;
   --touch-caregiver-min: 44px;
+
+  /* Caregiver mauve wash + glass tokens */
+  --c-wash: linear-gradient(135deg, #6E5FB8 0%, #9B6FA8 50%, #C68B95 100%);
+  --c-wash-night: linear-gradient(135deg, #1B1735 0%, #2C1F44 50%, #3A1F33 100%);
+  --glass-bg: rgba(255,255,255,0.16);
+  --glass-bg-solid: rgba(255,255,255,0.86);
+  --glass-border: rgba(255,255,255,0.32);
+  --glass-fg: #1F2330;
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: #14121E;
+  --foreground: #ECECF2;
+  --card: #1E1B2C;
+  --card-foreground: #ECECF2;
+  --popover: #1E1B2C;
+  --popover-foreground: #ECECF2;
+  --primary: #8B82E0;
+  --primary-foreground: #14121E;
+  --secondary: #2A2640;
+  --secondary-foreground: #ECECF2;
+  --muted: #2A2640;
+  --muted-foreground: #B8B3CC;
+  --accent: #8B82E0;
+  --accent-foreground: #14121E;
+  --destructive: #E36B58;
+  --destructive-foreground: #14121E;
+  --border: rgba(255,255,255,0.10);
+  --input: rgba(255,255,255,0.14);
+  --ring: #8B82E0;
+  --chart-1: #8B82E0;
+  --chart-2: #4FB69A;
+  --chart-3: #6FA8DF;
+  --chart-4: #E3A862;
+  --chart-5: #B7B2E4;
+  --sidebar: #1E1B2C;
+  --sidebar-foreground: #ECECF2;
+  --sidebar-primary: #8B82E0;
+  --sidebar-primary-foreground: #14121E;
+  --sidebar-accent: #2A2640;
+  --sidebar-accent-foreground: #ECECF2;
+  --sidebar-border: rgba(255,255,255,0.10);
+  --sidebar-ring: #8B82E0;
+
+  --glass-bg: rgba(20,18,30,0.40);
+  --glass-bg-solid: rgba(20,18,30,0.88);
+  --glass-border: rgba(255,255,255,0.14);
+  --glass-fg: #ECECF2;
 }
 
 @layer base {
@@ -150,6 +178,13 @@
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: var(--text-caregiver-min);
     line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* Two weights only across the app. */
+  h1, h2, h3, h4, h5, h6, strong, b,
+  .font-semibold, .font-bold, .font-extrabold, .font-black {
+    font-weight: 500 !important;
   }
 
   /* Design rule: no animations except the slow photo crossfade. */
@@ -178,10 +213,181 @@
 
   /* Visible focus across the app — critical for keyboard users. */
   :focus-visible {
-    outline: 3px solid hsl(var(--ring, var(--primary)));
+    outline: 3px solid var(--ring);
     outline-offset: 2px;
     border-radius: 4px;
   }
+}
+
+/* ============================================================
+ * SURFACE 2 — Caregiver Mode (glassmorphism over mauve wash)
+ * ============================================================ */
+[data-surface="caregiver"] {
+  background: var(--c-wash);
+  background-attachment: fixed;
+  min-height: 100dvh;
+  color: var(--glass-fg);
+}
+[data-surface="caregiver"][data-time="night"] {
+  background: var(--c-wash-night);
+}
+.dark [data-surface="caregiver"] {
+  background: var(--c-wash-night);
+}
+
+/* Frosted glass card. Solid-opaque fallback where backdrop-filter is unsupported. */
+.glass-card {
+  background: var(--glass-bg-solid);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  color: var(--glass-fg);
+  box-shadow: 0 8px 32px rgba(20,18,30,0.18);
+}
+@supports ((backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))) {
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+}
+
+/* Caregiver surface: re-skin existing components in place. */
+[data-surface="caregiver"] header[class*="border-b"],
+[data-surface="caregiver"] nav[aria-label="primary"] {
+  background: var(--glass-bg-solid) !important;
+  border-color: var(--glass-border) !important;
+  color: var(--glass-fg);
+}
+@supports ((backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))) {
+  [data-surface="caregiver"] header[class*="border-b"],
+  [data-surface="caregiver"] nav[aria-label="primary"] {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+}
+[data-surface="caregiver"] [class*="bg-card"],
+[data-surface="caregiver"] [class*="rounded-lg"][class*="border"],
+[data-surface="caregiver"] [class*="rounded-xl"][class*="border"],
+[data-surface="caregiver"] [class*="rounded-2xl"][class*="border"] {
+  background: var(--glass-bg-solid);
+  border-color: var(--glass-border);
+  border-radius: 16px;
+  color: var(--glass-fg);
+  box-shadow: 0 4px 18px rgba(20,18,30,0.12);
+}
+@supports ((backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))) {
+  [data-surface="caregiver"] [class*="bg-card"],
+  [data-surface="caregiver"] [class*="rounded-lg"][class*="border"],
+  [data-surface="caregiver"] [class*="rounded-xl"][class*="border"],
+  [data-surface="caregiver"] [class*="rounded-2xl"][class*="border"] {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+}
+[data-surface="caregiver"] .text-muted-foreground {
+  color: color-mix(in oklab, var(--glass-fg) 75%, transparent);
+}
+
+/* ============================================================
+ * SURFACE 3 — Physician summary (Apple Health clinical cards)
+ * ============================================================ */
+[data-surface="clinical"] {
+  background: var(--c-surface-cool) !important;
+  color: var(--c-ink);
+  backdrop-filter: none !important;
+}
+[data-surface="clinical"] *,
+[data-surface="clinical"] *::before,
+[data-surface="clinical"] *::after {
+  backdrop-filter: none !important;
+}
+[data-surface="clinical"] [class*="bg-card"],
+[data-surface="clinical"] [class*="rounded-lg"][class*="border"],
+[data-surface="clinical"] [class*="rounded-xl"][class*="border"],
+[data-surface="clinical"] [class*="rounded-2xl"][class*="border"] {
+  background: #FFFFFF !important;
+  border: 0.5px solid var(--c-line) !important;
+  border-radius: 16px !important;
+  color: var(--c-ink) !important;
+  box-shadow: 0 1px 2px rgba(31,35,48,0.04);
+}
+[data-surface="clinical"] .text-muted-foreground {
+  color: var(--c-ink-soft) !important;
+}
+.metric-label {
+  font-size: 12pt;
+  font-weight: 400;
+  color: var(--c-ink-soft);
+  letter-spacing: 0.01em;
+}
+.metric-number {
+  font-size: 34pt;
+  font-weight: 500;
+  color: var(--c-ink);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+ * SURFACE 1 — Patient Mode (photo-led, neo-cream buttons)
+ * ============================================================ */
+.patient-photo-bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+.patient-scrim {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.15) 45%,
+    rgba(0,0,0,0.55) 80%,
+    rgba(0,0,0,0.78) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+.patient-greeting {
+  color: #FFFFFF;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+  font-weight: 500;
+}
+.patient-caption {
+  color: #FFFFFF;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+  font-weight: 400;
+}
+/* Warm raised cream button — tactile, lifted, photo-safe. */
+.btn-neo-cream {
+  background: #FBF9F5;
+  color: var(--c-cream-label);
+  border-radius: 16px;
+  min-height: 100px;
+  padding: 1rem 1.25rem;
+  font-size: 21pt;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 0 rgba(0,0,0,0.05),
+    0 6px 14px rgba(0,0,0,0.28),
+    0 2px 4px rgba(0,0,0,0.18);
+}
+.btn-neo-cream .icon {
+  color: var(--c-cream-icon);
+  font-size: 26pt;
+  line-height: 1;
+}
+.btn-neo-cream:active {
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.10),
+    0 2px 6px rgba(0,0,0,0.25);
+  transform: translateY(1px);
 }
 
 /* Print: keep only the physician summary card on the page. */

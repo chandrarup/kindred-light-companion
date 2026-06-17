@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useT } from "@/i18n/I18nProvider";
 import { useMode } from "@/lib/mode-context";
 import { LanguageToggle } from "./LanguageToggle";
@@ -25,6 +25,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [pinOpen, setPinOpen] = useState(false);
   const verifyPinFn = useServerFn(verifyHouseholdPin);
+  const [night, setNight] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const h = new Date().getHours();
+      setNight(h >= 19 || h < 6);
+    };
+    update();
+    const id = setInterval(update, 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   async function handleModeButton() {
     if (mode === "caregiver") {
@@ -43,7 +54,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div data-mode="caregiver" className="min-h-screen flex flex-col bg-background text-foreground">
+    <div
+      data-mode="caregiver"
+      data-surface="caregiver"
+      data-time={night ? "night" : "day"}
+      className="min-h-screen flex flex-col"
+    >
       <DemoBanner />
       <header className="border-b border-border bg-card">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between gap-3">
