@@ -51,7 +51,7 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
         whileTap={{ scale: 0.94 }}
         whileHover={{ y: -2 }}
         aria-label="Ask COMPANION"
-        className="fixed right-4 z-40 inline-flex items-center gap-2 rounded-full px-5 h-14 font-medium text-white shadow-[0_10px_30px_-8px_rgba(79,70,229,0.65)] bg-[var(--c-indigo)] hover:bg-[var(--c-indigo-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-300/40"
+        className="fixed right-4 z-[60] inline-flex items-center gap-2 rounded-full px-5 h-14 font-medium text-white shadow-[0_10px_30px_-8px_rgba(79,70,229,0.65)] bg-[var(--c-indigo)] hover:bg-[var(--c-indigo-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-300/40"
         style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}
       >
         <MessageCircleQuestion size={22} strokeWidth={1.9} />

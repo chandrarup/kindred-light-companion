@@ -13,7 +13,10 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ModeProvider } from "@/lib/mode-context";
+import { useMode } from "@/lib/mode-context";
 import { supabase } from "@/integrations/supabase/client";
+import { FloatingAsk } from "@/components/FloatingAsk";
+import { useRouterState } from "@tanstack/react-router";
 
 function NotFoundComponent() {
   return (
@@ -140,8 +143,17 @@ function RootComponent() {
         <ModeProvider>
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
+          <GlobalFloatingAsk />
         </ModeProvider>
       </I18nProvider>
     </QueryClientProvider>
   );
+}
+
+function GlobalFloatingAsk() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { mode } = useMode();
+  // Hide on landing and auth screens
+  if (pathname === "/" || pathname.startsWith("/auth")) return null;
+  return <FloatingAsk mode={mode} />;
 }

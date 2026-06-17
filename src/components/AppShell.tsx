@@ -15,7 +15,6 @@ import { useMode } from "@/lib/mode-context";
 import { LanguageToggle } from "./LanguageToggle";
 import { DemoBanner } from "./DemoBanner";
 import { PinDialog } from "./PinDialog";
-import { FloatingAsk } from "./FloatingAsk";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { verifyHouseholdPin } from "@/lib/household.functions";
@@ -153,7 +152,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           return false;
         }}
       />
-      {mode === "caregiver" && <FloatingAsk mode="caregiver" />}
     </div>
   );
 }
