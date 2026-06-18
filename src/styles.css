@@ -426,3 +426,32 @@
   main { max-width: none !important; padding: 0 !important; }
   article { break-inside: avoid; }
 }
+
+/* ============================================================
+ * Form field contrast — keep dark text on light field backgrounds
+ * regardless of surface (caregiver glass, dark mode, autofill).
+ * Inputs/textareas/selects render with a white-ish background, so
+ * the typed text and placeholder must stay dark for legibility.
+ * ============================================================ */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+textarea,
+select {
+  background-color: #FFFFFF;
+  color: var(--c-ink);
+  caret-color: var(--c-ink);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--c-ink-muted);
+  opacity: 1;
+}
+/* Chrome/Safari autofill: prevent the yellow/white-on-white flash. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--c-ink);
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset;
+  caret-color: var(--c-ink);
+}
