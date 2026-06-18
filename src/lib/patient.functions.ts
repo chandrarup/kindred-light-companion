@@ -45,6 +45,8 @@ export const getPatientBundle = createServerFn({ method: "GET" })
     const bucket = context.supabase.storage.from("family-photos");
     const sign = async (path: string | null) => {
       if (!path) return null;
+      // Allow pre-resolved URLs (e.g. demo seed data using external image hosts).
+      if (/^https?:\/\//i.test(path)) return path;
       const { data } = await bucket.createSignedUrl(path, 60 * 60);
       return data?.signedUrl ?? null;
     };
