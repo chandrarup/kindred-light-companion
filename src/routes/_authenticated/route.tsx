@@ -12,19 +12,36 @@ function getCachedRole() {
   return cachedRolePromise;
 }
 
+function hasStoredSession() {
+  if (typeof window === "undefined") return false;
+  for (let i = 0; i < window.localStorage.length; i += 1) {
+    const key = window.localStorage.key(i);
+    if (!key?.startsWith("sb-") || !key.endsWith("-auth-token")) continue;
+    try {
+      const parsed = JSON.parse(window.localStorage.getItem(key) ?? "null");
+      if (parsed?.access_token || parsed?.currentSession?.access_token || parsed?.session?.access_token) {
+        return true;
+      }
+    } catch {
+      // Ignore malformed auth cache entries.
+    }
+  }
+  return false;
+}
+
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
     let user;
     try {
       const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) throw redirect({ to: "/auth" });
+      if ((error || !data.user) && !hasStoredSession()) throw redirect({ to: "/auth" });
       user = data.user;
     } catch (e) {
       if (isRedirect(e)) throw e;
-      // Supabase client failed to initialize (e.g. missing env in a stale
-      // build). Send the user to /auth rather than crashing the whole subtree.
-      throw redirect({ to: "/auth" });
+      // If the auth client hiccups but a browser session exists, allow the
+      // server functions to validate the token instead of bouncing to /auth.
+      if (!hasStoredSession()) throw redirect({ to: "/auth" });
     }
     // Clinicians may only see the physician summary view. Use cached role so
     // we don't block every navigation on a server call.
