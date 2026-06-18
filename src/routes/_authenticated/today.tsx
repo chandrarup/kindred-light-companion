@@ -173,7 +173,7 @@ function Today() {
             </motion.button>
           )}
 
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <motion.button
               variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
               whileHover={{ y: -2 }}

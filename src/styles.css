@@ -117,10 +117,17 @@
   --sidebar-ring: var(--c-indigo);
 
   /* COMPANION typography & touch sizing tokens */
+  /* Fluid patient text: 22pt on phones, up to ~34pt on TV/desktop. */
   --text-caregiver-min: 16pt;
-  --text-patient-min: 22pt;
-  --touch-patient-min: 120px;
+  --text-patient-min: clamp(20pt, 3.4vw + 10pt, 34pt);
+  /* Fluid patient touch target: 88px on phones, up to 140px on large screens. */
+  --touch-patient-min: clamp(88px, 10vw, 140px);
   --touch-caregiver-min: 44px;
+  /* Safe-area insets exposed as variables so layout can pad past notches. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 
   /* Caregiver airy mesh wash + glass tokens */
   --c-wash:
@@ -198,6 +205,9 @@
     line-height: 1.5;
     font-weight: 400;
   }
+
+  html, body { overflow-x: hidden; }
+  img, svg, video, canvas { max-width: 100%; height: auto; }
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
@@ -400,9 +410,9 @@
   background: var(--c-cream);
   color: var(--c-cream-label);
   border-radius: 18px;
-  min-height: 92px;
-  padding: 1rem 1.5rem;
-  font-size: 21pt;
+  min-height: clamp(72px, 12vw, 120px);
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 3vw, 1.75rem);
+  font-size: clamp(16pt, 2.2vw, 24pt);
   font-weight: 500;
   display: flex;
   align-items: center;

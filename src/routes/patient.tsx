@@ -164,17 +164,25 @@ function PatientPage() {
             </button>
           </>
         )}
-        <div className="relative z-10 flex min-h-dvh flex-col p-6">
-          <p className="patient-greeting" style={{ fontSize: "32pt" }}>
+        <div
+          className="relative z-10 flex min-h-dvh flex-col p-4 sm:p-6"
+          style={{
+            paddingTop: "max(1rem, env(safe-area-inset-top, 0px))",
+            paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
+            paddingLeft: "max(1rem, env(safe-area-inset-left, 0px))",
+            paddingRight: "max(1rem, env(safe-area-inset-right, 0px))",
+          }}
+        >
+          <p className="patient-greeting" style={{ fontSize: "clamp(22pt, 5vw, 40pt)" }}>
             {t("patient.greeting", { name: bundle.name || "" })}
           </p>
           <div className="flex-1" />
           {photo?.caption && (
-            <p className="patient-caption text-center mb-6" style={{ fontSize: "22pt" }}>
+            <p className="patient-caption text-center mb-6" style={{ fontSize: "clamp(16pt, 3vw, 28pt)" }}>
               {photo.caption}
             </p>
           )}
-          <div className="w-full max-w-md mx-auto flex flex-col gap-4">
+          <div className="w-full max-w-md sm:max-w-lg lg:max-w-2xl mx-auto flex flex-col gap-4">
             <motion.button
               whileTap={{ scale: 0.97 }}
               type="button"
@@ -211,7 +219,7 @@ function PatientPage() {
               type="button"
               onClick={() => setPinOpen(true)}
               className="mt-4 self-center rounded-2xl px-6 py-3 min-h-11"
-              style={{ fontSize: "16pt", background: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(8px)" }}
+              style={{ fontSize: "clamp(13pt, 1.6vw, 18pt)", background: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(8px)" }}
               data-touch
             >
               {t("patient.exit")}

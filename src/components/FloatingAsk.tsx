@@ -54,7 +54,7 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
         whileTap={{ scale: 0.94 }}
         whileHover={{ y: -2 }}
         aria-label="Ask COMPANION"
-        className="fixed right-4 z-[60] inline-flex items-center gap-2 rounded-full px-5 h-14 font-medium text-white shadow-[0_10px_30px_-8px_rgba(79,70,229,0.65)] bg-[var(--c-indigo)] hover:bg-[var(--c-indigo-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-300/40"
+        className="fixed right-4 lg:right-6 z-[60] inline-flex items-center gap-2 rounded-full px-4 sm:px-5 h-12 sm:h-14 font-medium text-white shadow-[0_10px_30px_-8px_rgba(79,70,229,0.65)] bg-[var(--c-indigo)] hover:bg-[var(--c-indigo-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-300/40"
         style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}
       >
         <MessageCircleQuestion size={22} strokeWidth={1.9} />
@@ -82,7 +82,8 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 40, opacity: 0 }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              className="relative w-full sm:max-w-xl mx-3 sm:mx-0 mb-3 sm:mb-0 rounded-3xl bg-white text-slate-900 shadow-2xl overflow-hidden"
+              className="relative w-full sm:max-w-xl mx-0 sm:mx-4 mb-0 sm:mb-0 max-h-[90dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white text-slate-900 shadow-2xl overflow-hidden"
+              style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
             >
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-2">
