@@ -410,9 +410,9 @@
   background: var(--c-cream);
   color: var(--c-cream-label);
   border-radius: 18px;
-  min-height: 92px;
-  padding: 1rem 1.5rem;
-  font-size: 21pt;
+  min-height: clamp(72px, 12vw, 120px);
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 3vw, 1.75rem);
+  font-size: clamp(16pt, 2.2vw, 24pt);
   font-weight: 500;
   display: flex;
   align-items: center;
