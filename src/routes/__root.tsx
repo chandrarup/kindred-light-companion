@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -151,8 +151,11 @@ function RootComponent() {
 }
 
 function GlobalFloatingAsk() {
+  const [mounted, setMounted] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { mode } = useMode();
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
   // Hide on landing and auth screens
   if (pathname === "/" || pathname.startsWith("/auth")) return null;
   return <FloatingAsk mode={mode} />;
