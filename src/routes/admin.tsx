@@ -20,10 +20,14 @@ function AdminPage() {
   const [demoFlag, setDemoFlag] = useState(false);
 
   useEffect(() => {
-    supabase.auth
-      .getUser()
-      .then(({ data }) => setSignedIn(!!data.user))
-      .catch(() => setSignedIn(false));
+    try {
+      supabase.auth
+        .getUser()
+        .then(({ data }) => setSignedIn(!!data.user))
+        .catch(() => setSignedIn(false));
+    } catch {
+      setSignedIn(false);
+    }
     setDemoFlag(window.localStorage.getItem("companion.demo") === "1");
   }, []);
 
