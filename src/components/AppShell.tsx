@@ -188,7 +188,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   }
                 >
                   <Icon aria-hidden size={22} strokeWidth={1.75} />
-                  <span className="truncate max-w-full px-0.5 hidden xs:inline sm:inline">{t(item.key)}</span>
+                  <span className="truncate max-w-full px-0.5">{t(item.key)}</span>
                 </Link>
                 {active && (
                   <motion.span
