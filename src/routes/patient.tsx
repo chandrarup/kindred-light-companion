@@ -39,7 +39,7 @@ function PatientPage() {
   const verifyPinFn = useServerFn(verifyHouseholdPin);
 
   const [bundle, setBundle] = useState<Bundle | null>(null);
-  const [view, setView] = useState<"idle" | "menu" | "people" | "music">("idle");
+  const [view, setView] = useState<"menu" | "people" | "music">("menu");
   const [slide, setSlide] = useState(0);
   const [pinOpen, setPinOpen] = useState(false);
   const [cue, setCue] = useState<{ id: string; label: string } | null>(null);
@@ -61,7 +61,7 @@ function PatientPage() {
 
   // Slideshow
   useEffect(() => {
-    if (view !== "idle" || !bundle || bundle.photos.length < 2) return;
+    if (view !== "menu" || !bundle || bundle.photos.length < 2) return;
     const id = setInterval(() => setSlide((i) => (i + 1) % bundle.photos.length), 7000);
     return () => clearInterval(id);
   }, [view, bundle]);
@@ -95,27 +95,19 @@ function PatientPage() {
 
   const lang = bundle?.language === "es" ? "es-ES" : "en-US";
 
-  const wake = useCallback(() => {
-    if (view !== "idle") return;
-    setView("menu");
-    if (!greetedRef.current) {
-      greetedRef.current = true;
-      if (bundle?.greeting_audio_url) {
-        const a = new Audio(bundle.greeting_audio_url);
-        a.play().catch(() => speak(t("patient.greeting", { name: bundle?.name ?? "" }), lang));
-      } else {
-        speak(t("patient.greeting", { name: bundle?.name ?? "" }), lang);
-      }
-    }
-  }, [view, bundle, t, lang]);
-
-  // Wake on touch/voice (any keypress in this view)
+  // Greet once when the bundle first loads (autoplay may be blocked until first interaction)
   useEffect(() => {
-    if (view !== "idle") return;
-    const onAny = () => wake();
-    window.addEventListener("keydown", onAny);
-    return () => window.removeEventListener("keydown", onAny);
-  }, [view, wake]);
+    if (!bundle || greetedRef.current) return;
+    greetedRef.current = true;
+    try {
+      if (bundle.greeting_audio_url) {
+        const a = new Audio(bundle.greeting_audio_url);
+        a.play().catch(() => speak(t("patient.greeting", { name: bundle.name ?? "" }), lang));
+      } else {
+        speak(t("patient.greeting", { name: bundle.name ?? "" }), lang);
+      }
+    } catch {}
+  }, [bundle, t, lang]);
 
   // CUE overlay (takes precedence)
   if (cue) {
@@ -132,50 +124,46 @@ function PatientPage() {
     return <div data-mode="patient" className="min-h-dvh bg-background" />;
   }
 
-  if (view === "idle") {
-    const photo = bundle.photos[slide];
-    return (
-      <button
-        data-mode="patient"
-        type="button"
-        onClick={wake}
-        aria-label={t("patient.wake")}
-        className="relative min-h-dvh w-full overflow-hidden text-left"
-      >
-        {photo && (
-          <div
-            className="patient-photo-bg photo-crossfade"
-            style={{ backgroundImage: `url(${photo.url})` }}
-            aria-hidden
-          />
-        )}
-        <div className="patient-scrim" aria-hidden />
-        <div className="relative z-10 flex min-h-dvh flex-col justify-between p-8">
-          <p className="patient-greeting" style={{ fontSize: "32pt" }}>
-            {t("patient.greeting", { name: bundle.name || "" })}
-          </p>
-          {photo?.caption && (
-            <p className="patient-caption text-center" style={{ fontSize: "26pt" }}>
-              {photo.caption}
-            </p>
-          )}
-        </div>
-      </button>
-    );
-  }
-
   if (view === "menu") {
     const photo = bundle.photos[slide];
+    const hasMany = bundle.photos.length > 1;
+    const prevPhoto = () => setSlide((i) => (i - 1 + bundle.photos.length) % bundle.photos.length);
+    const nextPhoto = () => setSlide((i) => (i + 1) % bundle.photos.length);
     return (
       <div data-mode="patient" className="relative min-h-dvh overflow-hidden">
         {photo && (
           <div
-            className="patient-photo-bg"
+            className="patient-photo-bg photo-crossfade"
+            key={photo.id}
             style={{ backgroundImage: `url(${photo.url})` }}
             aria-hidden
           />
         )}
         <div className="patient-scrim" aria-hidden />
+        {hasMany && (
+          <>
+            <button
+              type="button"
+              onClick={prevPhoto}
+              aria-label="Previous photo"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-20 rounded-full p-3 min-h-11 min-w-11 inline-flex items-center justify-center"
+              style={{ background: "rgba(0,0,0,0.35)", color: "#fff", backdropFilter: "blur(6px)" }}
+              data-touch
+            >
+              <ChevronLeft size={28} strokeWidth={2} />
+            </button>
+            <button
+              type="button"
+              onClick={nextPhoto}
+              aria-label="Next photo"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-20 rounded-full p-3 min-h-11 min-w-11 inline-flex items-center justify-center"
+              style={{ background: "rgba(0,0,0,0.35)", color: "#fff", backdropFilter: "blur(6px)" }}
+              data-touch
+            >
+              <ChevronRight size={28} strokeWidth={2} />
+            </button>
+          </>
+        )}
         <div className="relative z-10 flex min-h-dvh flex-col p-6">
           <p className="patient-greeting" style={{ fontSize: "32pt" }}>
             {t("patient.greeting", { name: bundle.name || "" })}
