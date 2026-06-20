@@ -20,7 +20,16 @@
       "selfCare": "Cuidado personal",
       "selfCareOpen": "¿Cómo estoy hoy?",
       "switchToCaregiver": "Las necesidades de Rosa han crecido — cambia a la vista del cuidador",
-      "switchNote": "Al avanzar la demencia, todo lo que Rosa registró pasa al cuidador y se desbloquean más herramientas."
+      "switchNote": "Al avanzar la demencia, todo lo que Rosa registró pasa al cuidador y se desbloquean más herramientas.",
+      "switchSmall": "Vista del cuidador",
+      "switchConfirm": {
+        "title": "¿Pasar al modo cuidador?",
+        "subtitle": "Un par de preguntas rápidas antes de transferir todo.",
+        "q1": "¿Rosa necesita más ayuda con las tareas diarias que hace seis meses?",
+        "q2": "¿Su cuidador debe manejar ahora sus registros, recordatorios y rutinas?",
+        "continue": "Sí — cambiar a cuidador",
+        "cancel": "Aún no"
+      }
     },
     "caregiver": {
       "today": "Hoy",
@@ -47,6 +56,10 @@
       "caregiverMode": "Asistente para el cuidador",
       "placeholder": "Escribe una pregunta…",
       "tryAsking": "Prueba preguntando:",
+      "micStart": "Habla tu pregunta",
+      "micStop": "Dejar de escuchar",
+      "micUnsupported": "La entrada por voz no está disponible en este navegador.",
+      "micListening": "Escuchando…",
       "tag": {
         "personalized": "Personalizado",
         "educational": "Educativo",
