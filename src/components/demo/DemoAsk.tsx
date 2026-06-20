@@ -10,6 +10,13 @@ const SUGGESTIONS_CAREGIVER = [
   { en: "What helps when she won't calm down?", es: "¿Qué ayuda cuando no se calma?" },
   { en: "She didn't sleep well — what can I do?", es: "No durmió bien — ¿qué puedo hacer?" },
   { en: "What should I tell the doctor?", es: "¿Qué debo decirle al médico?" },
+  { en: "How do I respond to repeated questions?", es: "¿Cómo respondo a preguntas repetidas?" },
+  { en: "She's not eating much — what should I do?", es: "No come mucho — ¿qué hago?" },
+  { en: "What if she wanders off?", es: "¿Qué hago si se va sola?" },
+  { en: "I'm exhausted — how do I cope?", es: "Estoy agotada — ¿cómo lo manejo?" },
+  { en: "What legal things should we set up?", es: "¿Qué temas legales debemos preparar?" },
+  { en: "What exercise is safe for her?", es: "¿Qué ejercicio es seguro para ella?" },
+  { en: "What are the stages of Alzheimer's?", es: "¿Cuáles son las etapas del Alzheimer?" },
 ];
 const SUGGESTIONS_PATIENT = [
   { en: "Tell me about my music", es: "Cuéntame de mi música" },
@@ -170,7 +177,22 @@ function AssistantBubble({ r, L, t }: { r: AskResponse; L: "en" | "es"; t: (k: s
     <div className={`rounded-2xl border px-3 py-2 max-w-[90%] text-sm ${tone}`}>
       <p className="text-[10px] font-semibold uppercase tracking-wide opacity-70 mb-1">{tag}</p>
       <p className="whitespace-pre-wrap">{r.text[L]}</p>
-      {r.video && (
+      {r.video?.youtubeId && (
+        <div className="mt-2 rounded-lg overflow-hidden border border-current/20 bg-black/5">
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src={`https://www.youtube.com/embed/${r.video.youtubeId}`}
+              title={r.video.label[L]}
+              frameBorder={0}
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <p className="px-2 py-1 text-[11px] opacity-80">{r.video.label[L]}</p>
+        </div>
+      )}
+      {r.video && !r.video.youtubeId && (
         <a href={r.video.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs font-medium underline">
           <Play size={12} /> {r.video.label[L]}
         </a>
@@ -179,6 +201,16 @@ function AssistantBubble({ r, L, t }: { r: AskResponse; L: "en" | "es"; t: (k: s
         <a href={r.source.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs font-medium underline">
           <ExternalLink size={12} /> {r.source.label}
         </a>
+      )}
+      {r.sources && r.sources.length > 0 && (
+        <div className="mt-2 space-y-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wide opacity-70">{L === "es" ? "Fuentes" : "Sources"}</p>
+          {r.sources.map((s, i) => (
+            <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs font-medium underline">
+              <ExternalLink size={12} /> {s.label}
+            </a>
+          ))}
+        </div>
       )}
       {r.actions && r.actions.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
