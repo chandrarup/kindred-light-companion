@@ -1,0 +1,16 @@
+import type { DemoPhoto } from "@/lib/demo/data";
+
+export function PhotoCard({ photo, lang, size = "lg" }: { photo: DemoPhoto; lang: "en" | "es"; size?: "sm" | "md" | "lg" }) {
+  const heights = { sm: "h-32", md: "h-48", lg: "h-72 sm:h-96" } as const;
+  const emojiSize = { sm: "text-4xl", md: "text-6xl", lg: "text-8xl" } as const;
+  return (
+    <div className={`relative rounded-2xl overflow-hidden bg-gradient-to-br ${photo.gradient} ${heights[size]} shadow-md`}>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className={emojiSize[size]} aria-hidden>{photo.emoji}</span>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent px-4 py-3">
+        <p className="text-white font-medium drop-shadow">{photo.caption[lang]}</p>
+      </div>
+    </div>
+  );
+}
