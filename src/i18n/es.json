@@ -42,7 +42,9 @@
     "emailLabel": "Correo electrónico",
     "sendLink": "Enviar enlace",
     "linkSent": "Revise su correo para el enlace de acceso.",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "caregiverTitle": "Inicie sesión como cuidador",
+    "patientTitle": "Inicie sesión en su espacio"
   },
   "onboarding": {
     "title": "Configurar el hogar",
