@@ -46,7 +46,7 @@ function LogsPage() {
   const dates = Object.keys(byDate).sort().reverse();
 
   return (
-    <AppShell title="Past logs">
+    <AppShell>
       <div className="space-y-4">
         <Link to="/today" className="inline-flex items-center text-sm text-muted-foreground hover:underline"><ChevronLeft size={16} />Back to Today</Link>
         {loading && <p className="text-muted-foreground">Loading…</p>}

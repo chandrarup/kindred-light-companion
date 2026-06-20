@@ -24,6 +24,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPhotosRouteImport } from './routes/_authenticated/photos'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedLogsRouteImport } from './routes/_authenticated/logs'
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedCuesRouteImport } from './routes/_authenticated/cues'
 import { Route as AuthenticatedCircleRouteImport } from './routes/_authenticated/circle'
@@ -103,6 +104,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLogsRoute = AuthenticatedLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLearnRoute = AuthenticatedLearnRouteImport.update({
   id: '/learn',
   path: '/learn',
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
   '/learn': typeof AuthenticatedLearnRoute
+  '/logs': typeof AuthenticatedLogsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/photos': typeof AuthenticatedPhotosRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
   '/learn': typeof AuthenticatedLearnRoute
+  '/logs': typeof AuthenticatedLogsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/photos': typeof AuthenticatedPhotosRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/_authenticated/circle': typeof AuthenticatedCircleRoute
   '/_authenticated/cues': typeof AuthenticatedCuesRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
+  '/_authenticated/logs': typeof AuthenticatedLogsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/photos': typeof AuthenticatedPhotosRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/circle'
     | '/cues'
     | '/learn'
+    | '/logs'
     | '/onboarding'
     | '/photos'
     | '/profile'
@@ -215,6 +225,7 @@ export interface FileRouteTypes {
     | '/circle'
     | '/cues'
     | '/learn'
+    | '/logs'
     | '/onboarding'
     | '/photos'
     | '/profile'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/_authenticated/circle'
     | '/_authenticated/cues'
     | '/_authenticated/learn'
+    | '/_authenticated/logs'
     | '/_authenticated/onboarding'
     | '/_authenticated/photos'
     | '/_authenticated/profile'
@@ -364,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/logs': {
+      id: '/_authenticated/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof AuthenticatedLogsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/learn': {
       id: '/_authenticated/learn'
       path: '/learn'
@@ -399,6 +418,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCircleRoute: typeof AuthenticatedCircleRoute
   AuthenticatedCuesRoute: typeof AuthenticatedCuesRoute
   AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
+  AuthenticatedLogsRoute: typeof AuthenticatedLogsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPhotosRoute: typeof AuthenticatedPhotosRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -411,6 +431,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCircleRoute: AuthenticatedCircleRoute,
   AuthenticatedCuesRoute: AuthenticatedCuesRoute,
   AuthenticatedLearnRoute: AuthenticatedLearnRoute,
+  AuthenticatedLogsRoute: AuthenticatedLogsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPhotosRoute: AuthenticatedPhotosRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
