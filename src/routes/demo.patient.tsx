@@ -24,6 +24,9 @@ function DemoPatient() {
   const [selfCare, setSelfCare] = useState<SelfCare>(null);
   const [slide, setSlide] = useState(0);
   const [savedKey, setSavedKey] = useState<string | null>(null);
+  const [switchOpen, setSwitchOpen] = useState(false);
+  const [switchStep, setSwitchStep] = useState<0 | 1>(0);
+  const [switchA1, setSwitchA1] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (view !== "menu") return;
@@ -53,8 +56,19 @@ function DemoPatient() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </div>
 
+          {/* Small top switch link */}
+          <div className="relative px-4 pt-3 flex justify-end">
+            <button
+              type="button"
+              onClick={() => { setSwitchStep(0); setSwitchA1(null); setSwitchOpen(true); }}
+              className="text-xs text-white/85 hover:text-white underline-offset-2 hover:underline inline-flex items-center gap-1 rounded-full bg-black/25 px-3 py-1.5 backdrop-blur"
+            >
+              {t("demo.patient.switchSmall")} <ArrowRight size={12} />
+            </button>
+          </div>
+
           {/* Greeting */}
-          <div className="relative px-6 pt-8 text-white">
+          <div className="relative px-6 pt-4 text-white">
             <h1 className="text-4xl sm:text-5xl font-semibold drop-shadow">{t("patient.greeting", { name: ROSA.preferredName })}</h1>
             <p className="mt-2 text-lg sm:text-xl drop-shadow text-white/90">{photo.caption[L]}</p>
           </div>
@@ -77,21 +91,45 @@ function DemoPatient() {
               </button>
             </div>
 
-            <div className="mt-4 max-w-3xl mx-auto">
-              <button
-                type="button"
-                onClick={() => navigate({ to: "/demo/caregiver" })}
-                className="w-full rounded-xl bg-stone-900/80 text-white p-3 text-sm inline-flex items-center justify-center gap-2 hover:bg-stone-900"
-              >
-                {t("demo.patient.switchToCaregiver")} <ArrowRight size={16} />
-              </button>
-              <p className="mt-2 text-xs text-white/80 text-center px-4">{t("demo.patient.switchNote")}</p>
-            </div>
           </div>
 
           {savedKey === "talk" && (
             <div className="absolute top-1/3 inset-x-4 z-10 rounded-2xl bg-white/95 text-stone-800 p-6 text-center shadow-2xl max-w-sm mx-auto">
               <p className="text-xl">{t("patient.talkPrompt")}</p>
+            </div>
+          )}
+
+          {switchOpen && (
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
+              <div className="w-full max-w-md rounded-2xl bg-white text-stone-900 shadow-2xl p-5">
+                <h3 className="text-lg font-semibold">{t("demo.patient.switchConfirm.title")}</h3>
+                <p className="mt-1 text-sm text-stone-600">{t("demo.patient.switchConfirm.subtitle")}</p>
+
+                {switchStep === 0 && (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-base">{t("demo.patient.switchConfirm.q1")}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={() => { setSwitchA1(false); setSwitchStep(1); }} className="rounded-xl border border-stone-200 py-2 font-medium hover:bg-stone-50">{t("common.no")}</button>
+                      <button onClick={() => { setSwitchA1(true); setSwitchStep(1); }} className="rounded-xl bg-primary text-primary-foreground py-2 font-medium">{t("common.yes")}</button>
+                    </div>
+                  </div>
+                )}
+                {switchStep === 1 && (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-base">{t("demo.patient.switchConfirm.q2")}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={() => setSwitchOpen(false)} className="rounded-xl border border-stone-200 py-2 font-medium hover:bg-stone-50">{t("demo.patient.switchConfirm.cancel")}</button>
+                      <button
+                        onClick={() => { setSwitchOpen(false); navigate({ to: "/demo/caregiver" }); }}
+                        className="rounded-xl bg-primary text-primary-foreground py-2 font-medium inline-flex items-center justify-center gap-1"
+                      >
+                        <Check size={16} /> {t("demo.patient.switchConfirm.continue")}
+                      </button>
+                    </div>
+                    <p className="text-xs text-stone-500 pt-1">{t("demo.patient.switchNote")}</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
