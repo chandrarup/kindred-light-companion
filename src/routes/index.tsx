@@ -46,7 +46,7 @@ function Welcome() {
 
   function choose(role: "caregiver" | "patient") {
     try { window.localStorage.setItem(ROLE_KEY, role); } catch {}
-    navigate({ to: "/auth", search: { role } as any });
+    navigate({ to: "/auth" });
   }
 
   if (checking) {
