@@ -42,7 +42,22 @@ async function getOrCreateUser(admin: any, email: string, displayName: string) {
   return created.user.id as string;
 }
 
-export async function wipeDemoHouseholds(admin: any) {
+export async function wipeDemoHouseholds(admin: any, userId?: string) {
+  // Scope to the caller's own demo households when a userId is provided so a
+  // demo user can't blow away other concurrent demo sessions.
+  if (userId) {
+    const { data: mem } = await admin
+      .from("memberships")
+      .select("household_id, households!inner(id, is_demo)")
+      .eq("user_id", userId)
+      .eq("households.is_demo", true);
+    const ids = Array.from(
+      new Set((mem ?? []).map((r: any) => r.household_id as string)),
+    );
+    if (ids.length === 0) return 0;
+    await admin.from("households").delete().in("id", ids);
+    return ids.length;
+  }
   const { data: hh } = await admin.from("households").select("id").eq("is_demo", true);
   const ids = (hh ?? []).map((r: any) => r.id);
   if (ids.length === 0) return 0;
