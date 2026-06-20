@@ -42,7 +42,9 @@
     "emailLabel": "Correo electrónico",
     "sendLink": "Enviar enlace",
     "linkSent": "Revise su correo para el enlace de acceso.",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "caregiverTitle": "Inicie sesión como cuidador",
+    "patientTitle": "Inicie sesión en su espacio"
   },
   "onboarding": {
     "title": "Configurar el hogar",
@@ -128,6 +130,47 @@
     "playTitle": "Reproducir",
     "prev": "Atrás",
     "next": "Siguiente"
+  },
+  "welcome": {
+    "title": "COMPANION",
+    "tagline": "Un acompañante tranquilo para quienes viven con un diagnóstico — y para quienes los aman.",
+    "caregiverTitle": "Soy cuidador(a)",
+    "caregiverDesc": "Registre los días, observe patrones y apoye a quien ama.",
+    "patientTitle": "Tengo un diagnóstico",
+    "patientDesc": "Un lugar sencillo y tranquilo, solo para usted.",
+    "demoTitle": "Probar la demostración",
+    "demoDesc": "Eche un vistazo — sin registrarse.",
+    "demoComingSoon": "La demostración llegará pronto.",
+    "changeRole": "Elegir otra opción"
+  },
+  "self": {
+    "sleep": "Cómo dormí",
+    "mood": "Cómo me siento hoy",
+    "bothering": "Qué me molesta",
+    "reminders": "Mis recordatorios",
+    "sleepPrompt": "¿Cómo durmió anoche?",
+    "moodPrompt": "¿Cómo se siente hoy?",
+    "botheringPrompt": "¿Algo en la mente?",
+    "botheringPlaceholder": "Con sus propias palabras…",
+    "useVoice": "Toque para hablar",
+    "stopRecording": "Detener",
+    "save": "Guardar",
+    "saved": "Gracias. Guardado.",
+    "savedAck": "Gracias. Se guardó.",
+    "well": "Dormí bien",
+    "okay": "Más o menos",
+    "poorly": "No dormí bien",
+    "good": "Bien",
+    "notGreat": "No muy bien",
+    "noReminders": "Aún no hay recordatorios.",
+    "setup": {
+      "title": "Bienvenido",
+      "lead": "Solo una pregunta rápida para configurar todo.",
+      "name": "Su nombre",
+      "language": "Su idioma",
+      "start": "Continuar",
+      "nameRequired": "Por favor, díganos su nombre."
+    }
   },
   "music": {
     "playNameMusic": "Pon la música de {name}",
