@@ -42,7 +42,9 @@
     "emailLabel": "Email address",
     "sendLink": "Send sign-in link",
     "linkSent": "Check your email for a sign-in link.",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "caregiverTitle": "Sign in as a caregiver",
+    "patientTitle": "Sign in to your space"
   },
   "onboarding": {
     "title": "Set up your household",
