@@ -34,7 +34,7 @@ async function getOrCreateUser(admin: any, email: string, displayName: string) {
     user_metadata: { display_name: displayName, demo: true },
     password: crypto.randomUUID(),
   });
-  if (error || !created?.user) throw new Error(error?.message ?? "createUser failed");
+  if (error || !created?.user) throw safeDbError(error, "createUser failed");
   // Ensure a public.users row exists (in case the trigger isn't attached) and set name.
   await admin
     .from("users")
@@ -78,7 +78,7 @@ export async function seedDemoHousehold(admin: any, primaryUserId: string) {
     })
     .select("id")
     .single();
-  if (hErr || !hh) throw new Error(hErr?.message ?? "household insert failed");
+  if (hErr || !hh) throw safeDbError(hErr, "household insert failed");
   const householdId = hh.id as string;
 
   // 2. Patient profile

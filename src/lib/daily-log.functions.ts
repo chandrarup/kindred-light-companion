@@ -61,7 +61,7 @@ async function getHouseholdId(supabase: any, userId: string): Promise<string> {
     .is("deleted_at", null)
     .limit(1)
     .maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) throw safeDbError(error);
   if (!data) throw new Error("No household for user");
   return data.household_id as string;
 }
@@ -87,7 +87,7 @@ export const createDailyLog = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (lErr || !log) throw new Error(lErr?.message ?? "Failed to insert log");
+    if (lErr || !log) throw safeDbError(lErr, "Failed to insert log");
 
     if (data.symptoms.length > 0) {
       const rows = data.symptoms.map((s) => ({
@@ -126,7 +126,7 @@ export const listRecentLogs = createServerFn({ method: "GET" })
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(10);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     const { data: hh } = await supabase
       .from("households")
       .select("edit_lock_days")
@@ -182,7 +182,7 @@ export const updateDailyLog = createServerFn({ method: "POST" })
         notes: data.notes ?? null,
       })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 

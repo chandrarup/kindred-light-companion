@@ -14,7 +14,7 @@ export const createDemoSession = createServerFn({ method: "POST" }).handler(asyn
     email_confirm: true,
     user_metadata: { demo: true, display_name: "María Herrera" },
   });
-  if (error || !data?.user) throw new Error(error?.message ?? "createUser failed");
+  if (error || !data?.user) throw safeDbError(error, "createUser failed");
   await supabaseAdmin
     .from("users")
     .upsert({ id: data.user.id, email, display_name: "María Herrera" }, { onConflict: "id" });

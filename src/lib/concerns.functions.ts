@@ -16,7 +16,7 @@ export const listConcerns = createServerFn({ method: "GET" })
       .eq("household_id", householdId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { concerns: data ?? [] };
   });
 
@@ -30,7 +30,7 @@ export const addConcern = createServerFn({ method: "POST" })
       .insert({ household_id: householdId, created_by: context.userId, text: data.text })
       .select("id, text, resolved_at, created_at")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return row;
   });
 
@@ -43,7 +43,7 @@ export const resolveConcern = createServerFn({ method: "POST" })
       .from("caregiver_concerns")
       .update({ resolved_at: new Date().toISOString() })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -56,6 +56,6 @@ export const deleteConcern = createServerFn({ method: "POST" })
       .from("caregiver_concerns")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });

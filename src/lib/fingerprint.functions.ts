@@ -39,7 +39,7 @@ export const listInsights = createServerFn({ method: "GET" })
       .eq("household_id", householdId)
       .is("deleted_at", null)
       .order("updated_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { insights: data ?? [], minEvidence: (h?.min_evidence as number) ?? 4 };
   });
 
@@ -53,6 +53,6 @@ export const dismissInsight = createServerFn({ method: "POST" })
       .from("fingerprint_insights")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });

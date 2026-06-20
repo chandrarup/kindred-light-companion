@@ -109,7 +109,7 @@ export const recordTrainingFeedback = createServerFn({ method: "POST" })
       helped: data.helped ?? null,
       action_saved: data.action_saved ?? false,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 

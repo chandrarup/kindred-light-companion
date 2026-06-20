@@ -20,7 +20,7 @@ export const setIntendedRole = createServerFn({ method: "POST" })
       .from("users")
       .update({ intended_role: data.role })
       .eq("id", userId);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { role: data.role };
   });
 

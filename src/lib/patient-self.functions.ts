@@ -42,7 +42,7 @@ export const completePatientSelfOnboarding = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (hErr || !household) throw new Error(hErr?.message ?? "Failed to create household");
+    if (hErr || !household) throw safeDbError(hErr, "Failed to create household");
 
     const { error: mErr } = await supabaseAdmin.from("memberships").insert({
       user_id: userId,

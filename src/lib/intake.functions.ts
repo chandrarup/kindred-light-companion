@@ -93,7 +93,7 @@ export const startIntake = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (hErr || !household) throw new Error(hErr?.message ?? "Failed to create household");
+    if (hErr || !household) throw safeDbError(hErr, "Failed to create household");
     const householdId = household.id as string;
 
     const { error: mErr } = await supabaseAdmin.from("memberships").insert({
@@ -141,7 +141,7 @@ export const saveIntakeStep = createServerFn({ method: "POST" })
         .from("patient_profile")
         .update(patch)
         .eq("household_id", m.household_id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error);
     }
 
     if (data.markComplete) {
@@ -243,6 +243,6 @@ export const attachPhotos = createServerFn({ method: "POST" })
       created_by: context.userId,
     }));
     const { error } = await context.supabase.from("media").insert(rows);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true as const, count: rows.length };
   });

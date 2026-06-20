@@ -311,7 +311,7 @@ export const generatePhysicianSummary = createServerFn({ method: "POST" })
       })
       .select("id, summary, stats, period_start, period_end, created_at")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return row;
   });
 

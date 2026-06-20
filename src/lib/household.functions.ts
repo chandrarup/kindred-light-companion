@@ -52,7 +52,7 @@ export const completeOnboarding = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (hErr || !household) throw new Error(hErr?.message ?? "Failed to create household");
+    if (hErr || !household) throw safeDbError(hErr, "Failed to create household");
 
     const householdId = household.id as string;
 
@@ -172,6 +172,6 @@ export const updateHouseholdSettings = createServerFn({ method: "POST" })
     if (data.notify_window_end !== undefined) patch.notify_window_end = data.notify_window_end;
     if (Object.keys(patch).length === 0) return { ok: true };
     const { error } = await context.supabase.from("households").update(patch as any).eq("id", householdId);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });

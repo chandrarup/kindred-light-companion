@@ -91,7 +91,7 @@ export const inviteToCircle = createServerFn({ method: "POST" })
       })
       .select("id, token")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
 
     // Send magic-link sign-up to the invitee
     const origin =
@@ -129,7 +129,7 @@ export const updateMemberPermissions = createServerFn({ method: "POST" })
       .from("memberships")
       .update({ permissions: data.permissions })
       .eq("id", data.membershipId);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -152,7 +152,7 @@ export const removeMember = createServerFn({ method: "POST" })
       .from("memberships")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", data.membershipId);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -169,7 +169,7 @@ export const cancelInvite = createServerFn({ method: "POST" })
       .delete()
       .eq("id", data.inviteId)
       .eq("household_id", householdId);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -184,6 +184,6 @@ export const setEditLockDays = createServerFn({ method: "POST" })
       .from("households")
       .update({ edit_lock_days: data.days })
       .eq("id", householdId);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true, days: data.days };
   });
