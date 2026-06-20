@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { Mic, Users, Music, ChevronLeft, ChevronRight, Play, Check } from "lucide-react";
+import { Mic, Users, Music, ChevronLeft, ChevronRight, Play, Check, Moon, Smile, MessageCircle, Bell } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { useMode } from "@/lib/mode-context";
 import { PinDialog } from "@/components/PinDialog";
@@ -10,6 +10,10 @@ import { verifyHouseholdPin } from "@/lib/household.functions";
 import { getPatientBundle, getDueCues } from "@/lib/patient.functions";
 import { buildProviderSearchUrl } from "@/lib/music.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { createDailyLog } from "@/lib/daily-log.functions";
+import { listCues } from "@/lib/cues.functions";
+import { completePatientSelfOnboarding } from "@/lib/patient-self.functions";
+import { getIntendedRole } from "@/lib/intended-role.functions";
 
 export const Route = createFileRoute("/patient")({
   head: () => ({ meta: [{ title: "Patient — COMPANION" }] }),
@@ -37,9 +41,16 @@ function PatientPage() {
   const bundleFn = useServerFn(getPatientBundle);
   const cuesFn = useServerFn(getDueCues);
   const verifyPinFn = useServerFn(verifyHouseholdPin);
+  const createLog = useServerFn(createDailyLog);
+  const listAllCues = useServerFn(listCues);
+  const setupPatient = useServerFn(completePatientSelfOnboarding);
+  const getIntent = useServerFn(getIntendedRole);
 
   const [bundle, setBundle] = useState<Bundle | null>(null);
-  const [view, setView] = useState<"menu" | "people" | "music">("menu");
+  const [view, setView] = useState<"menu" | "people" | "music" | "selfcare">("menu");
+  const [selfCare, setSelfCare] = useState<null | "sleep" | "mood" | "bothering" | "reminders">(null);
+  const [isPatient, setIsPatient] = useState(false);
+  const [needsSetup, setNeedsSetup] = useState(false);
   const [slide, setSlide] = useState(0);
   const [pinOpen, setPinOpen] = useState(false);
   const [cue, setCue] = useState<{ id: string; label: string } | null>(null);
@@ -54,10 +65,23 @@ function PatientPage() {
         navigate({ to: "/auth", replace: true });
         return;
       }
-      const b: any = await bundleFn();
-      setBundle(b);
+      try {
+        const intent: any = await getIntent();
+        setIsPatient(intent?.role === "patient");
+      } catch {}
+      try {
+        const b: any = await bundleFn();
+        setBundle(b);
+      } catch (e: any) {
+        // Patient signed up but doesn't have a household yet → show setup.
+        if (String(e?.message ?? "").toLowerCase().includes("no household")) {
+          setNeedsSetup(true);
+        } else {
+          console.error(e);
+        }
+      }
     })();
-  }, [bundleFn, navigate]);
+  }, [bundleFn, navigate, getIntent]);
 
   // Slideshow
   useEffect(() => {
@@ -121,6 +145,20 @@ function PatientPage() {
   }
 
   if (!bundle) {
+    if (needsSetup) {
+      return (
+        <PatientSetup
+          onDone={async (name, language) => {
+            await setupPatient({ data: { displayName: name, language } });
+            setNeedsSetup(false);
+            try {
+              const b: any = await bundleFn();
+              setBundle(b);
+            } catch (e) { console.error(e); }
+          }}
+        />
+      );
+    }
     return <div data-mode="patient" className="min-h-dvh bg-background" />;
   }
 
