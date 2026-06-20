@@ -161,6 +161,6 @@ function GlobalFloatingAsk() {
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
   // Hide on landing and auth screens
-  if (pathname === "/" || pathname.startsWith("/auth")) return null;
+  if (pathname === "/" || pathname.startsWith("/auth") || pathname.startsWith("/demo")) return null;
   return <FloatingAsk mode={mode} />;
 }
