@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Camera, Music, ListChecks, FileText, MessageCircle, Sparkles, Phone, ChevronRight, BookOpen, Activity, AlertCircle } from "lucide-react";
+import { Sun, Image as ImageIcon, PlayCircle, Users, ClipboardList, Settings as SettingsIcon, FileText, Phone, ChevronRight, Sparkles, AlertCircle, MessageCircle, Camera, BookOpen } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_LOGS, DEMO_INSIGHTS, DEMO_CUES, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
 import { DemoReminder } from "@/components/demo/DemoReminder";
@@ -69,20 +69,101 @@ const COMING_SOON: Record<string, ComingSoonFeature> = {
   },
 };
 
+type TabKey = "today" | "photos" | "learn" | "circle" | "summary" | "settings";
+
 function DemoCaregiver() {
   const { t, lang } = useT();
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
   const [preview, setPreview] = useState<ComingSoonFeature | null>(null);
+  const [tab, setTab] = useState<TabKey>("today");
 
-  const today = DEMO_LOGS[0];
+  const tabs: { key: TabKey; label: string; Icon: any }[] = [
+    { key: "today",    label: t("nav.today"),    Icon: Sun },
+    { key: "photos",   label: t("nav.photos"),   Icon: ImageIcon },
+    { key: "learn",    label: t("nav.learn"),    Icon: PlayCircle },
+    { key: "circle",   label: t("nav.circle"),   Icon: Users },
+    { key: "summary",  label: t("nav.summary"),  Icon: ClipboardList },
+    { key: "settings", label: t("nav.settings"), Icon: SettingsIcon },
+  ];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 space-y-6">
+    <div className="flex flex-col lg:flex-row min-h-[calc(100dvh-90px)]">
       <DemoReminder mode="caregiver" />
       <DemoAsk mode="caregiver" />
 
-      {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:border-r lg:border-border lg:bg-card">
+        <div className="px-5 py-5 border-b border-border">
+          <p className="text-xs text-muted-foreground">{t("demo.caregiver.today")}</p>
+          <p className="font-semibold">{ROSA.name}</p>
+        </div>
+        <ul className="flex-1 px-3 py-4 space-y-1">
+          {tabs.map(({ key, label, Icon }) => {
+            const active = tab === key;
+            return (
+              <li key={key}>
+                <button
+                  type="button"
+                  onClick={() => setTab(key)}
+                  aria-current={active ? "page" : undefined}
+                  className={"w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors " + (active ? "bg-accent/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-muted/50")}
+                >
+                  <Icon aria-hidden size={20} strokeWidth={1.75} />
+                  <span>{label}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="px-3 py-4 border-t border-border">
+          <Link to="/demo/patient" className="block text-center rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium hover:border-primary/40">{t("demo.caregiver.openPatient")}</Link>
+        </div>
+      </aside>
+
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 sm:px-6 py-6 pb-28 lg:pb-10">
+        {tab === "today" && <TodayTab L={L} t={t} setPreview={setPreview} />}
+        {tab === "photos" && <PhotosTab L={L} setPreview={setPreview} />}
+        {tab === "learn" && <LearnTab L={L} setPreview={setPreview} />}
+        {tab === "circle" && <CircleTab L={L} setPreview={setPreview} />}
+        {tab === "summary" && <SummaryTab L={L} setPreview={setPreview} />}
+        {tab === "settings" && <SettingsTab L={L} />}
+      </main>
+
+      {/* Mobile bottom tab bar */}
+      <nav aria-label="primary" className="fixed bottom-0 inset-x-0 z-20 border-t border-border bg-card lg:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        <ul className="mx-auto max-w-3xl grid grid-cols-6 px-1">
+          {tabs.map(({ key, label, Icon }) => {
+            const active = tab === key;
+            return (
+              <li key={key} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setTab(key)}
+                  aria-current={active ? "page" : undefined}
+                  className={"w-full flex flex-col items-center justify-center py-2.5 gap-1 text-[10px] sm:text-xs leading-tight transition-colors min-w-0 " + (active ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground")}
+                >
+                  <Icon aria-hidden size={22} strokeWidth={1.75} />
+                  <span className="truncate max-w-full px-0.5">{label}</span>
+                </button>
+                {active && (
+                  <motion.span layoutId="demo-nav-indicator" aria-hidden className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-10 rounded-full bg-primary" transition={{ type: "spring", stiffness: 380, damping: 30 }} />
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {preview && <DemoComingSoon feature={preview} onClose={() => setPreview(null)} />}
+    </div>
+  );
+}
+
+function TodayTab({ L, t, setPreview }: { L: "en" | "es"; t: (k: string) => string; setPreview: (f: ComingSoonFeature) => void }) {
+  const today = DEMO_LOGS[0];
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3 lg:hidden">
         <div>
           <p className="text-sm text-muted-foreground">{t("demo.caregiver.today")}</p>
           <h1 className="text-3xl font-semibold">{ROSA.name}</h1>
@@ -91,7 +172,6 @@ function DemoCaregiver() {
         <Link to="/demo/patient" className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40">{t("demo.caregiver.openPatient")}</Link>
       </div>
 
-      {/* Today snapshot */}
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -109,7 +189,6 @@ function DemoCaregiver() {
         </div>
       </section>
 
-      {/* Quick actions (clean, four tiles) */}
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.actions")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -120,7 +199,6 @@ function DemoCaregiver() {
         </div>
       </section>
 
-      {/* Surfaced insight */}
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.insights")}</h2>
         <div className="grid md:grid-cols-2 gap-3">
@@ -135,7 +213,6 @@ function DemoCaregiver() {
         </div>
       </section>
 
-      {/* Cues */}
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.cues")}</h2>
         <ul className="grid sm:grid-cols-3 gap-3">
@@ -148,41 +225,115 @@ function DemoCaregiver() {
           ))}
         </ul>
       </section>
+    </div>
+  );
+}
 
-      {/* Care circle */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("demo.caregiver.circle")}</h2>
-          <button onClick={() => setPreview(COMING_SOON.circle)} className="text-sm text-primary hover:underline">{L === "es" ? "Invitar" : "Invite"}</button>
-        </div>
-        <ul className="grid sm:grid-cols-2 gap-2">
-          {DEMO_PEOPLE.map((p) => (
-            <li key={p.id} className="rounded-xl border border-border bg-card p-3 flex items-center justify-between">
-              <div>
-                <p className="font-medium">{p.name}</p>
-                <p className="text-xs text-muted-foreground">{p.relationship[L]}</p>
-              </div>
-              <a href={`tel:${p.phone}`} className="inline-flex items-center gap-1 text-sm text-primary"><Phone size={14} /> {p.phone}</a>
-            </li>
-          ))}
-        </ul>
-      </section>
+function PhotosTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoonFeature) => void }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">{L === "es" ? "Galería" : "Photos"}</h2>
+        <button onClick={() => setPreview(COMING_SOON.photos)} className="text-sm text-primary hover:underline">{L === "es" ? "Subir" : "Upload"}</button>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {DEMO_PHOTOS.map((p) => (
+          <div key={p.id} className={`rounded-2xl bg-gradient-to-br ${p.gradient} aspect-square flex flex-col items-center justify-center p-3 text-center shadow-sm border border-border`}>
+            <span className="text-5xl" aria-hidden>{p.emoji}</span>
+            <p className="mt-2 text-sm font-medium text-stone-800">{p.caption[L]}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      {/* Physician summary preview */}
+function LearnTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoonFeature) => void }) {
+  const cards = [
+    { title: { en: "Sundowning: gentle hand-off", es: "Sundowning: transición suave" }, body: { en: "Why Rosa's 3 PM clock fires, and how music + dim light helps.", es: "Por qué se activa el reloj de las 3 PM y cómo música + luz tenue ayudan." } },
+    { title: { en: "Responding to repeated questions", es: "Responder a preguntas repetidas" }, body: { en: "Answer calmly, then redirect — never correct.", es: "Responde con calma y redirige — nunca corrijas." } },
+    { title: { en: "Bathing without battles", es: "Bañarse sin pelear" }, body: { en: "Predictable, warm, short. A familiar washcloth in hand.", es: "Predecible, cálido, breve. Una toallita familiar en la mano." } },
+  ];
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold">{L === "es" ? "Biblioteca de aprendizaje" : "Learn library"}</h2>
+      <ul className="space-y-3">
+        {cards.map((c, i) => (
+          <li key={i} className="rounded-2xl border border-border bg-card p-4 flex items-start gap-3">
+            <span className="h-10 w-10 rounded-full bg-sky-100 text-sky-700 inline-flex items-center justify-center shrink-0"><PlayCircle size={20} /></span>
+            <div className="flex-1">
+              <p className="font-semibold">{c.title[L]}</p>
+              <p className="text-sm text-muted-foreground mt-0.5">{c.body[L]}</p>
+              <button onClick={() => setPreview(COMING_SOON.learn)} className="mt-2 text-xs text-primary hover:underline">{L === "es" ? "Ver (2 min)" : "Watch (2 min)"}</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoonFeature) => void }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">{L === "es" ? "Círculo de cuidado" : "Care circle"}</h2>
+        <button onClick={() => setPreview(COMING_SOON.circle)} className="text-sm text-primary hover:underline">{L === "es" ? "Invitar" : "Invite"}</button>
+      </div>
+      <ul className="grid sm:grid-cols-2 gap-2">
+        {DEMO_PEOPLE.map((p) => (
+          <li key={p.id} className="rounded-xl border border-border bg-card p-3 flex items-center justify-between">
+            <div>
+              <p className="font-medium">{p.name}</p>
+              <p className="text-xs text-muted-foreground">{p.relationship[L]}</p>
+            </div>
+            <a href={`tel:${p.phone}`} className="inline-flex items-center gap-1 text-sm text-primary"><Phone size={14} /> {p.phone}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoonFeature) => void }) {
+  return (
+    <div className="space-y-4">
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold inline-flex items-center gap-2"><FileText size={18} /> {t("demo.caregiver.summaryTitle")}</h2>
+          <h2 className="text-lg font-semibold inline-flex items-center gap-2"><FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}</h2>
           <button onClick={() => setPreview(COMING_SOON.summary)} className="text-sm text-primary hover:underline">{L === "es" ? "Abrir" : "Open"}</button>
         </div>
         <div className="mt-4 grid sm:grid-cols-3 gap-3 text-sm">
           <Stat label={L === "es" ? "Registros" : "Logs"} value={String(DEMO_LOGS.length)} />
           <Stat label={L === "es" ? "Episodios" : "Episodes"} value={String(DEMO_LOGS.reduce((n, l) => n + l.symptoms.length, 0))} />
-          <Stat label={L === "es" ? "Sueño promedio" : "Avg. mood"} value={(DEMO_LOGS.reduce((n, l) => n + l.mood, 0) / DEMO_LOGS.length).toFixed(1)} />
+          <Stat label={L === "es" ? "Ánimo promedio" : "Avg. mood"} value={(DEMO_LOGS.reduce((n, l) => n + l.mood, 0) / DEMO_LOGS.length).toFixed(1)} />
         </div>
         <p className="mt-3 text-xs text-muted-foreground italic">{L === "es" ? "Conteos y observaciones — no es un diagnóstico." : "Counts and observations — not a diagnosis."}</p>
       </section>
+    </div>
+  );
+}
 
-      {preview && <DemoComingSoon feature={preview} onClose={() => setPreview(null)} />}
+function SettingsTab({ L }: { L: "en" | "es" }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold">{L === "es" ? "Configuración" : "Settings"}</h2>
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-3 text-sm">
+        <Row label={L === "es" ? "Idioma" : "Language"} value={L === "es" ? "Español (usa el botón arriba)" : "English (use toggle above)"} />
+        <Row label={L === "es" ? "Paciente" : "Patient"} value={ROSA.name} />
+        <Row label={L === "es" ? "Diagnóstico" : "Diagnosis"} value={ROSA.diagnosis} />
+        <Row label={L === "es" ? "Música preferida" : "Preferred music"} value={DEMO_MUSIC.map((m) => m.title).join(", ")} />
+        <p className="text-xs text-muted-foreground italic pt-2">{L === "es" ? "Demo — los cambios no se guardan." : "Demo — changes are not saved."}</p>
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-right">{value}</span>
     </div>
   );
 }
