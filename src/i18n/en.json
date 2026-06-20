@@ -131,6 +131,47 @@
     "prev": "Back",
     "next": "Next"
   },
+  "welcome": {
+    "title": "COMPANION",
+    "tagline": "A calm companion for people living with a diagnosis — and the people who love them.",
+    "caregiverTitle": "I'm a caregiver",
+    "caregiverDesc": "Track days, spot patterns, and support someone you love.",
+    "patientTitle": "I have a diagnosis",
+    "patientDesc": "A simple, calm place that's just for you.",
+    "demoTitle": "Try the demo",
+    "demoDesc": "Look around — no sign-up needed.",
+    "demoComingSoon": "Demo coming soon.",
+    "changeRole": "Choose a different option"
+  },
+  "self": {
+    "sleep": "How I slept",
+    "mood": "How I feel today",
+    "bothering": "What's bothering me",
+    "reminders": "My reminders",
+    "sleepPrompt": "How did you sleep last night?",
+    "moodPrompt": "How do you feel today?",
+    "botheringPrompt": "Is something on your mind?",
+    "botheringPlaceholder": "In your own words…",
+    "useVoice": "Tap to speak",
+    "stopRecording": "Stop",
+    "save": "Save",
+    "saved": "Thank you. Saved.",
+    "savedAck": "Thank you. That's saved.",
+    "well": "I slept well",
+    "okay": "Okay",
+    "poorly": "I didn't sleep well",
+    "good": "Good",
+    "notGreat": "Not great",
+    "noReminders": "No reminders yet.",
+    "setup": {
+      "title": "Welcome",
+      "lead": "Just one quick question so we can set things up.",
+      "name": "Your name",
+      "language": "Your language",
+      "start": "Continue",
+      "nameRequired": "Please tell us your name."
+    }
+  },
   "music": {
     "playNameMusic": "Play {name}'s music",
     "theirs": "their",
