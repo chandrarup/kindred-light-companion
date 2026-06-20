@@ -253,6 +253,26 @@ function PatientPage() {
                 <span>{t("patient.music")}</span>
               </motion.button>
             </div>
+            {isPatient && (
+              <div className="grid grid-cols-2 gap-4">
+                <motion.button whileTap={{ scale: 0.97 }} type="button" onClick={() => setSelfCare("sleep")} className="btn-neo-cream" data-touch>
+                  <Moon className="icon" size={32} strokeWidth={1.75} aria-hidden />
+                  <span>{t("self.sleep")}</span>
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.97 }} type="button" onClick={() => setSelfCare("mood")} className="btn-neo-cream" data-touch>
+                  <Smile className="icon" size={32} strokeWidth={1.75} aria-hidden />
+                  <span>{t("self.mood")}</span>
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.97 }} type="button" onClick={() => setSelfCare("bothering")} className="btn-neo-cream" data-touch>
+                  <MessageCircle className="icon" size={32} strokeWidth={1.75} aria-hidden />
+                  <span>{t("self.bothering")}</span>
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.97 }} type="button" onClick={() => setSelfCare("reminders")} className="btn-neo-cream" data-touch>
+                  <Bell className="icon" size={32} strokeWidth={1.75} aria-hidden />
+                  <span>{t("self.reminders")}</span>
+                </motion.button>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setPinOpen(true)}
