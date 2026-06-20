@@ -67,18 +67,17 @@ function PatientPage() {
       }
       try {
         const intent: any = await getIntent();
-        setIsPatient(intent?.role === "patient");
-      } catch {}
-      try {
+        const patientRole = intent?.role === "patient";
+        setIsPatient(patientRole);
         const b: any = await bundleFn();
-        setBundle(b);
-      } catch (e: any) {
-        // Patient signed up but doesn't have a household yet → show setup.
-        if (String(e?.message ?? "").toLowerCase().includes("no household")) {
+        // Empty bundle + patient role → they haven't set up their household yet.
+        if (patientRole && (!b?.name || b.name === "")) {
           setNeedsSetup(true);
         } else {
-          console.error(e);
+          setBundle(b);
         }
+      } catch (e: any) {
+        console.error(e);
       }
     })();
   }, [bundleFn, navigate, getIntent]);
