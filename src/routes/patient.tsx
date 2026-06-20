@@ -447,3 +447,224 @@ function FullScreenCue({ label, lang, onDone }: { label: string; lang: string; o
     </div>
   );
 }
+
+function PatientSetup({ onDone }: { onDone: (name: string, language: "en" | "es") => Promise<void> }) {
+  const { t } = useT();
+  const [name, setName] = useState("");
+  const [language, setLanguage] = useState<"en" | "es">("en");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <div data-mode="patient" className="min-h-dvh bg-background text-foreground p-6 flex items-center justify-center">
+      <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6">
+        <h1 className="text-2xl font-semibold mb-2">{t("self.setup.title")}</h1>
+        <p className="text-muted-foreground mb-6">{t("self.setup.lead")}</p>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!name.trim()) { setErr(t("self.setup.nameRequired")); return; }
+            setBusy(true); setErr(null);
+            try { await onDone(name.trim(), language); }
+            catch (e: any) { setErr(e?.message ?? "Could not set up"); }
+            finally { setBusy(false); }
+          }}
+          className="space-y-4"
+        >
+          <label className="block">
+            <span className="block mb-1 font-medium">{t("self.setup.name")}</span>
+            <input value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-3 border border-input rounded-md bg-background" autoFocus />
+          </label>
+          <label className="block">
+            <span className="block mb-1 font-medium">{t("self.setup.language")}</span>
+            <select value={language} onChange={(e) => setLanguage(e.target.value as any)} className="w-full px-3 py-3 border border-input rounded-md bg-background">
+              <option value="en">{t("common.english")}</option>
+              <option value="es">{t("common.spanish")}</option>
+            </select>
+          </label>
+          {err && <p role="alert" className="text-destructive">✕ {err}</p>}
+          <button type="submit" disabled={busy} className="w-full py-3 rounded-md bg-primary text-primary-foreground disabled:opacity-50" data-touch>
+            {busy ? t("common.loading") : t("self.setup.start")}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+type SelfCareProps = {
+  kind: "sleep" | "mood" | "bothering" | "reminders";
+  lang: string;
+  patientName: string;
+  onBack: () => void;
+  onSaveLog: (payload: any) => Promise<void>;
+  loadCues: () => Promise<any[]>;
+};
+
+function SelfCare({ kind, lang, onBack, onSaveLog, loadCues }: SelfCareProps) {
+  const { t } = useT();
+  const [saved, setSaved] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [cues, setCues] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (kind !== "reminders") return;
+    loadCues().then(setCues).catch(() => setCues([]));
+  }, [kind, loadCues]);
+
+  async function save(payload: any, spokenAck: string) {
+    if (busy) return;
+    setBusy(true); setErr(null);
+    try {
+      await onSaveLog(payload);
+      setSaved(true);
+      speak(spokenAck, lang);
+      setTimeout(onBack, 1400);
+    } catch (e: any) {
+      setErr(e?.message ?? "Could not save");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const title =
+    kind === "sleep" ? t("self.sleep")
+    : kind === "mood" ? t("self.mood")
+    : kind === "bothering" ? t("self.bothering")
+    : t("self.reminders");
+
+  return (
+    <div data-mode="patient" className="min-h-dvh bg-background text-foreground p-6 flex flex-col">
+      <BackBar onBack={onBack} label={title} />
+      <div className="flex-1 flex flex-col items-center justify-center gap-6 max-w-2xl w-full mx-auto">
+        {saved && (
+          <p style={{ fontSize: "30pt", fontWeight: 600 }} className="text-center">{t("self.saved")}</p>
+        )}
+        {!saved && kind === "sleep" && (
+          <>
+            <p className="text-center" style={{ fontSize: "26pt" }}>{t("self.sleepPrompt")}</p>
+            <div className="grid grid-cols-1 gap-4 w-full">
+              <BigChoice onClick={() => save({ sleep_quality: 5, symptoms: [], notes: "Patient: slept well" }, t("self.savedAck"))}>{t("self.well")}</BigChoice>
+              <BigChoice onClick={() => save({ sleep_quality: 3, symptoms: [], notes: "Patient: slept okay" }, t("self.savedAck"))}>{t("self.okay")}</BigChoice>
+              <BigChoice onClick={() => save({ sleep_quality: 1, symptoms: [{ symptom: "poor_sleep" }], notes: "Patient: slept poorly" }, t("self.savedAck"))}>{t("self.poorly")}</BigChoice>
+            </div>
+          </>
+        )}
+        {!saved && kind === "mood" && (
+          <>
+            <p className="text-center" style={{ fontSize: "26pt" }}>{t("self.moodPrompt")}</p>
+            <div className="grid grid-cols-3 gap-4 w-full">
+              <BigChoice onClick={() => save({ mood: 2, symptoms: [], notes: "Patient: feeling low" }, t("self.savedAck"))}>😟<br/>{t("self.notGreat")}</BigChoice>
+              <BigChoice onClick={() => save({ mood: 3, symptoms: [], notes: "Patient: feeling okay" }, t("self.savedAck"))}>😐<br/>{t("self.okay")}</BigChoice>
+              <BigChoice onClick={() => save({ mood: 5, symptoms: [], notes: "Patient: feeling good" }, t("self.savedAck"))}>🙂<br/>{t("self.good")}</BigChoice>
+            </div>
+          </>
+        )}
+        {!saved && kind === "bothering" && (
+          <BotheringForm
+            lang={lang}
+            busy={busy}
+            onSubmit={(text) => save({ symptoms: [{ symptom: "other", intervention_tried: null }], notes: `Patient said: ${text}` }, t("self.savedAck"))}
+          />
+        )}
+        {!saved && kind === "reminders" && (
+          <div className="w-full flex flex-col gap-4">
+            {cues === null ? (
+              <p style={{ fontSize: "22pt" }} className="text-center">{t("common.loading")}</p>
+            ) : cues.length === 0 ? (
+              <p style={{ fontSize: "22pt" }} className="text-center">{t("self.noReminders")}</p>
+            ) : (
+              cues.map((c: any) => (
+                <div key={c.id} className="rounded-2xl bg-card p-4 border border-border">
+                  <p style={{ fontSize: "26pt", fontWeight: 600 }}>{c.label}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "18pt" }}>
+                    {(c.schedule_times ?? []).map((s: string) => s.slice(0, 5)).join(" · ")}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+        {err && <p role="alert" className="text-destructive" style={{ fontSize: "18pt" }}>✕ {err}</p>}
+      </div>
+    </div>
+  );
+}
+
+function BigChoice({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-2xl bg-primary text-primary-foreground active:scale-95 transition px-6 py-6"
+      style={{ minHeight: 120, fontSize: "28pt", fontWeight: 600 }}
+      data-touch
+    >
+      {children}
+    </button>
+  );
+}
+
+function BotheringForm({ lang, busy, onSubmit }: { lang: string; busy: boolean; onSubmit: (text: string) => void }) {
+  const { t } = useT();
+  const [text, setText] = useState("");
+  const [recording, setRecording] = useState(false);
+  const recRef = useRef<any>(null);
+
+  function startVoice() {
+    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    const r = new SR();
+    r.lang = lang;
+    r.continuous = false;
+    r.interimResults = false;
+    r.onresult = (e: any) => {
+      const t = e?.results?.[0]?.[0]?.transcript ?? "";
+      setText((prev) => (prev ? prev + " " + t : t));
+    };
+    r.onend = () => setRecording(false);
+    r.onerror = () => setRecording(false);
+    recRef.current = r;
+    setRecording(true);
+    r.start();
+  }
+  function stopVoice() {
+    try { recRef.current?.stop(); } catch {}
+    setRecording(false);
+  }
+
+  return (
+    <div className="w-full flex flex-col gap-4">
+      <p className="text-center" style={{ fontSize: "26pt" }}>{t("self.botheringPrompt")}</p>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={4}
+        className="w-full rounded-2xl border border-input bg-background p-4"
+        style={{ fontSize: "22pt" }}
+        placeholder={t("self.botheringPlaceholder")}
+      />
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button
+          type="button"
+          onClick={recording ? stopVoice : startVoice}
+          className="flex-1 rounded-2xl bg-card border border-border px-6 py-5"
+          style={{ fontSize: "22pt", minHeight: 90 }}
+          data-touch
+        >
+          {recording ? t("self.stopRecording") : t("self.useVoice")}
+        </button>
+        <button
+          type="button"
+          disabled={busy || !text.trim()}
+          onClick={() => onSubmit(text.trim())}
+          className="flex-1 rounded-2xl bg-primary text-primary-foreground px-6 py-5 disabled:opacity-50"
+          style={{ fontSize: "22pt", minHeight: 90 }}
+          data-touch
+        >
+          {busy ? t("common.loading") : t("self.save")}
+        </button>
+      </div>
+    </div>
+  );
+}
