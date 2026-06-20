@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getCallerMembership } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 /** Symptoms that should surface the music trigger button. */
 export const MUSIC_TRIGGER_SYMPTOMS = [
@@ -56,7 +57,7 @@ export const updateMusicProvider = createServerFn({ method: "POST" })
       .from("patient_profile")
       .update({ music_provider: data.provider })
       .eq("household_id", m.household_id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -76,7 +77,7 @@ export const markSongDisliked = createServerFn({ method: "POST" })
       .from("patient_profile")
       .update({ music_disliked: [...cur] })
       .eq("household_id", m.household_id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -106,7 +107,7 @@ export const startMusicSession = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { id: (row as any).id as string };
   });
 
@@ -125,6 +126,6 @@ export const recordMusicFeedback = createServerFn({ method: "POST" })
       .update({ helped: data.helped, ended_at: new Date().toISOString() })
       .eq("id", data.session_id)
       .eq("household_id", m.household_id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });

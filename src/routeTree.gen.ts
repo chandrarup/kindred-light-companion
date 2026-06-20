@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrustRouteImport } from './routes/trust'
 import { Route as PatientRouteImport } from './routes/patient'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -30,6 +31,11 @@ import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCuesRouteImport } from './routes/_authenticated/cues'
 import { Route as AuthenticatedCircleRouteImport } from './routes/_authenticated/circle'
 
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PatientRoute = PatientRouteImport.update({
   id: '/patient',
   path: '/patient',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRouteWithChildren
   '/patient': typeof PatientRoute
+  '/trust': typeof TrustRoute
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
   '/learn': typeof AuthenticatedLearnRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/patient': typeof PatientRoute
+  '/trust': typeof TrustRoute
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
   '/learn': typeof AuthenticatedLearnRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRouteWithChildren
   '/patient': typeof PatientRoute
+  '/trust': typeof TrustRoute
   '/_authenticated/circle': typeof AuthenticatedCircleRoute
   '/_authenticated/cues': typeof AuthenticatedCuesRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/demo'
     | '/patient'
+    | '/trust'
     | '/circle'
     | '/cues'
     | '/learn'
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/patient'
+    | '/trust'
     | '/circle'
     | '/cues'
     | '/learn'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/demo'
     | '/patient'
+    | '/trust'
     | '/_authenticated/circle'
     | '/_authenticated/cues'
     | '/_authenticated/learn'
@@ -267,10 +279,18 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DemoRoute: typeof DemoRouteWithChildren
   PatientRoute: typeof PatientRoute
+  TrustRoute: typeof TrustRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/patient': {
       id: '/patient'
       path: '/patient'
@@ -466,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DemoRoute: DemoRouteWithChildren,
   PatientRoute: PatientRoute,
+  TrustRoute: TrustRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

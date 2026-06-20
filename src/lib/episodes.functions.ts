@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ANTECEDENT_OPTIONS, OUTCOME_OPTIONS, SYMPTOM_OPTIONS } from "./daily-log.functions";
 import { requireSection, isLocked } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 /**
  * Red flag signals the app must surface verbatim. The app NEVER interprets
@@ -59,7 +60,7 @@ export const createEpisode = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (error || !ep) throw new Error(error?.message ?? "Failed to save episode");
+    if (error || !ep) throw safeDbError(error, "Failed to save episode");
 
     // Feed the trigger fingerprint after every confirmed episode.
     try {
@@ -126,6 +127,6 @@ export const updateEpisode = createServerFn({ method: "POST" })
         outcome: data.outcome ?? null,
       })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getCallerMembership } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 const WEEK_MS = 7 * 24 * 3600 * 1000;
 const THRESHOLD = 3;
@@ -109,7 +110,7 @@ export const recordTrainingFeedback = createServerFn({ method: "POST" })
       helped: data.helped ?? null,
       action_saved: data.action_saved ?? false,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 

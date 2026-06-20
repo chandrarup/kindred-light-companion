@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { safeDbError } from "./safe-errors";
 
 const schema = z.object({
   displayName: z.string().min(1).max(120),
@@ -42,7 +43,7 @@ export const completePatientSelfOnboarding = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (hErr || !household) throw new Error(hErr?.message ?? "Failed to create household");
+    if (hErr || !household) throw safeDbError(hErr, "Failed to create household");
 
     const { error: mErr } = await supabaseAdmin.from("memberships").insert({
       user_id: userId,

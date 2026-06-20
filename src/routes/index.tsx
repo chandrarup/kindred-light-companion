@@ -89,6 +89,13 @@ function Welcome() {
           </div>
         </div>
       </main>
+      <footer className="border-t border-border bg-card">
+        <div className="mx-auto max-w-3xl px-4 py-3 text-xs text-muted-foreground flex justify-center">
+          <a href="/trust" className="hover:text-foreground underline-offset-4 hover:underline">
+            Trust &amp; Privacy
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
