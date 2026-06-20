@@ -10,10 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PatientRouteImport } from './routes/patient'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemoIndexRouteImport } from './routes/demo.index'
+import { Route as DemoPatientRouteImport } from './routes/demo.patient'
+import { Route as DemoCaregiverRouteImport } from './routes/demo.caregiver'
 import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/today'
 import { Route as AuthenticatedSummaryRouteImport } from './routes/_authenticated/summary'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -23,10 +27,16 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedCuesRouteImport } from './routes/_authenticated/cues'
 import { Route as AuthenticatedCircleRouteImport } from './routes/_authenticated/circle'
+import { Route as DemoCaregiverLogsRouteImport } from './routes/demo.caregiver.logs'
 
 const PatientRoute = PatientRouteImport.update({
   id: '/patient',
   path: '/patient',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -47,6 +57,21 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DemoIndexRoute = DemoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DemoRoute,
+} as any)
+const DemoPatientRoute = DemoPatientRouteImport.update({
+  id: '/patient',
+  path: '/patient',
+  getParentRoute: () => DemoRoute,
+} as any)
+const DemoCaregiverRoute = DemoCaregiverRouteImport.update({
+  id: '/caregiver',
+  path: '/caregiver',
+  getParentRoute: () => DemoRoute,
 } as any)
 const AuthenticatedTodayRoute = AuthenticatedTodayRouteImport.update({
   id: '/today',
@@ -93,11 +118,17 @@ const AuthenticatedCircleRoute = AuthenticatedCircleRouteImport.update({
   path: '/circle',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const DemoCaregiverLogsRoute = DemoCaregiverLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => DemoCaregiverRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/demo': typeof DemoRouteWithChildren
   '/patient': typeof PatientRoute
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
@@ -108,6 +139,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/summary': typeof AuthenticatedSummaryRoute
   '/today': typeof AuthenticatedTodayRoute
+  '/demo/caregiver': typeof DemoCaregiverRouteWithChildren
+  '/demo/patient': typeof DemoPatientRoute
+  '/demo/': typeof DemoIndexRoute
+  '/demo/caregiver/logs': typeof DemoCaregiverLogsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -123,6 +158,10 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/summary': typeof AuthenticatedSummaryRoute
   '/today': typeof AuthenticatedTodayRoute
+  '/demo/caregiver': typeof DemoCaregiverRouteWithChildren
+  '/demo/patient': typeof DemoPatientRoute
+  '/demo': typeof DemoIndexRoute
+  '/demo/caregiver/logs': typeof DemoCaregiverLogsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -130,6 +169,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/demo': typeof DemoRouteWithChildren
   '/patient': typeof PatientRoute
   '/_authenticated/circle': typeof AuthenticatedCircleRoute
   '/_authenticated/cues': typeof AuthenticatedCuesRoute
@@ -140,6 +180,10 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/summary': typeof AuthenticatedSummaryRoute
   '/_authenticated/today': typeof AuthenticatedTodayRoute
+  '/demo/caregiver': typeof DemoCaregiverRouteWithChildren
+  '/demo/patient': typeof DemoPatientRoute
+  '/demo/': typeof DemoIndexRoute
+  '/demo/caregiver/logs': typeof DemoCaregiverLogsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,6 +191,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/demo'
     | '/patient'
     | '/circle'
     | '/cues'
@@ -157,6 +202,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/summary'
     | '/today'
+    | '/demo/caregiver'
+    | '/demo/patient'
+    | '/demo/'
+    | '/demo/caregiver/logs'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,12 +221,17 @@ export interface FileRouteTypes {
     | '/settings'
     | '/summary'
     | '/today'
+    | '/demo/caregiver'
+    | '/demo/patient'
+    | '/demo'
+    | '/demo/caregiver/logs'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/admin'
     | '/auth'
+    | '/demo'
     | '/patient'
     | '/_authenticated/circle'
     | '/_authenticated/cues'
@@ -188,6 +242,10 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/summary'
     | '/_authenticated/today'
+    | '/demo/caregiver'
+    | '/demo/patient'
+    | '/demo/'
+    | '/demo/caregiver/logs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,6 +253,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  DemoRoute: typeof DemoRouteWithChildren
   PatientRoute: typeof PatientRoute
 }
 
@@ -205,6 +264,13 @@ declare module '@tanstack/react-router' {
       path: '/patient'
       fullPath: '/patient'
       preLoaderRoute: typeof PatientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -234,6 +300,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/demo/': {
+      id: '/demo/'
+      path: '/'
+      fullPath: '/demo/'
+      preLoaderRoute: typeof DemoIndexRouteImport
+      parentRoute: typeof DemoRoute
+    }
+    '/demo/patient': {
+      id: '/demo/patient'
+      path: '/patient'
+      fullPath: '/demo/patient'
+      preLoaderRoute: typeof DemoPatientRouteImport
+      parentRoute: typeof DemoRoute
+    }
+    '/demo/caregiver': {
+      id: '/demo/caregiver'
+      path: '/caregiver'
+      fullPath: '/demo/caregiver'
+      preLoaderRoute: typeof DemoCaregiverRouteImport
+      parentRoute: typeof DemoRoute
     }
     '/_authenticated/today': {
       id: '/_authenticated/today'
@@ -298,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCircleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/demo/caregiver/logs': {
+      id: '/demo/caregiver/logs'
+      path: '/logs'
+      fullPath: '/demo/caregiver/logs'
+      preLoaderRoute: typeof DemoCaregiverLogsRouteImport
+      parentRoute: typeof DemoCaregiverRoute
+    }
   }
 }
 
@@ -328,11 +422,38 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface DemoCaregiverRouteChildren {
+  DemoCaregiverLogsRoute: typeof DemoCaregiverLogsRoute
+}
+
+const DemoCaregiverRouteChildren: DemoCaregiverRouteChildren = {
+  DemoCaregiverLogsRoute: DemoCaregiverLogsRoute,
+}
+
+const DemoCaregiverRouteWithChildren = DemoCaregiverRoute._addFileChildren(
+  DemoCaregiverRouteChildren,
+)
+
+interface DemoRouteChildren {
+  DemoCaregiverRoute: typeof DemoCaregiverRouteWithChildren
+  DemoPatientRoute: typeof DemoPatientRoute
+  DemoIndexRoute: typeof DemoIndexRoute
+}
+
+const DemoRouteChildren: DemoRouteChildren = {
+  DemoCaregiverRoute: DemoCaregiverRouteWithChildren,
+  DemoPatientRoute: DemoPatientRoute,
+  DemoIndexRoute: DemoIndexRoute,
+}
+
+const DemoRouteWithChildren = DemoRoute._addFileChildren(DemoRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  DemoRoute: DemoRouteWithChildren,
   PatientRoute: PatientRoute,
 }
 export const routeTree = rootRouteImport
