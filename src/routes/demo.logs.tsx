@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { DEMO_LOGS } from "@/lib/demo/data";
 
-export const Route = createFileRoute("/demo/caregiver/logs")({
+export const Route = createFileRoute("/demo/logs")({
   component: DemoLogs,
 });
 

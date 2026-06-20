@@ -103,7 +103,7 @@ function DemoCaregiver() {
               {today.symptoms.map((s, i) => <Tag key={i}>{s.name[L]}</Tag>)}
             </div>
           </div>
-          <Link to="/demo/caregiver/logs" className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+          <Link to="/demo/logs" className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
             {t("demo.caregiver.viewPast")} <ChevronRight size={16} />
           </Link>
         </div>
