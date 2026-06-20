@@ -47,7 +47,7 @@ function DemoPatient() {
       <DemoAsk mode="patient" />
 
       {view === "menu" && (
-        <div className="relative min-h-[calc(100dvh-110px)] overflow-hidden">
+        <div className="relative min-h-[calc(100dvh-110px)] overflow-hidden flex flex-col">
           {/* Background photo */}
           <div className={`absolute inset-0 bg-gradient-to-br ${photo.gradient}`}>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -73,8 +73,11 @@ function DemoPatient() {
             <p className="mt-2 text-lg sm:text-xl drop-shadow text-white/90">{photo.caption[L]}</p>
           </div>
 
-          {/* Actions */}
-          <div className="relative mt-auto px-4 pb-6 pt-32">
+          {/* Spacer so the photo stays visible in the middle */}
+          <div className="relative flex-1" />
+
+          {/* Actions pinned to the bottom */}
+          <div className="relative px-4 pb-6 pt-4">
             <div className="grid grid-cols-3 gap-3 max-w-3xl mx-auto">
               <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => ack("talk")} />
               <BigButton icon={<Users />} label={t("patient.people")} onClick={() => setView("people")} />
@@ -90,7 +93,6 @@ function DemoPatient() {
                 <Smile size={22} /> {t("demo.patient.selfCareOpen")}
               </button>
             </div>
-
           </div>
 
           {savedKey === "talk" && (
