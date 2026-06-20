@@ -149,6 +149,40 @@ const RULES: AskRule[] = [
     },
   },
   {
+    keywords: ["calm", "won't calm", "wont calm", "settle", "soothe", "calma", "tranquiliz", "no se calma"],
+    mode: "caregiver",
+    response: {
+      kind: "personalized",
+      text: {
+        en: "When Rosa won't settle, lower the noise, dim overhead lights, and sit beside her — don't stand over her. Put on 'Cielito Lindo' softly and offer her hand. Music has eased 6 of her last 8 distress moments. If she's still escalating after 15 minutes, step away briefly and try again — pressure makes it worse.",
+        es: "Cuando Rosa no se calma, baja el ruido, baja las luces y siéntate a su lado — no de pie sobre ella. Pon 'Cielito Lindo' suave y ofrécele tu mano. La música ha aliviado 6 de los últimos 8 momentos difíciles. Si sigue escalando tras 15 minutos, aléjate un momento e inténtalo de nuevo — la presión empeora.",
+      },
+    },
+  },
+  {
+    keywords: ["sleep", "didn't sleep", "didnt sleep", "no sleep", "insomnia", "tired", "dormir", "no durmió", "insomnio", "cansad"],
+    mode: "caregiver",
+    response: {
+      kind: "grounded",
+      text: {
+        en: "After a poor night: keep today's routine but slow it down. Get morning light within an hour of waking, skip the long nap, keep caffeine before noon, and dim the house from 7 PM. If poor sleep continues 3+ nights, mention it to Dr. Alvarez.",
+        es: "Tras una mala noche: mantén la rutina pero más despacio. Luz de la mañana dentro de la primera hora, evita la siesta larga, café solo antes del mediodía y atenúa la casa desde las 7 PM. Si dura 3+ noches, dilo al Dr. Alvarez.",
+      },
+      source: { label: "Alzheimer's Association — Sleep", url: "https://www.alz.org/help-support/caregiving/daily-care/sleep-issues-sundowning" },
+    },
+  },
+  {
+    keywords: ["doctor", "tell the doctor", "appointment", "visit", "médico", "doctor", "cita", "decirle"],
+    mode: "caregiver",
+    response: {
+      kind: "personalized",
+      text: {
+        en: "Bring this to Dr. Alvarez: 5 afternoon-agitation episodes in 8 days (2:30–3:30 PM), 2 nights of poor sleep this week, appetite drop on day 3, and that music + dim light has been the most reliable response. Open the Physician Summary tab to print or share the full one-page snapshot.",
+        es: "Lleva esto al Dr. Alvarez: 5 episodios de agitación por la tarde en 8 días (2:30–3:30 PM), 2 noches de mal sueño esta semana, baja de apetito el día 3, y que la música + luz tenue ha sido la respuesta más confiable. Abre la pestaña Resumen Médico para imprimir o compartir.",
+      },
+    },
+  },
+  {
     keywords: ["fell", "fall", "unresponsive", "not breathing", "wander", "missing", "lost", "se cayó", "no responde", "perdid"],
     mode: "caregiver",
     response: {

@@ -20,7 +20,16 @@
       "selfCare": "Self-care",
       "selfCareOpen": "How am I today?",
       "switchToCaregiver": "Rosa's needs have grown — switch to caregiver view",
-      "switchNote": "As dementia progresses, everything Rosa logged moves to her caregiver, and more tools unlock."
+      "switchNote": "As dementia progresses, everything Rosa logged moves to her caregiver, and more tools unlock.",
+      "switchSmall": "Caregiver view",
+      "switchConfirm": {
+        "title": "Move to caregiver mode?",
+        "subtitle": "A couple of quick questions before we hand things over.",
+        "q1": "Is Rosa needing more help with daily tasks than she did six months ago?",
+        "q2": "Should her caregiver now manage her logs, reminders, and routines?",
+        "continue": "Yes — switch to caregiver",
+        "cancel": "Not yet"
+      }
     },
     "caregiver": {
       "today": "Today",
@@ -47,6 +56,10 @@
       "caregiverMode": "Caregiver assistant",
       "placeholder": "Type a question…",
       "tryAsking": "Try asking:",
+      "micStart": "Speak your question",
+      "micStop": "Stop listening",
+      "micUnsupported": "Voice input isn't available in this browser.",
+      "micListening": "Listening…",
       "tag": {
         "personalized": "Personalized",
         "educational": "Educational",
