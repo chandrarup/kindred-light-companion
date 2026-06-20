@@ -36,7 +36,7 @@ export const loadDemoData = createServerFn({ method: "POST" })
       .delete()
       .eq("user_id", context.userId);
 
-    await wipeDemoHouseholds(supabaseAdmin);
+    await wipeDemoHouseholds(supabaseAdmin, context.userId);
     const out = await seedDemoHousehold(supabaseAdmin, context.userId);
     return { ok: true, householdId: out.householdId };
   });
@@ -47,7 +47,7 @@ export const resetDemoData = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { wipeDemoHouseholds } = await import("./demo.server");
     await supabaseAdmin.from("memberships").delete().eq("user_id", context.userId);
-    const wiped = await wipeDemoHouseholds(supabaseAdmin);
+    const wiped = await wipeDemoHouseholds(supabaseAdmin, context.userId);
     return { ok: true, wiped };
   });
 
@@ -67,6 +67,7 @@ const LABEL_TO_VIDEO_TAG: Record<string, string> = {
 };
 
 export const askCompanion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => askSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
