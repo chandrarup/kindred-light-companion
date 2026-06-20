@@ -105,7 +105,8 @@ export type AskResponse = {
   kind: "personalized" | "educational" | "grounded" | "emergency" | "guardrail" | "reminiscence" | "fallback";
   text: { en: string; es: string };
   source?: { label: string; url: string };
-  video?: { label: { en: string; es: string }; url: string };
+  sources?: { label: string; url: string }[];
+  video?: { label: { en: string; es: string }; url: string; youtubeId?: string };
   actions?: { label: { en: string; es: string }; phone?: string }[];
 };
 
@@ -133,7 +134,12 @@ const RULES: AskRule[] = [
         en: "Repeating questions is common in dementia. The trick is to answer calmly, then redirect to a familiar activity — never correct or remind that they've already asked.",
         es: "Repetir preguntas es común en la demencia. La clave es responder con calma y redirigir a una actividad familiar — nunca corregir.",
       },
-      video: { label: { en: "Watch (2 min): Responding to repeated questions", es: "Ver (2 min): Cómo responder a preguntas repetidas" }, url: "#" },
+      video: {
+        label: { en: "Watch (3 min): Responding to repeated questions", es: "Ver (3 min): Cómo responder a preguntas repetidas" },
+        url: "https://www.youtube.com/watch?v=Iqf5y2tIyL0",
+        youtubeId: "Iqf5y2tIyL0",
+      },
+      source: { label: "Alzheimer's Association — Communication", url: "https://www.alz.org/help-support/caregiving/daily-care/communications" },
     },
   },
   {
@@ -180,6 +186,103 @@ const RULES: AskRule[] = [
         en: "Bring this to Dr. Alvarez: 5 afternoon-agitation episodes in 8 days (2:30–3:30 PM), 2 nights of poor sleep this week, appetite drop on day 3, and that music + dim light has been the most reliable response. Open the Physician Summary tab to print or share the full one-page snapshot.",
         es: "Lleva esto al Dr. Alvarez: 5 episodios de agitación por la tarde en 8 días (2:30–3:30 PM), 2 noches de mal sueño esta semana, baja de apetito el día 3, y que la música + luz tenue ha sido la respuesta más confiable. Abre la pestaña Resumen Médico para imprimir o compartir.",
       },
+    },
+  },
+  {
+    keywords: ["wander", "wandering", "leave the house", "walk off", "se va", "vagar"],
+    mode: "caregiver",
+    response: {
+      kind: "grounded",
+      text: {
+        en: "Wandering is common and often purposeful — the person is trying to get somewhere meaningful from their past. Reduce risk with door chimes, a GPS bracelet, and a daily walk to burn restless energy. Enroll Rosa in a wandering-response service before an incident.",
+        es: "El deambular es común y suele tener un propósito — la persona intenta llegar a un lugar significativo de su pasado. Reduce el riesgo con timbres en las puertas, brazalete GPS y una caminata diaria. Inscribe a Rosa en un servicio de respuesta antes de un incidente.",
+      },
+      sources: [
+        { label: "Alzheimer's Association — Wandering", url: "https://www.alz.org/help-support/caregiving/safety/wandering" },
+        { label: "NIA — Home Safety and Alzheimer's", url: "https://www.nia.nih.gov/health/home-safety-and-alzheimers-disease" },
+      ],
+    },
+  },
+  {
+    keywords: ["eat", "eating", "food", "nutrition", "appetite", "meal", "comer", "comida", "alimentaci"],
+    mode: "caregiver",
+    response: {
+      kind: "educational",
+      text: {
+        en: "Appetite changes are normal. Offer small frequent meals, high-contrast plates (food shows up better on a solid color), finger foods she can pick up, and skip choices — ask 'chicken?' not 'what would you like?'. Keep mealtimes consistent.",
+        es: "Los cambios de apetito son normales. Ofrece comidas pequeñas frecuentes, platos de color contrastante, alimentos que pueda tomar con la mano y evita opciones — pregunta '¿pollo?' no '¿qué quieres?'. Mantén horarios consistentes.",
+      },
+      video: {
+        label: { en: "Watch (4 min): Mealtime strategies for dementia", es: "Ver (4 min): Estrategias para la hora de comer" },
+        url: "https://www.youtube.com/watch?v=v2pq3KEs7Wo",
+        youtubeId: "v2pq3KEs7Wo",
+      },
+      source: { label: "Alzheimer's Association — Food & Eating", url: "https://www.alz.org/help-support/caregiving/daily-care/food-eating" },
+    },
+  },
+  {
+    keywords: ["legal", "finance", "power of attorney", "will", "money", "legal", "finanzas", "poder"],
+    mode: "caregiver",
+    response: {
+      kind: "grounded",
+      text: {
+        en: "Early stage is the time to put legal and financial plans in place while Rosa can still participate: durable power of attorney, healthcare proxy, an updated will, and a review of long-term care insurance. Work with an elder-law attorney.",
+        es: "La etapa temprana es el momento para poner en orden los planes legales y financieros mientras Rosa puede participar: poder notarial duradero, representante de salud, testamento actualizado y revisión del seguro de cuidado a largo plazo.",
+      },
+      sources: [
+        { label: "Alzheimer's Association — Legal Planning", url: "https://www.alz.org/help-support/caregiving/financial-legal-planning/legal-planning" },
+        { label: "Alzheimer's Association — Financial Planning", url: "https://www.alz.org/help-support/caregiving/financial-legal-planning" },
+      ],
+    },
+  },
+  {
+    keywords: ["burnout", "overwhelmed", "exhausted", "myself", "stress", "agotada", "agotado", "yo misma", "estrés"],
+    mode: "caregiver",
+    response: {
+      kind: "personalized",
+      text: {
+        en: "You're carrying a lot. Caregiver burnout is real and predictable — and the best thing for Rosa is a caregiver who isn't running on empty. Ask one person in the circle for a 2-hour weekly break this week. The Alzheimer's Association 24/7 Helpline (800-272-3900) is free.",
+        es: "Llevas mucho encima. El agotamiento del cuidador es real — y lo mejor para Rosa es un cuidador que no esté vacío. Pide a alguien del círculo una pausa de 2 horas esta semana. La línea de ayuda 24/7 de la Alzheimer's Association (800-272-3900) es gratis.",
+      },
+      video: {
+        label: { en: "Watch (5 min): Recognizing caregiver stress", es: "Ver (5 min): Reconocer el estrés del cuidador" },
+        url: "https://www.youtube.com/watch?v=KlT5gI3LBYE",
+        youtubeId: "KlT5gI3LBYE",
+      },
+      source: { label: "Alzheimer's Association — Caregiver Health", url: "https://www.alz.org/help-support/caregiving/caregiver-health" },
+      actions: [{ label: { en: "Call 24/7 Helpline", es: "Llamar línea 24/7" }, phone: "800-272-3900" }],
+    },
+  },
+  {
+    keywords: ["exercise", "activity", "active", "movement", "ejercicio", "actividad"],
+    mode: "caregiver",
+    response: {
+      kind: "educational",
+      text: {
+        en: "Regular gentle movement improves mood, sleep, and balance, and can slow functional decline. Aim for 30 minutes most days — a morning walk plus light stretching. Pair it with music she loves so it feels like joy, not a workout.",
+        es: "El movimiento suave regular mejora el ánimo, el sueño y el equilibrio. Apunta a 30 minutos casi todos los días — una caminata matutina y estiramientos suaves. Acompáñalo con música que ama para que se sienta como alegría, no ejercicio.",
+      },
+      video: {
+        label: { en: "Watch (6 min): Seated exercises for older adults", es: "Ver (6 min): Ejercicios sentados para adultos mayores" },
+        url: "https://www.youtube.com/watch?v=UItWltVZZmE",
+        youtubeId: "UItWltVZZmE",
+      },
+      source: { label: "NIA — Exercise and Physical Activity", url: "https://www.nia.nih.gov/health/exercise-physical-activity" },
+    },
+  },
+  {
+    keywords: ["stages", "what to expect", "progression", "early stage", "etapas", "progresi"],
+    mode: "caregiver",
+    response: {
+      kind: "grounded",
+      text: {
+        en: "Alzheimer's is generally described in early, middle, and late stages. Rosa is in the early stage — she can do most things with light cues. Plan now for the middle stage (more help with daily tasks) so transitions feel like preparation, not crisis.",
+        es: "El Alzheimer se describe en etapas temprana, media y tardía. Rosa está en la temprana — puede hacer la mayoría de cosas con pistas suaves. Planifica ya para la etapa media para que las transiciones sean preparación, no crisis.",
+      },
+      sources: [
+        { label: "Alzheimer's Association — Stages", url: "https://www.alz.org/alzheimers-dementia/stages" },
+        { label: "NIA — Alzheimer's Disease Stages", url: "https://www.nia.nih.gov/health/what-are-different-stages-alzheimers-disease" },
+      ],
     },
   },
   {
