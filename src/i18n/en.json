@@ -4,6 +4,60 @@
     "tagline": "Adaptive companion for caregivers",
     "demoBanner": "Synthetic data only — do not enter real patient information."
   },
+  "demo": {
+    "banner": "Demo · sample data for Rosa Herrera",
+    "exit": "Exit demo",
+    "chooser": {
+      "title": "Are you a patient, or a caregiver?",
+      "subtitle": "No sign-up. Everything you see is synthetic data for Rosa Herrera.",
+      "patient": "I'm the patient",
+      "patientDesc": "See Rosa's calm patient space.",
+      "caregiver": "I'm a caregiver",
+      "caregiverDesc": "See the full caregiver view with logs, patterns, and the physician summary.",
+      "foot": "You can switch between the two views any time."
+    },
+    "patient": {
+      "selfCare": "Self-care",
+      "selfCareOpen": "How am I today?",
+      "switchToCaregiver": "Rosa's needs have grown — switch to caregiver view",
+      "switchNote": "As dementia progresses, everything Rosa logged moves to her caregiver, and more tools unlock."
+    },
+    "caregiver": {
+      "today": "Today",
+      "todayTitle": "Today's snapshot",
+      "viewPast": "View past logs",
+      "actions": "Quick actions",
+      "insights": "What we're noticing",
+      "cues": "Today's cues",
+      "circle": "Care circle",
+      "summaryTitle": "Physician summary",
+      "openPatient": "Open patient view",
+      "pastLogs": "Past logs",
+      "pastLogsHint": "Grouped by date. Tap a day to see the details."
+    },
+    "preview": {
+      "tag": "In the full version",
+      "howItWorks": "How it works",
+      "fullVersion": "This preview shows what shipping looks like — the demo is intentionally limited."
+    },
+    "ask": {
+      "open": "Ask COMPANION",
+      "title": "Ask COMPANION",
+      "patientMode": "Warm reminiscence only",
+      "caregiverMode": "Caregiver assistant",
+      "placeholder": "Type a question…",
+      "tryAsking": "Try asking:",
+      "tag": {
+        "personalized": "Personalized",
+        "educational": "Educational",
+        "grounded": "Grounded source",
+        "emergency": "Safety",
+        "guardrail": "Routed to your doctor",
+        "reminiscence": "A memory",
+        "fallback": "Note"
+      }
+    }
+  },
   "common": {
     "next": "Next",
     "back": "Back",
