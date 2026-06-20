@@ -4,6 +4,60 @@
     "tagline": "Acompañante adaptativo para cuidadores",
     "demoBanner": "Solo datos sintéticos — no ingrese información real del paciente."
   },
+  "demo": {
+    "banner": "Demo · datos de ejemplo de Rosa Herrera",
+    "exit": "Salir del demo",
+    "chooser": {
+      "title": "¿Eres paciente o cuidador?",
+      "subtitle": "Sin registro. Todo lo que ves son datos sintéticos de Rosa Herrera.",
+      "patient": "Soy la paciente",
+      "patientDesc": "Mira el espacio tranquilo de Rosa.",
+      "caregiver": "Soy cuidador(a)",
+      "caregiverDesc": "Mira la vista completa del cuidador con registros, patrones y resumen médico.",
+      "foot": "Puedes cambiar entre las dos vistas en cualquier momento."
+    },
+    "patient": {
+      "selfCare": "Cuidado personal",
+      "selfCareOpen": "¿Cómo estoy hoy?",
+      "switchToCaregiver": "Las necesidades de Rosa han crecido — cambia a la vista del cuidador",
+      "switchNote": "Al avanzar la demencia, todo lo que Rosa registró pasa al cuidador y se desbloquean más herramientas."
+    },
+    "caregiver": {
+      "today": "Hoy",
+      "todayTitle": "Resumen de hoy",
+      "viewPast": "Ver registros pasados",
+      "actions": "Acciones rápidas",
+      "insights": "Lo que estamos notando",
+      "cues": "Recordatorios de hoy",
+      "circle": "Círculo de cuidado",
+      "summaryTitle": "Resumen médico",
+      "openPatient": "Abrir vista de paciente",
+      "pastLogs": "Registros pasados",
+      "pastLogsHint": "Agrupados por fecha. Toca un día para ver los detalles."
+    },
+    "preview": {
+      "tag": "En la versión completa",
+      "howItWorks": "Cómo funciona",
+      "fullVersion": "Esta vista previa muestra cómo se ve la versión completa — el demo es intencionalmente limitado."
+    },
+    "ask": {
+      "open": "Preguntar a COMPANION",
+      "title": "Preguntar a COMPANION",
+      "patientMode": "Solo recuerdos cálidos",
+      "caregiverMode": "Asistente para el cuidador",
+      "placeholder": "Escribe una pregunta…",
+      "tryAsking": "Prueba preguntando:",
+      "tag": {
+        "personalized": "Personalizado",
+        "educational": "Educativo",
+        "grounded": "Fuente confiable",
+        "emergency": "Seguridad",
+        "guardrail": "Para tu médico",
+        "reminiscence": "Un recuerdo",
+        "fallback": "Nota"
+      }
+    }
+  },
   "common": {
     "next": "Siguiente",
     "back": "Atrás",

@@ -10,16 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PatientRouteImport } from './routes/patient'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemoIndexRouteImport } from './routes/demo.index'
+import { Route as DemoPatientRouteImport } from './routes/demo.patient'
+import { Route as DemoLogsRouteImport } from './routes/demo.logs'
+import { Route as DemoCaregiverRouteImport } from './routes/demo.caregiver'
 import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/today'
 import { Route as AuthenticatedSummaryRouteImport } from './routes/_authenticated/summary'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPhotosRouteImport } from './routes/_authenticated/photos'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedLogsRouteImport } from './routes/_authenticated/logs'
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedCuesRouteImport } from './routes/_authenticated/cues'
 import { Route as AuthenticatedCircleRouteImport } from './routes/_authenticated/circle'
@@ -27,6 +33,11 @@ import { Route as AuthenticatedCircleRouteImport } from './routes/_authenticated
 const PatientRoute = PatientRouteImport.update({
   id: '/patient',
   path: '/patient',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -47,6 +58,26 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DemoIndexRoute = DemoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DemoRoute,
+} as any)
+const DemoPatientRoute = DemoPatientRouteImport.update({
+  id: '/patient',
+  path: '/patient',
+  getParentRoute: () => DemoRoute,
+} as any)
+const DemoLogsRoute = DemoLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => DemoRoute,
+} as any)
+const DemoCaregiverRoute = DemoCaregiverRouteImport.update({
+  id: '/caregiver',
+  path: '/caregiver',
+  getParentRoute: () => DemoRoute,
 } as any)
 const AuthenticatedTodayRoute = AuthenticatedTodayRouteImport.update({
   id: '/today',
@@ -78,6 +109,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLogsRoute = AuthenticatedLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLearnRoute = AuthenticatedLearnRouteImport.update({
   id: '/learn',
   path: '/learn',
@@ -98,16 +134,22 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/demo': typeof DemoRouteWithChildren
   '/patient': typeof PatientRoute
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
   '/learn': typeof AuthenticatedLearnRoute
+  '/logs': typeof AuthenticatedLogsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/photos': typeof AuthenticatedPhotosRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/summary': typeof AuthenticatedSummaryRoute
   '/today': typeof AuthenticatedTodayRoute
+  '/demo/caregiver': typeof DemoCaregiverRoute
+  '/demo/logs': typeof DemoLogsRoute
+  '/demo/patient': typeof DemoPatientRoute
+  '/demo/': typeof DemoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,12 +159,17 @@ export interface FileRoutesByTo {
   '/circle': typeof AuthenticatedCircleRoute
   '/cues': typeof AuthenticatedCuesRoute
   '/learn': typeof AuthenticatedLearnRoute
+  '/logs': typeof AuthenticatedLogsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/photos': typeof AuthenticatedPhotosRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/summary': typeof AuthenticatedSummaryRoute
   '/today': typeof AuthenticatedTodayRoute
+  '/demo/caregiver': typeof DemoCaregiverRoute
+  '/demo/logs': typeof DemoLogsRoute
+  '/demo/patient': typeof DemoPatientRoute
+  '/demo': typeof DemoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -130,16 +177,22 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/demo': typeof DemoRouteWithChildren
   '/patient': typeof PatientRoute
   '/_authenticated/circle': typeof AuthenticatedCircleRoute
   '/_authenticated/cues': typeof AuthenticatedCuesRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
+  '/_authenticated/logs': typeof AuthenticatedLogsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/photos': typeof AuthenticatedPhotosRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/summary': typeof AuthenticatedSummaryRoute
   '/_authenticated/today': typeof AuthenticatedTodayRoute
+  '/demo/caregiver': typeof DemoCaregiverRoute
+  '/demo/logs': typeof DemoLogsRoute
+  '/demo/patient': typeof DemoPatientRoute
+  '/demo/': typeof DemoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,16 +200,22 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/demo'
     | '/patient'
     | '/circle'
     | '/cues'
     | '/learn'
+    | '/logs'
     | '/onboarding'
     | '/photos'
     | '/profile'
     | '/settings'
     | '/summary'
     | '/today'
+    | '/demo/caregiver'
+    | '/demo/logs'
+    | '/demo/patient'
+    | '/demo/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,28 +225,39 @@ export interface FileRouteTypes {
     | '/circle'
     | '/cues'
     | '/learn'
+    | '/logs'
     | '/onboarding'
     | '/photos'
     | '/profile'
     | '/settings'
     | '/summary'
     | '/today'
+    | '/demo/caregiver'
+    | '/demo/logs'
+    | '/demo/patient'
+    | '/demo'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/admin'
     | '/auth'
+    | '/demo'
     | '/patient'
     | '/_authenticated/circle'
     | '/_authenticated/cues'
     | '/_authenticated/learn'
+    | '/_authenticated/logs'
     | '/_authenticated/onboarding'
     | '/_authenticated/photos'
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/summary'
     | '/_authenticated/today'
+    | '/demo/caregiver'
+    | '/demo/logs'
+    | '/demo/patient'
+    | '/demo/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,6 +265,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  DemoRoute: typeof DemoRouteWithChildren
   PatientRoute: typeof PatientRoute
 }
 
@@ -205,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/patient'
       fullPath: '/patient'
       preLoaderRoute: typeof PatientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -234,6 +312,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/demo/': {
+      id: '/demo/'
+      path: '/'
+      fullPath: '/demo/'
+      preLoaderRoute: typeof DemoIndexRouteImport
+      parentRoute: typeof DemoRoute
+    }
+    '/demo/patient': {
+      id: '/demo/patient'
+      path: '/patient'
+      fullPath: '/demo/patient'
+      preLoaderRoute: typeof DemoPatientRouteImport
+      parentRoute: typeof DemoRoute
+    }
+    '/demo/logs': {
+      id: '/demo/logs'
+      path: '/logs'
+      fullPath: '/demo/logs'
+      preLoaderRoute: typeof DemoLogsRouteImport
+      parentRoute: typeof DemoRoute
+    }
+    '/demo/caregiver': {
+      id: '/demo/caregiver'
+      path: '/caregiver'
+      fullPath: '/demo/caregiver'
+      preLoaderRoute: typeof DemoCaregiverRouteImport
+      parentRoute: typeof DemoRoute
     }
     '/_authenticated/today': {
       id: '/_authenticated/today'
@@ -277,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/logs': {
+      id: '/_authenticated/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof AuthenticatedLogsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/learn': {
       id: '/_authenticated/learn'
       path: '/learn'
@@ -305,6 +418,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCircleRoute: typeof AuthenticatedCircleRoute
   AuthenticatedCuesRoute: typeof AuthenticatedCuesRoute
   AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
+  AuthenticatedLogsRoute: typeof AuthenticatedLogsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPhotosRoute: typeof AuthenticatedPhotosRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -317,6 +431,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCircleRoute: AuthenticatedCircleRoute,
   AuthenticatedCuesRoute: AuthenticatedCuesRoute,
   AuthenticatedLearnRoute: AuthenticatedLearnRoute,
+  AuthenticatedLogsRoute: AuthenticatedLogsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPhotosRoute: AuthenticatedPhotosRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
@@ -328,11 +443,28 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface DemoRouteChildren {
+  DemoCaregiverRoute: typeof DemoCaregiverRoute
+  DemoLogsRoute: typeof DemoLogsRoute
+  DemoPatientRoute: typeof DemoPatientRoute
+  DemoIndexRoute: typeof DemoIndexRoute
+}
+
+const DemoRouteChildren: DemoRouteChildren = {
+  DemoCaregiverRoute: DemoCaregiverRoute,
+  DemoLogsRoute: DemoLogsRoute,
+  DemoPatientRoute: DemoPatientRoute,
+  DemoIndexRoute: DemoIndexRoute,
+}
+
+const DemoRouteWithChildren = DemoRoute._addFileChildren(DemoRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  DemoRoute: DemoRouteWithChildren,
   PatientRoute: PatientRoute,
 }
 export const routeTree = rootRouteImport

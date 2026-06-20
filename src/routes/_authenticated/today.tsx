@@ -220,45 +220,14 @@ function Today() {
 
           <TrainingCards refreshKey={insightsKey} />
 
-          <section aria-labelledby="recent-logs">
-            <h2 id="recent-logs" className="text-lg font-semibold mb-2">
-              Recent logs
-            </h2>
-            {logs.length === 0 ? (
-              <p className="text-muted-foreground">No logs yet today.</p>
-            ) : (
-              <ul className="space-y-2">
-                {logs.map((l) => (
-                  <li key={l.id} className="rounded border p-3">
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>logged at {new Date(l.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
-                      <span className="flex items-center gap-2">
-                        {l.mood && <span>Mood: {l.mood}/5</span>}
-                        {isLockedClient(l.created_at, editLockDays) && (
-                          <span title={`Locked after ${editLockDays} days — read-only`} aria-label="locked" className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs">
-                            <Lock size={12} strokeWidth={2} /> locked
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    {l.notes && <p className="mt-1">{l.notes}</p>}
-                    {l.log_symptoms?.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {l.log_symptoms.map((s, i) => (
-                          <span
-                            key={i}
-                            className="rounded-full bg-muted px-2 py-1 text-xs capitalize"
-                          >
-                            {s.symptom.replace(/_/g, " ")}
-                            {s.outcome ? ` · ${s.outcome.replace(/_/g, " ")}` : ""}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
+          <section aria-labelledby="recent-logs" className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <div>
+              <h2 id="recent-logs" className="font-semibold">Past logs</h2>
+              <p className="text-sm text-muted-foreground">
+                {logs.length === 0 ? "Nothing logged yet." : `${logs.length} recent entr${logs.length === 1 ? "y" : "ies"}.`}
+              </p>
+            </div>
+            <Link to="/logs" className="text-sm font-medium text-primary hover:underline">View past logs →</Link>
           </section>
 
           <section aria-labelledby="insights">

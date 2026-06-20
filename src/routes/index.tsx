@@ -84,8 +84,7 @@ function Welcome() {
               icon={<Sparkles className="h-7 w-7" aria-hidden />}
               title={t("welcome.demoTitle")}
               desc={t("welcome.demoDesc")}
-              onClick={() => alert(t("welcome.demoComingSoon"))}
-              muted
+              onClick={() => navigate({ to: "/demo" })}
             />
           </div>
         </div>
