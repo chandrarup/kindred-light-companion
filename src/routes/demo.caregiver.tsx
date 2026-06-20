@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Sun, Image as ImageIcon, PlayCircle, Users, ClipboardList, Settings as SettingsIcon, FileText, Phone, ChevronRight, Sparkles, AlertCircle, MessageCircle, Camera, BookOpen } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_LOGS, DEMO_INSIGHTS, DEMO_CUES, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
 import { DemoReminder } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
@@ -296,19 +297,146 @@ function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
 }
 
 function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoonFeature) => void }) {
+  // Sort logs ascending by date for trend lines
+  const sorted = [...DEMO_LOGS].sort((a, b) => a.date.localeCompare(b.date));
+  const moodData = sorted.map((l) => ({
+    date: l.date.slice(5),
+    mood: l.mood,
+    sleep: l.sleep === "well" ? 3 : l.sleep === "okay" ? 2 : 1,
+  }));
+
+  // Episodes by time of day
+  const tod: Record<string, number> = { morning: 0, afternoon: 0, evening: 0, night: 0 };
+  for (const l of DEMO_LOGS) for (const s of l.symptoms) {
+    const k = s.timeOfDay && tod[s.timeOfDay] !== undefined ? s.timeOfDay : "morning";
+    tod[k] += 1;
+  }
+  const todLabels: Record<string, { en: string; es: string }> = {
+    morning: { en: "Morning", es: "Mañana" }, afternoon: { en: "Afternoon", es: "Tarde" },
+    evening: { en: "Evening", es: "Tarde-noche" }, night: { en: "Night", es: "Noche" },
+  };
+  const episodeData = Object.entries(tod).map(([k, v]) => ({ name: todLabels[k][L], count: v }));
+
+  // Sleep distribution
+  const sleepCounts = DEMO_LOGS.reduce((acc, l) => { acc[l.sleep] = (acc[l.sleep] || 0) + 1; return acc; }, {} as Record<string, number>);
+  const sleepData = [
+    { name: L === "es" ? "Bien" : "Well", value: sleepCounts.well || 0, color: "#10b981" },
+    { name: L === "es" ? "Regular" : "Okay", value: sleepCounts.okay || 0, color: "#f59e0b" },
+    { name: L === "es" ? "Mal" : "Poor", value: sleepCounts.poorly || 0, color: "#ef4444" },
+  ];
+
+  // Symptom counts
+  const symCounts: Record<string, number> = {};
+  for (const l of DEMO_LOGS) for (const s of l.symptoms) {
+    const n = s.name[L]; symCounts[n] = (symCounts[n] || 0) + 1;
+  }
+  const symptomData = Object.entries(symCounts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+
+  const avgMood = (DEMO_LOGS.reduce((n, l) => n + l.mood, 0) / DEMO_LOGS.length).toFixed(1);
+  const totalEpisodes = DEMO_LOGS.reduce((n, l) => n + l.symptoms.length, 0);
+  const poorSleepNights = sleepCounts.poorly || 0;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <section className="rounded-2xl border border-border bg-card p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold inline-flex items-center gap-2"><FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}</h2>
-          <button onClick={() => setPreview(COMING_SOON.summary)} className="text-sm text-primary hover:underline">{L === "es" ? "Abrir" : "Open"}</button>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h2 className="text-lg font-semibold inline-flex items-center gap-2"><FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}</h2>
+            <p className="text-xs text-muted-foreground mt-1">{L === "es" ? "Últimos 12 días · listo para imprimir o compartir" : "Last 12 days · ready to print or share"}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => window.print()} className="text-sm rounded-lg border border-border px-3 py-1.5 hover:bg-muted">{L === "es" ? "Imprimir" : "Print"}</button>
+            <button onClick={() => setPreview(COMING_SOON.summary)} className="text-sm rounded-lg bg-primary text-primary-foreground px-3 py-1.5">{L === "es" ? "Compartir" : "Share"}</button>
+          </div>
         </div>
-        <div className="mt-4 grid sm:grid-cols-3 gap-3 text-sm">
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           <Stat label={L === "es" ? "Registros" : "Logs"} value={String(DEMO_LOGS.length)} />
-          <Stat label={L === "es" ? "Episodios" : "Episodes"} value={String(DEMO_LOGS.reduce((n, l) => n + l.symptoms.length, 0))} />
-          <Stat label={L === "es" ? "Ánimo promedio" : "Avg. mood"} value={(DEMO_LOGS.reduce((n, l) => n + l.mood, 0) / DEMO_LOGS.length).toFixed(1)} />
+          <Stat label={L === "es" ? "Episodios" : "Episodes"} value={String(totalEpisodes)} />
+          <Stat label={L === "es" ? "Ánimo promedio" : "Avg. mood"} value={avgMood} />
+          <Stat label={L === "es" ? "Noches mal sueño" : "Poor sleep nights"} value={String(poorSleepNights)} />
         </div>
-        <p className="mt-3 text-xs text-muted-foreground italic">{L === "es" ? "Conteos y observaciones — no es un diagnóstico." : "Counts and observations — not a diagnosis."}</p>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-semibold">{L === "es" ? "Ánimo y sueño en el tiempo" : "Mood & sleep over time"}</h3>
+        <p className="text-xs text-muted-foreground">{L === "es" ? "Ánimo 1–5 · Sueño 1=mal, 2=regular, 3=bien" : "Mood 1–5 · Sleep 1=poor, 2=okay, 3=well"}</p>
+        <div className="h-56 mt-3">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={moodData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 5]} tick={{ fontSize: 11 }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+              <ReferenceLine y={3} stroke="#cbd5e1" strokeDasharray="3 3" />
+              <Line type="monotone" dataKey="mood" stroke="#7c3aed" strokeWidth={2.5} dot={{ r: 3 }} name={L === "es" ? "Ánimo" : "Mood"} />
+              <Line type="monotone" dataKey="sleep" stroke="#0ea5e9" strokeWidth={2} dot={{ r: 3 }} name={L === "es" ? "Sueño" : "Sleep"} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="font-semibold">{L === "es" ? "Episodios por hora del día" : "Episodes by time of day"}</h3>
+          <p className="text-xs text-muted-foreground">{L === "es" ? "La tarde domina — coincide con su rutina de las 3 PM." : "Afternoon dominates — aligns with her 3 PM routine."}</p>
+          <div className="h-52 mt-3">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={episodeData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                <Bar dataKey="count" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="font-semibold">{L === "es" ? "Calidad del sueño" : "Sleep quality"}</h3>
+          <p className="text-xs text-muted-foreground">{L === "es" ? "Distribución de las noches registradas." : "Distribution of logged nights."}</p>
+          <div className="h-52 mt-3 flex items-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={sleepData} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70} paddingAngle={3}>
+                  {sleepData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                </Pie>
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+              </PieChart>
+            </ResponsiveContainer>
+            <ul className="text-xs space-y-1 pr-2">
+              {sleepData.map((d) => (
+                <li key={d.name} className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: d.color }} /> {d.name} · {d.value}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-semibold">{L === "es" ? "Síntomas registrados" : "Symptoms logged"}</h3>
+        <div className="h-52 mt-3">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={symptomData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+              <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 11 }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+              <Bar dataKey="count" fill="#0ea5e9" radius={[0, 6, 6, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-violet-200 bg-violet-50 text-violet-900 p-5">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide"><Sparkles size={14} /> {L === "es" ? "Notas para el médico" : "Notes for the clinician"}</div>
+        <ul className="mt-2 text-sm space-y-1.5 list-disc pl-5">
+          <li>{L === "es" ? `${totalEpisodes} episodios en 12 días, concentrados entre 2:30–3:30 PM.` : `${totalEpisodes} episodes over 12 days, concentrated 2:30–3:30 PM.`}</li>
+          <li>{L === "es" ? `${poorSleepNights} noches de mal sueño; ánimo promedio ${avgMood}/5.` : `${poorSleepNights} nights of poor sleep; average mood ${avgMood}/5.`}</li>
+          <li>{L === "es" ? "Música + luz tenue ha resuelto 6 de 8 episodios." : "Music + dim light has resolved 6 of 8 episodes."}</li>
+          <li>{L === "es" ? "Sin caídas. Sin cambios de medicación." : "No falls. No medication changes."}</li>
+        </ul>
+        <p className="mt-3 text-xs italic opacity-80">{L === "es" ? "Observaciones — no es un diagnóstico." : "Observations — not a diagnosis."}</p>
       </section>
     </div>
   );
