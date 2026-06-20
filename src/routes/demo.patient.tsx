@@ -1,0 +1,256 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Mic, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Moon, Smile, MessageCircle, Bell, ArrowRight, Check } from "lucide-react";
+import { useT } from "@/i18n/I18nProvider";
+import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
+import { PhotoCard } from "@/components/demo/PhotoCard";
+import { DemoReminder } from "@/components/demo/DemoReminder";
+import { DemoAsk } from "@/components/demo/DemoAsk";
+import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
+
+export const Route = createFileRoute("/demo/patient")({
+  component: DemoPatient,
+});
+
+type View = "menu" | "people" | "music" | "selfcare";
+type SelfCare = null | "sleep" | "mood" | "bothering" | "reminders";
+
+function DemoPatient() {
+  const { t, lang } = useT();
+  const L = (lang as "en" | "es") === "es" ? "es" : "en";
+  const navigate = useNavigate();
+  const [view, setView] = useState<View>("menu");
+  const [selfCare, setSelfCare] = useState<SelfCare>(null);
+  const [slide, setSlide] = useState(0);
+  const [savedKey, setSavedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (view !== "menu") return;
+    const id = setInterval(() => setSlide((i) => (i + 1) % DEMO_PHOTOS.length), 7000);
+    return () => clearInterval(id);
+  }, [view]);
+
+  const photo = DEMO_PHOTOS[slide];
+
+  function ack(key: string) {
+    setSavedKey(key);
+    setTimeout(() => setSavedKey(null), 1800);
+  }
+
+  return (
+    <div className="relative">
+      <DemoReminder mode="patient" />
+      <DemoAsk mode="patient" />
+
+      {view === "menu" && (
+        <div className="relative min-h-[calc(100dvh-110px)] overflow-hidden">
+          {/* Background photo */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${photo.gradient}`}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-[12rem] opacity-90" aria-hidden>{photo.emoji}</span>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          </div>
+
+          {/* Greeting */}
+          <div className="relative px-6 pt-8 text-white">
+            <h1 className="text-4xl sm:text-5xl font-semibold drop-shadow">{t("patient.greeting", { name: ROSA.preferredName })}</h1>
+            <p className="mt-2 text-lg sm:text-xl drop-shadow text-white/90">{photo.caption[L]}</p>
+          </div>
+
+          {/* Actions */}
+          <div className="relative mt-auto px-4 pb-6 pt-32">
+            <div className="grid grid-cols-3 gap-3 max-w-3xl mx-auto">
+              <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => ack("talk")} />
+              <BigButton icon={<Users />} label={t("patient.people")} onClick={() => setView("people")} />
+              <BigButton icon={<MusicIcon />} label={t("patient.music")} onClick={() => setView("music")} />
+            </div>
+
+            <div className="mt-4 max-w-3xl mx-auto">
+              <button
+                type="button"
+                onClick={() => setView("selfcare")}
+                className="w-full rounded-2xl bg-white/90 text-stone-800 p-4 font-medium text-lg shadow-md inline-flex items-center justify-center gap-2"
+              >
+                <Smile size={22} /> {t("demo.patient.selfCareOpen")}
+              </button>
+            </div>
+
+            <div className="mt-4 max-w-3xl mx-auto">
+              <button
+                type="button"
+                onClick={() => navigate({ to: "/demo/caregiver" })}
+                className="w-full rounded-xl bg-stone-900/80 text-white p-3 text-sm inline-flex items-center justify-center gap-2 hover:bg-stone-900"
+              >
+                {t("demo.patient.switchToCaregiver")} <ArrowRight size={16} />
+              </button>
+              <p className="mt-2 text-xs text-white/80 text-center px-4">{t("demo.patient.switchNote")}</p>
+            </div>
+          </div>
+
+          {savedKey === "talk" && (
+            <div className="absolute top-1/3 inset-x-4 z-10 rounded-2xl bg-white/95 text-stone-800 p-6 text-center shadow-2xl max-w-sm mx-auto">
+              <p className="text-xl">{t("patient.talkPrompt")}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {view === "people" && <PeopleView L={L} onBack={() => setView("menu")} />}
+      {view === "music" && <MusicView L={L} onBack={() => setView("menu")} />}
+      {view === "selfcare" && (
+        <SelfCareView
+          L={L} t={t}
+          onBack={() => { setView("menu"); setSelfCare(null); }}
+          selected={selfCare} setSelected={setSelfCare}
+          ack={ack}
+        />
+      )}
+    </div>
+  );
+}
+
+function BigButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <motion.button
+      whileTap={{ scale: 0.96 }}
+      type="button"
+      onClick={onClick}
+      className="rounded-2xl bg-white/95 text-stone-800 px-3 py-5 sm:py-6 flex flex-col items-center gap-2 shadow-lg font-semibold text-base sm:text-lg min-h-[88px]"
+    >
+      <span className="text-primary [&_svg]:h-7 [&_svg]:w-7">{icon}</span>
+      {label}
+    </motion.button>
+  );
+}
+
+function PeopleView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
+  const { t } = useT();
+  const [i, setI] = useState(0);
+  const photo = DEMO_PHOTOS[i % DEMO_PHOTOS.length];
+  const person = DEMO_PEOPLE[i % DEMO_PEOPLE.length];
+  return (
+    <div className="px-4 py-6 max-w-2xl mx-auto">
+      <BackBar onBack={onBack} label={t("patient.people")} />
+      <PhotoCard photo={photo} lang={L} />
+      <p className="mt-4 text-center text-2xl font-semibold">{person.name}</p>
+      <p className="text-center text-muted-foreground">{person.relationship[L]}</p>
+      <div className="mt-6 flex justify-between">
+        <NavBtn icon={<ChevronLeft />} label={t("patient.prev")} onClick={() => setI((x) => (x - 1 + DEMO_PHOTOS.length) % DEMO_PHOTOS.length)} />
+        <NavBtn icon={<ChevronRight />} label={t("patient.next")} onClick={() => setI((x) => (x + 1) % DEMO_PHOTOS.length)} />
+      </div>
+    </div>
+  );
+}
+
+function MusicView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
+  const { t } = useT();
+  const [playing, setPlaying] = useState<string | null>(null);
+  return (
+    <div className="px-4 py-6 max-w-2xl mx-auto">
+      <BackBar onBack={onBack} label={t("patient.music")} />
+      <ul className="space-y-3">
+        {DEMO_MUSIC.map((m) => (
+          <li key={m.id}>
+            <button
+              type="button"
+              onClick={() => setPlaying(m.id)}
+              className={`w-full text-left rounded-2xl border p-4 flex items-center gap-4 ${playing === m.id ? "border-primary bg-primary/10" : "border-border bg-card"}`}
+            >
+              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center"><Play size={22} /></div>
+              <div>
+                <p className="text-lg font-semibold">{m.title}</p>
+                <p className="text-muted-foreground">{m.artist}</p>
+              </div>
+            </button>
+          </li>
+        ))}
+      </ul>
+      {playing && <p className="mt-4 text-center text-muted-foreground">{L === "es" ? "Reproduciendo (demo)" : "Playing (demo)"}…</p>}
+    </div>
+  );
+}
+
+function NavBtn({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-lg">
+      {icon}{label}
+    </button>
+  );
+}
+
+function BackBar({ onBack, label }: { onBack: () => void; label: string }) {
+  return (
+    <div className="mb-4 flex items-center justify-between">
+      <button type="button" onClick={onBack} className="text-sm underline">← Back</button>
+      <span className="font-semibold">{label}</span>
+      <span />
+    </div>
+  );
+}
+
+function SelfCareView({ L, t, onBack, selected, setSelected, ack }: { L: "en" | "es"; t: (k: string, v?: any) => string; onBack: () => void; selected: SelfCare; setSelected: (s: SelfCare) => void; ack: (k: string) => void }) {
+  const [bothering, setBothering] = useState("");
+  return (
+    <div className="px-4 py-6 max-w-2xl mx-auto">
+      <BackBar onBack={onBack} label={t("demo.patient.selfCare")} />
+      {!selected && (
+        <div className="grid grid-cols-2 gap-3">
+          <Card onClick={() => setSelected("sleep")} icon={<Moon />} label={t("self.sleep")} />
+          <Card onClick={() => setSelected("mood")} icon={<Smile />} label={t("self.mood")} />
+          <Card onClick={() => setSelected("bothering")} icon={<MessageCircle />} label={t("self.bothering")} />
+          <Card onClick={() => setSelected("reminders")} icon={<Bell />} label={t("self.reminders")} />
+        </div>
+      )}
+
+      {selected === "sleep" && (
+        <SelfChoice prompt={t("self.sleepPrompt")} options={[t("self.well"), t("self.okay"), t("self.poorly")]} onPick={() => { ack("sleep"); setSelected(null); }} />
+      )}
+      {selected === "mood" && (
+        <SelfChoice prompt={t("self.moodPrompt")} options={[t("self.good"), t("self.okay"), t("self.notGreat")]} onPick={() => { ack("mood"); setSelected(null); }} />
+      )}
+      {selected === "bothering" && (
+        <div className="space-y-3">
+          <p className="text-xl">{t("self.botheringPrompt")}</p>
+          <textarea value={bothering} onChange={(e) => setBothering(e.target.value)} placeholder={t("self.botheringPlaceholder")} className="w-full rounded-xl border border-input bg-background p-3 text-lg min-h-[140px]" />
+          <button onClick={() => { ack("bothering"); setBothering(""); setSelected(null); }} className="w-full rounded-2xl bg-primary text-primary-foreground py-4 text-lg font-medium">{t("self.save")}</button>
+        </div>
+      )}
+      {selected === "reminders" && (
+        <ul className="space-y-3">
+          {[{ time: "8:00 AM", label: L === "es" ? "Desayuno y pastilla matutina" : "Breakfast and morning pill" },
+            { time: "2:45 PM", label: L === "es" ? "Música — Vicente Fernández" : "Music — Vicente Fernández" },
+            { time: "8:30 PM", label: L === "es" ? "Hora tranquila antes de dormir" : "Quiet time before bed" }].map((r, i) => (
+            <li key={i} className="rounded-2xl border border-border bg-card p-4 flex items-center gap-4">
+              <span className="text-2xl font-semibold w-24">{r.time}</span>
+              <span className="text-lg">{r.label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Card({ onClick, icon, label }: { onClick: () => void; icon: React.ReactNode; label: string }) {
+  return (
+    <button onClick={onClick} type="button" className="rounded-2xl border border-border bg-card p-5 flex flex-col items-center gap-2 shadow-sm hover:border-primary/40 min-h-[120px]">
+      <span className="text-primary [&_svg]:h-8 [&_svg]:w-8">{icon}</span>
+      <span className="text-lg font-semibold text-center">{label}</span>
+    </button>
+  );
+}
+
+function SelfChoice({ prompt, options, onPick }: { prompt: string; options: string[]; onPick: () => void }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xl">{prompt}</p>
+      <div className="grid gap-3">
+        {options.map((o, i) => (
+          <button key={i} onClick={onPick} className="rounded-2xl border border-border bg-card py-4 text-lg font-medium hover:border-primary/40">{o}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
