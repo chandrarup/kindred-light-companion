@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireSection, isLocked } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 const SYMPTOMS = [
   "forgetfulness",

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getCallerMembership } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 /** Symptoms that should surface the music trigger button. */
 export const MUSIC_TRIGGER_SYMPTOMS = [

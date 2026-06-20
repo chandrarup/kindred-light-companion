@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { safeDbError } from "./safe-errors";
 
 /** Create a throwaway demo auth user and return credentials so the client can sign in. */
 export const createDemoSession = createServerFn({ method: "POST" }).handler(async () => {

@@ -1,4 +1,5 @@
 import type { Database } from "@/integrations/supabase/types";
+import { safeDbError } from "./safe-errors";
 
 export type Section =
   | "photos"

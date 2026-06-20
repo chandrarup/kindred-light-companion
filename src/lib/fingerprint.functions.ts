@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { safeDbError } from "./safe-errors";
 
 /**
  * Recompute the trigger fingerprint for the caller's household.

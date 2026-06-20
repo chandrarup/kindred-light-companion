@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ANTECEDENT_OPTIONS, OUTCOME_OPTIONS, SYMPTOM_OPTIONS } from "./daily-log.functions";
 import { requireSection, isLocked } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 /**
  * Red flag signals the app must surface verbatim. The app NEVER interprets

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireSection } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 const addSchema = z.object({ text: z.string().min(1).max(500) });
 const idSchema = z.object({ id: z.string().uuid() });

@@ -1,4 +1,5 @@
 import { recomputeFingerprintInline } from "./fingerprint.server";
+import { safeDbError } from "./safe-errors";
 
 const DEMO_NAME = "Rosa Herrera Demo";
 const PHOTO_CAPTIONS = [
