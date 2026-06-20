@@ -80,7 +80,8 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-30 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition"
+        className="fixed right-5 z-30 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition"
+        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}
         aria-label={t("demo.ask.open")}
       >
         <MessageCircle size={26} />
