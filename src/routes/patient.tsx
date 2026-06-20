@@ -162,6 +162,19 @@ function PatientPage() {
     return <div data-mode="patient" className="min-h-dvh bg-background" />;
   }
 
+  if (selfCare) {
+    return (
+      <SelfCare
+        kind={selfCare}
+        lang={lang}
+        patientName={bundle.name}
+        onBack={() => setSelfCare(null)}
+        onSaveLog={async (payload) => { await createLog({ data: payload }); }}
+        loadCues={async () => { const r: any = await listAllCues(); return r?.cues ?? []; }}
+      />
+    );
+  }
+
   if (view === "menu") {
     const photo = bundle.photos[slide];
     const hasMany = bundle.photos.length > 1;
