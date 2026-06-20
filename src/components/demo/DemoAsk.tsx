@@ -1,16 +1,15 @@
-import { useState } from "react";
-import { MessageCircle, X, Send, Play, ExternalLink, Phone } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MessageCircle, X, Send, Play, ExternalLink, Phone, Mic, MicOff } from "lucide-react";
 import { askCanned, type AskResponse } from "@/lib/demo/data";
 import { useT } from "@/i18n/I18nProvider";
 
 type Msg = { role: "user" | "assistant"; text?: string; response?: AskResponse };
 
 const SUGGESTIONS_CAREGIVER = [
-  { en: "Why is she agitated at 3pm?", es: "¿Por qué se agita a las 3pm?" },
-  { en: "She keeps repeating the same question", es: "Sigue repitiendo la misma pregunta" },
-  { en: "She's resisting bathing", es: "Se resiste al baño" },
-  { en: "She just fell", es: "Se acaba de caer" },
-  { en: "What about her medication?", es: "¿Qué hay de su medicación?" },
+  { en: "Why does she get upset in the afternoon?", es: "¿Por qué se molesta por la tarde?" },
+  { en: "What helps when she won't calm down?", es: "¿Qué ayuda cuando no se calma?" },
+  { en: "She didn't sleep well — what can I do?", es: "No durmió bien — ¿qué puedo hacer?" },
+  { en: "What should I tell the doctor?", es: "¿Qué debo decirle al médico?" },
 ];
 const SUGGESTIONS_PATIENT = [
   { en: "Tell me about my music", es: "Cuéntame de mi música" },
@@ -24,6 +23,19 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
+  const [listening, setListening] = useState(false);
+  const [voiceErr, setVoiceErr] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const SpeechRecognition =
+    typeof window !== "undefined"
+      ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      : null;
+  const voiceSupported = !!SpeechRecognition;
+
+  useEffect(() => {
+    return () => { try { recognitionRef.current?.stop?.(); } catch {} };
+  }, []);
 
   const suggestions = mode === "patient" ? SUGGESTIONS_PATIENT : SUGGESTIONS_CAREGIVER;
 
@@ -33,6 +45,34 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
     const response = askCanned(text, mode);
     setMsgs((m) => [...m, { role: "user", text }, { role: "assistant", response }]);
     setInput("");
+  }
+
+  function toggleVoice() {
+    setVoiceErr(null);
+    if (!voiceSupported) { setVoiceErr(t("demo.ask.micUnsupported")); return; }
+    if (listening) { try { recognitionRef.current?.stop(); } catch {} return; }
+    const rec = new SpeechRecognition();
+    rec.lang = L === "es" ? "es-ES" : "en-US";
+    rec.interimResults = true;
+    rec.continuous = false;
+    let finalText = "";
+    rec.onresult = (e: any) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalText += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      setInput((finalText + interim).trim());
+    };
+    rec.onerror = () => { setListening(false); };
+    rec.onend = () => {
+      setListening(false);
+      const q = finalText.trim();
+      if (q) send(q);
+    };
+    recognitionRef.current = rec;
+    try { rec.start(); setListening(true); } catch { setListening(false); }
   }
 
   return (
@@ -85,15 +125,28 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
 
           <form
             onSubmit={(e) => { e.preventDefault(); send(input); }}
-            className="border-t border-border p-3 flex gap-2"
+            className="border-t border-border p-3 flex flex-col gap-2"
           >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t("demo.ask.placeholder")}
-              className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <button type="submit" className="rounded-lg bg-primary text-primary-foreground px-3 py-2" aria-label="Send"><Send size={16} /></button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={toggleVoice}
+                aria-label={listening ? t("demo.ask.micStop") : t("demo.ask.micStart")}
+                aria-pressed={listening}
+                className={`shrink-0 rounded-lg px-3 py-2 border ${listening ? "bg-red-500 text-white border-red-500 animate-pulse" : "bg-background border-input hover:bg-muted"}`}
+                title={voiceSupported ? (listening ? t("demo.ask.micStop") : t("demo.ask.micStart")) : t("demo.ask.micUnsupported")}
+              >
+                {listening ? <MicOff size={16} /> : <Mic size={16} />}
+              </button>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={listening ? t("demo.ask.micListening") : t("demo.ask.placeholder")}
+                className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button type="submit" className="rounded-lg bg-primary text-primary-foreground px-3 py-2" aria-label="Send"><Send size={16} /></button>
+            </div>
+            {voiceErr && <p className="text-xs text-muted-foreground">{voiceErr}</p>}
           </form>
         </div>
       )}
