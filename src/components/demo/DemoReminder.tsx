@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Check } from "lucide-react";
 import { DEMO_REMINDERS } from "@/lib/demo/data";
@@ -6,24 +6,19 @@ import { useT } from "@/i18n/I18nProvider";
 
 const INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 
-type ReminderCtx = { trigger: () => void };
-const Ctx = createContext<ReminderCtx | null>(null);
+// Tiny module-level pub/sub so a "Show reminder" button anywhere in the demo can
+// fire the reminder mounted by <DemoReminder /> without prop-drilling.
+const triggerListeners = new Set<() => void>();
+export function triggerDemoReminder() { for (const fn of triggerListeners) fn(); }
 
-export function useDemoReminderTrigger() {
-  return useContext(Ctx);
-}
-
-export function DemoShowReminderButton({ mode, label }: { mode: "patient" | "caregiver"; label?: string }) {
-  const ctx = useDemoReminderTrigger();
-  if (!ctx) return null;
-  const text = label ?? (mode === "patient" ? "Show reminder" : "Show reminder");
+export function DemoShowReminderButton({ label, className }: { label: string; className?: string }) {
   return (
     <button
       type="button"
-      onClick={ctx.trigger}
-      className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1.5 text-xs text-white/90 hover:bg-black/35 backdrop-blur"
+      onClick={triggerDemoReminder}
+      className={className ?? "inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1.5 text-xs text-white/90 hover:bg-black/35 backdrop-blur"}
     >
-      <Bell size={12} /> {text}
+      <Bell size={12} /> {label}
     </button>
   );
 }
@@ -46,7 +41,7 @@ function playChime(soft: boolean) {
   } catch {}
 }
 
-export function DemoReminder({ mode, children }: { mode: "patient" | "caregiver"; children?: React.ReactNode }) {
+export function DemoReminder({ mode }: { mode: "patient" | "caregiver" }) {
   const { lang } = useT();
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
   const idxRef = useRef(0);
@@ -61,17 +56,20 @@ export function DemoReminder({ mode, children }: { mode: "patient" | "caregiver"
   }, [mode]);
 
   useEffect(() => {
+    triggerListeners.add(fire);
     const t = window.setTimeout(fire, INTERVAL_MS);
     const iv = window.setInterval(fire, INTERVAL_MS);
-    return () => { window.clearTimeout(t); window.clearInterval(iv); };
+    return () => {
+      triggerListeners.delete(fire);
+      window.clearTimeout(t);
+      window.clearInterval(iv);
+    };
   }, [fire]);
 
   const r = useMemo(() => DEMO_REMINDERS[idx], [idx]);
-  const ctxValue = useMemo<ReminderCtx>(() => ({ trigger: fire }), [fire]);
 
-  const overlay = (
-    <>
-      {mode === "caregiver" ? (
+  if (mode === "caregiver") {
+    return (
         <AnimatePresence>
           {open && (
             <motion.div
@@ -90,8 +88,11 @@ export function DemoReminder({ mode, children }: { mode: "patient" | "caregiver"
             </motion.div>
           )}
         </AnimatePresence>
-      ) : (
-        <AnimatePresence>
+    );
+  }
+
+  return (
+    <AnimatePresence>
           {open && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -115,15 +116,6 @@ export function DemoReminder({ mode, children }: { mode: "patient" | "caregiver"
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence>
-      )}
-    </>
-  );
-
-  return (
-    <Ctx.Provider value={ctxValue}>
-      {children}
-      {overlay}
-    </Ctx.Provider>
+    </AnimatePresence>
   );
 }
