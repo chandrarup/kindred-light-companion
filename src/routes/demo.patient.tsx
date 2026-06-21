@@ -1,13 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen } from "lucide-react";
+import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
+import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
+import { useDemoEntries } from "@/lib/demo/log-store";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
 
 export const Route = createFileRoute("/demo/patient")({
@@ -30,6 +32,8 @@ function DemoPatient() {
   const [switchA1, setSwitchA1] = useState<boolean | null>(null);
   const [talkOpen, setTalkOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [moreView, setMoreView] = useState<null | "fullLog" | "reminders" | "visitPrep">(null);
 
   useEffect(() => {
     if (view !== "menu") return;
@@ -75,6 +79,7 @@ function DemoPatient() {
           <div className="relative px-6 pt-4 text-white">
             <h1 className="text-4xl sm:text-5xl font-semibold drop-shadow">{t("patient.greeting", { name: ROSA.preferredName })}</h1>
             <p className="mt-2 text-lg sm:text-xl drop-shadow text-white/90">{photo.caption[L]}</p>
+            <DateTimeDisplay L={L} />
           </div>
 
           {/* Spacer so the photo stays visible in the middle */}
@@ -107,10 +112,28 @@ function DemoPatient() {
                 <NotebookPen size={20} /> {L === "es" ? "Apuntar cómo me siento" : "Note how I feel"}
               </button>
             </div>
+
+            <div className="mt-3 max-w-3xl mx-auto flex justify-center">
+              <button
+                type="button"
+                onClick={() => { setMoreView(null); setMoreOpen(true); }}
+                className="text-sm text-white/95 inline-flex items-center gap-1.5 rounded-full bg-black/30 hover:bg-black/40 px-4 py-2 backdrop-blur"
+              >
+                <Sparkles size={14} /> {L === "es" ? "Más herramientas" : "More tools"}
+              </button>
+            </div>
           </div>
 
           {talkOpen && <TalkModal L={L} onClose={() => setTalkOpen(false)} />}
           {logOpen && <DemoPatientLogForm onClose={() => setLogOpen(false)} />}
+          {moreOpen && (
+            <MoreToolsModal
+              L={L}
+              view={moreView}
+              setView={setMoreView}
+              onClose={() => { setMoreOpen(false); setMoreView(null); }}
+            />
+          )}
 
           {switchOpen && (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
@@ -475,6 +498,182 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function DateTimeDisplay({ L }: { L: "en" | "es" }) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const locale = L === "es" ? "es-ES" : "en-US";
+  const dateStr = now.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric" });
+  const timeStr = now.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+  return (
+    <div className="mt-4 inline-flex flex-col rounded-2xl bg-black/30 backdrop-blur px-5 py-3 shadow-md">
+      <span className="text-2xl sm:text-3xl font-semibold leading-tight capitalize">{dateStr}</span>
+      <span className="text-lg sm:text-xl text-white/90">{timeStr}</span>
+    </div>
+  );
+}
+
+function MoreToolsModal({
+  L, view, setView, onClose,
+}: {
+  L: "en" | "es";
+  view: null | "fullLog" | "reminders" | "visitPrep";
+  setView: (v: null | "fullLog" | "reminders" | "visitPrep") => void;
+  onClose: () => void;
+}) {
+  if (view === "fullLog") {
+    return <DemoEpisodeForm source="patient" onClose={onClose} />;
+  }
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md rounded-2xl bg-white text-stone-900 shadow-2xl p-5 max-h-[90dvh] overflow-y-auto">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            {view === "reminders"
+              ? (L === "es" ? "Mis recordatorios" : "My reminders")
+              : view === "visitPrep"
+                ? (L === "es" ? "Para mi cita médica" : "For my doctor visit")
+                : (L === "es" ? "Más herramientas" : "More tools")}
+          </h3>
+          <button onClick={onClose} aria-label="Close" className="p-1 rounded hover:bg-stone-100"><X size={18} /></button>
+        </div>
+
+        {view === null && (
+          <div className="mt-4 space-y-2">
+            <p className="text-sm text-stone-600">
+              {L === "es"
+                ? "Cosas que puedes hacer tú misma."
+                : "Things you can do on your own."}
+            </p>
+            <ToolRow
+              icon={<ClipboardList size={20} />}
+              title={L === "es" ? "Apuntar un episodio (completo)" : "Add a full log entry"}
+              desc={L === "es" ? "Paso a paso, como lo hace tu cuidador." : "Step-by-step, the way your caregiver does it."}
+              onClick={() => setView("fullLog")}
+            />
+            <ToolRow
+              icon={<Bell size={20} />}
+              title={L === "es" ? "Ver mis recordatorios" : "View my reminders"}
+              desc={L === "es" ? "Lo que viene hoy." : "What's coming up today."}
+              onClick={() => setView("reminders")}
+            />
+            <ToolRow
+              icon={<Stethoscope size={20} />}
+              title={L === "es" ? "Prepararme para el médico" : "Prepare for doctor visit"}
+              desc={L === "es" ? "Lo que debo llevar y contar." : "What to bring and share."}
+              onClick={() => setView("visitPrep")}
+            />
+          </div>
+        )}
+
+        {view === "reminders" && (
+          <div className="mt-4 space-y-3">
+            <button onClick={() => setView(null)} className="text-sm underline">← {L === "es" ? "Atrás" : "Back"}</button>
+            <ul className="space-y-2">
+              {[
+                { time: "8:00 AM", label: L === "es" ? "Desayuno y pastilla matutina" : "Breakfast and morning pill" },
+                { time: "12:30 PM", label: L === "es" ? "Agua y comida ligera" : "Water and a light meal" },
+                { time: "2:45 PM", label: L === "es" ? "Música — Vicente Fernández" : "Music — Vicente Fernández" },
+                { time: "6:00 PM", label: L === "es" ? "Pastilla de la tarde" : "Evening pill" },
+                { time: "8:30 PM", label: L === "es" ? "Hora tranquila antes de dormir" : "Quiet time before bed" },
+              ].map((r, i) => (
+                <li key={i} className="rounded-xl border border-stone-200 bg-stone-50 p-3 flex items-center gap-3">
+                  <span className="text-base font-semibold w-20 text-primary">{r.time}</span>
+                  <span className="text-base">{r.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {view === "visitPrep" && <VisitPrep L={L} onBack={() => setView(null)} />}
+      </div>
+    </div>
+  );
+}
+
+function ToolRow({ icon, title, desc, onClick }: { icon: React.ReactNode; title: string; desc: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full text-left rounded-xl border border-stone-200 hover:border-primary/40 hover:bg-stone-50 p-3 flex items-start gap-3"
+    >
+      <span className="text-primary mt-0.5">{icon}</span>
+      <span className="flex-1">
+        <span className="block font-semibold">{title}</span>
+        <span className="block text-sm text-stone-600">{desc}</span>
+      </span>
+      <ArrowRight size={16} className="text-stone-400 mt-1" />
+    </button>
+  );
+}
+
+function VisitPrep({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
+  const entries = useDemoEntries();
+  const dayMs = 7 * 24 * 60 * 60 * 1000;
+  const recent = entries.filter((e) => Date.now() - e.createdAt < dayMs);
+  const episodes = recent.filter((e) => e.kind === "episode");
+  const notes = recent.filter((e) => e.kind === "note");
+
+  return (
+    <div className="mt-4 space-y-4">
+      <button onClick={onBack} className="text-sm underline">← {L === "es" ? "Atrás" : "Back"}</button>
+
+      <div className="rounded-xl bg-violet-50 border border-violet-200 p-3 text-sm text-violet-900">
+        {L === "es"
+          ? "Lleva esto a tu cita. COMPANION lo preparó por ti."
+          : "Bring this to your appointment. COMPANION put it together for you."}
+      </div>
+
+      <section>
+        <h4 className="font-semibold mb-2">{L === "es" ? "Lo que he registrado esta semana" : "What I've logged this week"}</h4>
+        {recent.length === 0 ? (
+          <p className="text-sm text-stone-600">
+            {L === "es" ? "Aún no hay registros nuevos esta semana." : "No new entries yet this week."}
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {episodes.map((e) => (
+              <li key={e.id} className="rounded-lg border border-stone-200 p-2 text-sm">
+                <span className="font-medium">{e.symptom}</span>
+                <span className="text-stone-600"> · {e.timeOfDay} · {L === "es" ? "ayudó:" : "helped:"} {e.intervention} → {e.outcome}</span>
+              </li>
+            ))}
+            {notes.map((n) => (
+              <li key={n.id} className="rounded-lg border border-stone-200 p-2 text-sm">
+                <span className="font-medium">{L === "es" ? "Nota" : "Note"}:</span>{" "}
+                <span className="text-stone-700">{n.note || (n.symptom ?? "")}</span>
+                {n.sleep && <span className="text-stone-500"> · {L === "es" ? "dormí" : "slept"} {n.sleep}</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section>
+        <h4 className="font-semibold mb-2">{L === "es" ? "Preguntas para el médico" : "Questions for the doctor"}</h4>
+        <ul className="list-disc pl-5 text-sm space-y-1 text-stone-700">
+          <li>{L === "es" ? "¿Es normal que me confunda por las tardes?" : "Is it normal that I get confused in the afternoons?"}</li>
+          <li>{L === "es" ? "¿Mis pastillas están bien como están?" : "Are my pills okay the way they are?"}</li>
+          <li>{L === "es" ? "¿Qué puedo hacer para dormir mejor?" : "What can I do to sleep better?"}</li>
+        </ul>
+      </section>
+
+      <section>
+        <h4 className="font-semibold mb-2">{L === "es" ? "Mis medicamentos" : "My medications"}</h4>
+        <ul className="text-sm space-y-1 text-stone-700">
+          <li>Donepezil 10 mg — 1× {L === "es" ? "por la noche" : "at night"}</li>
+          <li>Memantine 10 mg — 2× {L === "es" ? "al día" : "daily"}</li>
+          <li>Lisinopril 20 mg — 1× {L === "es" ? "por la mañana" : "in the morning"}</li>
+        </ul>
+      </section>
     </div>
   );
 }
