@@ -398,6 +398,50 @@ const RULES: AskRule[] = [
   },
   // ===== Patient (reminiscence only) =====
   {
+    keywords: ["what day", "what date", "today's date", "qué día", "que dia", "qué fecha", "que fecha"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: `Today is ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}. It's a good day, Rosa.`,
+        es: `Hoy es ${new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}. Es un buen día, Rosa.`,
+      },
+    },
+  },
+  {
+    keywords: ["wedding", "bride", "boda", "novia"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: "Your wedding was in 1962. White roses, your mother's favorite, filled the church.",
+        es: "Tu boda fue en 1962. Rosas blancas, las favoritas de tu mamá, llenaban la iglesia.",
+      },
+    },
+  },
+  {
+    keywords: ["grandchildren", "grandkids", "nietos"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: "Your grandchildren love the beach with you. They run to you every Sunday.",
+        es: "A tus nietos les encanta la playa contigo. Corren hacia ti cada domingo.",
+      },
+    },
+  },
+  {
+    keywords: ["sing", "canta", "cántame", "cantame"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: "How about 'Cielito Lindo'? You always sang the chorus the loudest.",
+        es: "¿Qué tal 'Cielito Lindo'? Siempre cantabas el coro más fuerte.",
+      },
+    },
+  },
+  {
     keywords: ["music", "song", "vicente", "música", "canción"],
     mode: "patient",
     response: {
