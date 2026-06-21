@@ -1,13 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen } from "lucide-react";
+import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
+import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
+import { useDemoEntries } from "@/lib/demo/log-store";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
 
 export const Route = createFileRoute("/demo/patient")({
@@ -30,6 +32,8 @@ function DemoPatient() {
   const [switchA1, setSwitchA1] = useState<boolean | null>(null);
   const [talkOpen, setTalkOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [moreView, setMoreView] = useState<null | "fullLog" | "reminders" | "visitPrep">(null);
 
   useEffect(() => {
     if (view !== "menu") return;
@@ -75,6 +79,7 @@ function DemoPatient() {
           <div className="relative px-6 pt-4 text-white">
             <h1 className="text-4xl sm:text-5xl font-semibold drop-shadow">{t("patient.greeting", { name: ROSA.preferredName })}</h1>
             <p className="mt-2 text-lg sm:text-xl drop-shadow text-white/90">{photo.caption[L]}</p>
+            <DateTimeDisplay L={L} />
           </div>
 
           {/* Spacer so the photo stays visible in the middle */}
@@ -107,10 +112,28 @@ function DemoPatient() {
                 <NotebookPen size={20} /> {L === "es" ? "Apuntar cómo me siento" : "Note how I feel"}
               </button>
             </div>
+
+            <div className="mt-3 max-w-3xl mx-auto flex justify-center">
+              <button
+                type="button"
+                onClick={() => { setMoreView(null); setMoreOpen(true); }}
+                className="text-sm text-white/95 inline-flex items-center gap-1.5 rounded-full bg-black/30 hover:bg-black/40 px-4 py-2 backdrop-blur"
+              >
+                <Sparkles size={14} /> {L === "es" ? "Más herramientas" : "More tools"}
+              </button>
+            </div>
           </div>
 
           {talkOpen && <TalkModal L={L} onClose={() => setTalkOpen(false)} />}
           {logOpen && <DemoPatientLogForm onClose={() => setLogOpen(false)} />}
+          {moreOpen && (
+            <MoreToolsModal
+              L={L}
+              view={moreView}
+              setView={setMoreView}
+              onClose={() => { setMoreOpen(false); setMoreView(null); }}
+            />
+          )}
 
           {switchOpen && (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
