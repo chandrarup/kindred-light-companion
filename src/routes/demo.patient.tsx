@@ -3,12 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
-import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
+import { ROSA, DEMO_PHOTOS, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
 import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
+import { DemoMusicPlayer } from "@/components/demo/DemoMusicPlayer";
 import { useDemoEntries } from "@/lib/demo/log-store";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
 
@@ -172,7 +173,7 @@ function DemoPatient() {
       )}
 
       {view === "people" && <PeopleView L={L} onBack={() => setView("menu")} />}
-      {view === "music" && <MusicView L={L} onBack={() => setView("menu")} />}
+      {view === "music" && <DemoMusicPlayer L={L} onBack={() => setView("menu")} />}
       {view === "selfcare" && (
         <SelfCareView
           L={L} t={t}
