@@ -134,8 +134,15 @@ export const DEMO_LOGS: DemoLog[] = [
   { id: "l9", date: isoDaysAgo(10), mood: 4, sleep: "well", notes: { en: "Sang all afternoon.", es: "Cantó toda la tarde." }, symptoms: [] },
   {
     id: "l10", date: isoDaysAgo(12), mood: 3, sleep: "okay",
-    notes: { en: "Mild confusion at dinner.", es: "Confusión leve en la cena." },
-    symptoms: [{ name: { en: "Confusion", es: "Confusión" }, timeOfDay: "evening" }],
+    notes: {
+      en: "Confused most of the day. Didn't recognize María when she visited. Saw 'people in the garden' that weren't there.",
+      es: "Confundida casi todo el día. No reconoció a María cuando vino. Vio 'gente en el jardín' que no estaba.",
+    },
+    symptoms: [
+      { name: { en: "Prolonged confusion", es: "Confusión prolongada" }, timeOfDay: "evening" },
+      { name: { en: "Did not recognize caregiver", es: "No reconoció a la cuidadora" }, timeOfDay: "afternoon" },
+      { name: { en: "Hallucinations", es: "Alucinaciones" }, timeOfDay: "afternoon" },
+    ],
   },
 ];
 
