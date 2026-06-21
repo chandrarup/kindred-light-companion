@@ -331,6 +331,8 @@ function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
         ))}
       </ul>
       <DemoCareHandoffButton L={L} />
+      <DemoEmergencyButton L={L} />
+      <DemoWhereIsRosa L={L} />
       <DemoFamiliarVoiceCard L={L} />
     </div>
   );
