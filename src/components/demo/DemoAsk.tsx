@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, X, Send, Play, ExternalLink, Phone, Mic, MicOff } from "lucide-react";
 import { askCanned, type AskResponse } from "@/lib/demo/data";
 import { useT } from "@/i18n/I18nProvider";
 
 type Msg = { role: "user" | "assistant"; text?: string; response?: AskResponse };
 
-const SUGGESTIONS_CAREGIVER = [
+const SUGGESTIONS_CAREGIVER: { en: string; es: string }[] = [
   { en: "Why does she get upset in the afternoon?", es: "¿Por qué se molesta por la tarde?" },
   { en: "What helps when she won't calm down?", es: "¿Qué ayuda cuando no se calma?" },
   { en: "She didn't sleep well — what can I do?", es: "No durmió bien — ¿qué puedo hacer?" },
@@ -18,20 +18,34 @@ const SUGGESTIONS_CAREGIVER = [
   { en: "What exercise is safe for her?", es: "¿Qué ejercicio es seguro para ella?" },
   { en: "What are the stages of Alzheimer's?", es: "¿Cuáles son las etapas del Alzheimer?" },
 ];
-const SUGGESTIONS_PATIENT = [
+const SUGGESTIONS_PATIENT: { en: string; es: string }[] = [
   { en: "Tell me about my music", es: "Cuéntame de mi música" },
   { en: "What was my work?", es: "¿Cuál era mi trabajo?" },
   { en: "Who is María?", es: "¿Quién es María?" },
+  { en: "What day is it today?", es: "¿Qué día es hoy?" },
+  { en: "Tell me about my wedding", es: "Cuéntame de mi boda" },
+  { en: "Who are my grandchildren?", es: "¿Quiénes son mis nietos?" },
+  { en: "Sing me something", es: "Cántame algo" },
+];
+const SUGGESTIONS_PHYSICIAN: { en: string; es: string }[] = [
+  { en: "What's changed since last visit?", es: "¿Qué ha cambiado desde la última visita?" },
+  { en: "How often is the agitation happening?", es: "¿Con qué frecuencia ocurre la agitación?" },
+  { en: "What's been helping?", es: "¿Qué le está ayudando?" },
+  { en: "What does her sleep look like?", es: "¿Cómo está su sueño?" },
+  { en: "Any safety events?", es: "¿Algún evento de seguridad?" },
+  { en: "What should I ask the caregiver?", es: "¿Qué debo preguntarle a la cuidadora?" },
 ];
 
-export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
+export function DemoAsk({ mode, context }: { mode: "patient" | "caregiver"; context?: "patient" | "caregiver" | "physician" }) {
   const { t, lang } = useT();
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
+  const ctx: "patient" | "caregiver" | "physician" = context ?? mode;
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [listening, setListening] = useState(false);
   const [voiceErr, setVoiceErr] = useState<string | null>(null);
+  const [sugCursor, setSugCursor] = useState(0);
   const recognitionRef = useRef<any>(null);
 
   const SpeechRecognition =
@@ -44,14 +58,28 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
     return () => { try { recognitionRef.current?.stop?.(); } catch {} };
   }, []);
 
-  const suggestions = mode === "patient" ? SUGGESTIONS_PATIENT : SUGGESTIONS_CAREGIVER;
+  const pool = useMemo(() => {
+    if (ctx === "physician") return SUGGESTIONS_PHYSICIAN;
+    if (ctx === "patient") return SUGGESTIONS_PATIENT;
+    return SUGGESTIONS_CAREGIVER;
+  }, [ctx]);
+
+  // Rotating window of 3 suggestions, refreshed after every assistant reply.
+  const visibleSuggestions = useMemo(() => {
+    const out: { en: string; es: string }[] = [];
+    for (let i = 0; i < Math.min(3, pool.length); i++) {
+      out.push(pool[(sugCursor + i) % pool.length]);
+    }
+    return out;
+  }, [pool, sugCursor]);
 
   function send(q: string) {
     const text = q.trim();
     if (!text) return;
-    const response = askCanned(text, mode);
+    const response = askCanned(text, ctx);
     setMsgs((m) => [...m, { role: "user", text }, { role: "assistant", response }]);
     setInput("");
+    setSugCursor((c) => c + 3);
   }
 
   function toggleVoice() {
@@ -105,21 +133,6 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
           </div>
 
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            {msgs.length === 0 && (
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">{t("demo.ask.tryAsking")}</p>
-                {suggestions.map((s, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => send(s[L])}
-                    className="block w-full text-left text-sm rounded-lg border border-border bg-muted/40 px-3 py-2 hover:bg-muted"
-                  >
-                    {s[L]}
-                  </button>
-                ))}
-              </div>
-            )}
             {msgs.map((m, i) => (
               <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
                 {m.role === "user" ? (
@@ -129,6 +142,23 @@ export function DemoAsk({ mode }: { mode: "patient" | "caregiver" }) {
                 )}
               </div>
             ))}
+
+            {/* Always offer fresh suggestions after every reply — never runs out. */}
+            <div className="space-y-2 pt-1">
+              <p className="text-xs text-muted-foreground">
+                {msgs.length === 0 ? t("demo.ask.tryAsking") : (L === "es" ? "Sigue preguntando:" : "Keep asking:")}
+              </p>
+              {visibleSuggestions.map((s, i) => (
+                <button
+                  key={`${sugCursor}-${i}`}
+                  type="button"
+                  onClick={() => send(s[L])}
+                  className="block w-full text-left text-sm rounded-lg border border-border bg-muted/40 px-3 py-2 hover:bg-muted"
+                >
+                  {s[L]}
+                </button>
+              ))}
+            </div>
           </div>
 
           <form

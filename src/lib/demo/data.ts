@@ -103,6 +103,7 @@ export const DEMO_REMINDERS = [
 
 // ===== Ask Companion canned responses =====
 export type AskMode = "patient" | "caregiver";
+export type AskContext = "patient" | "caregiver" | "physician";
 export type AskResponse = {
   kind: "personalized" | "educational" | "grounded" | "emergency" | "guardrail" | "reminiscence" | "fallback";
   text: { en: string; es: string };
@@ -112,9 +113,66 @@ export type AskResponse = {
   actions?: { label: { en: string; es: string }; phone?: string }[];
 };
 
-type AskRule = { keywords: string[]; mode: AskMode | "both"; response: AskResponse };
+type AskRule = { keywords: string[]; mode: AskMode | "both" | "physician"; response: AskResponse };
 
 const RULES: AskRule[] = [
+  // ===== Physician (pulls from logged data) =====
+  {
+    keywords: ["changed", "change since", "since last", "cambio", "desde la última"],
+    mode: "physician",
+    response: {
+      kind: "personalized",
+      text: {
+        en: "Since the last visit (12 days): 5 afternoon-agitation episodes clustered 2:30–3:30 PM, 3 nights of poor sleep, one appetite drop on day 3, and a new repetition pattern around 'going to the school' at ~3 PM. Mood average 3.0/5 (vs 3.4 prior).",
+        es: "Desde la última visita (12 días): 5 episodios de agitación por la tarde entre 2:30 y 3:30 PM, 3 noches de mal sueño, una baja de apetito el día 3, y un nuevo patrón de repetición sobre 'ir a la escuela' cerca de las 3 PM. Ánimo promedio 3.0/5 (antes 3.4).",
+      },
+    },
+  },
+  {
+    keywords: ["how often", "frequency", "frecuencia", "cuántas veces", "cuantas veces"],
+    mode: "physician",
+    response: {
+      kind: "personalized",
+      text: {
+        en: "Agitation: 5 logged episodes in the last 8 days, all between 2:30–3:30 PM. Repetition episodes: 2 in the same window. Sundowning-style distress: 1 at sunset (day 5).",
+        es: "Agitación: 5 episodios registrados en los últimos 8 días, todos entre 2:30 y 3:30 PM. Episodios de repetición: 2 en la misma franja. Angustia tipo sundowning: 1 al atardecer (día 5).",
+      },
+    },
+  },
+  {
+    keywords: ["helping", "what works", "what's been working", "qué ayuda", "que ayuda", "está funcionando", "esta funcionando"],
+    mode: "physician",
+    response: {
+      kind: "personalized",
+      text: {
+        en: "Music + dim lights at 2:45 PM has eased or resolved 6 of 8 logged distress moments. Morning walks are tied to her best-sleep nights (4/5 days). Redirecting with familiar photos worked the one time it was tried.",
+        es: "Música + luces tenues a las 2:45 PM ha aliviado o resuelto 6 de 8 momentos de angustia registrados. Las caminatas matutinas se asocian con sus mejores noches de sueño (4/5 días). Redirigir con fotos familiares funcionó la única vez que se intentó.",
+      },
+    },
+  },
+  {
+    keywords: ["sleep trend", "sleep pattern", "sueño", "patrón de sueño", "patron de sueno"],
+    mode: "physician",
+    response: {
+      kind: "grounded",
+      text: {
+        en: "Sleep last 12 days: 5 'well', 4 'okay', 3 'poorly'. Poor nights cluster after days with afternoon agitation, suggesting a circadian/3 PM linkage rather than a primary sleep disorder.",
+        es: "Sueño últimos 12 días: 5 'bien', 4 'regular', 3 'mal'. Las malas noches se agrupan tras días con agitación por la tarde, sugiriendo un vínculo circadiano/3 PM más que un trastorno primario del sueño.",
+      },
+      source: { label: "Alzheimer's Association — Sleep", url: "https://www.alz.org/help-support/caregiving/daily-care/sleep-issues-sundowning" },
+    },
+  },
+  {
+    keywords: ["safety", "risk", "fall", "wander", "seguridad", "riesgo", "caída", "deambular"],
+    mode: "physician",
+    response: {
+      kind: "grounded",
+      text: {
+        en: "No falls, no wandering events, and no missed medications logged this period. Caregiver has flagged afternoon agitation as the main escalation risk.",
+        es: "Sin caídas, sin episodios de deambular y sin medicaciones perdidas en este periodo. La cuidadora marca la agitación por la tarde como el principal riesgo de escalada.",
+      },
+    },
+  },
   // ===== Caregiver =====
   {
     keywords: ["afternoon", "agitated", "agitation", "3pm", "three pm", "late afternoon", "sundown", "sundowning", "tarde", "agitad"],
@@ -340,6 +398,50 @@ const RULES: AskRule[] = [
   },
   // ===== Patient (reminiscence only) =====
   {
+    keywords: ["what day", "what date", "today's date", "qué día", "que dia", "qué fecha", "que fecha"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: `Today is ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}. It's a good day, Rosa.`,
+        es: `Hoy es ${new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}. Es un buen día, Rosa.`,
+      },
+    },
+  },
+  {
+    keywords: ["wedding", "bride", "boda", "novia"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: "Your wedding was in 1962. White roses, your mother's favorite, filled the church.",
+        es: "Tu boda fue en 1962. Rosas blancas, las favoritas de tu mamá, llenaban la iglesia.",
+      },
+    },
+  },
+  {
+    keywords: ["grandchildren", "grandkids", "nietos"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: "Your grandchildren love the beach with you. They run to you every Sunday.",
+        es: "A tus nietos les encanta la playa contigo. Corren hacia ti cada domingo.",
+      },
+    },
+  },
+  {
+    keywords: ["sing", "canta", "cántame", "cantame"],
+    mode: "patient",
+    response: {
+      kind: "reminiscence",
+      text: {
+        en: "How about 'Cielito Lindo'? You always sang the chorus the loudest.",
+        es: "¿Qué tal 'Cielito Lindo'? Siempre cantabas el coro más fuerte.",
+      },
+    },
+  },
+  {
     keywords: ["music", "song", "vicente", "música", "canción"],
     mode: "patient",
     response: {
@@ -374,10 +476,13 @@ const RULES: AskRule[] = [
   },
 ];
 
-export function askCanned(question: string, mode: AskMode): AskResponse {
+export function askCanned(question: string, mode: AskMode | "physician"): AskResponse {
   const q = question.toLowerCase();
+  // Physician questions match physician rules first, then fall through to caregiver rules.
+  const modesToTry: (AskMode | "physician" | "both")[] =
+    mode === "physician" ? ["physician", "caregiver", "both"] : [mode, "both"];
   for (const rule of RULES) {
-    if (rule.mode !== "both" && rule.mode !== mode) continue;
+    if (!modesToTry.includes(rule.mode)) continue;
     if (rule.keywords.some((k) => q.includes(k.toLowerCase()))) return rule.response;
   }
   if (mode === "patient") {
