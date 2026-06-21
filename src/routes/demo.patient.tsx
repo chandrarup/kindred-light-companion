@@ -64,7 +64,7 @@ function DemoPatient() {
               key={photo.id}
               src={photo.image}
               alt={photo.caption[L]}
-              className="absolute inset-0 h-full w-full object-cover animate-[fadeIn_900ms_ease-out]"
+              className="absolute inset-0 h-full w-full object-cover motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
             />
             {/* Soft scrim only at top and bottom — middle stays clear */}
             <div className="pointer-events-none absolute inset-x-0 top-0 h-44 sm:h-56 bg-gradient-to-b from-black/55 via-black/20 to-transparent" />
