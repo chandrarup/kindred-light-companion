@@ -12,6 +12,7 @@ import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
 import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
 import { DemoCareHandoffButton } from "@/components/demo/DemoCareHandoff";
 import { DemoFamiliarVoiceCard } from "@/components/demo/DemoFamiliarVoiceCard";
+import { DemoRedFlagBanner, DemoEmergencyButton, DemoWhereIsRosa } from "@/components/demo/DemoSafety";
 import { useDemoEntries, type DemoEntry } from "@/lib/demo/log-store";
 
 export const Route = createFileRoute("/demo/caregiver")({
@@ -179,6 +180,7 @@ function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es";
   const liveEntries = useDemoEntries();
   return (
     <div className="space-y-6">
+      <DemoRedFlagBanner L={L} />
       <div className="flex flex-wrap items-end justify-between gap-3 lg:hidden">
         <div>
           <p className="text-sm text-muted-foreground">{t("demo.caregiver.today")}</p>
@@ -329,6 +331,8 @@ function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
         ))}
       </ul>
       <DemoCareHandoffButton L={L} />
+      <DemoEmergencyButton L={L} />
+      <DemoWhereIsRosa L={L} />
       <DemoFamiliarVoiceCard L={L} />
     </div>
   );
