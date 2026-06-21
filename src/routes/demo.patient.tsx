@@ -3,12 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
-import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
+import { ROSA, DEMO_PHOTOS, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
 import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
+import { DemoMusicPlayer } from "@/components/demo/DemoMusicPlayer";
 import { useDemoEntries } from "@/lib/demo/log-store";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
 
@@ -172,7 +173,7 @@ function DemoPatient() {
       )}
 
       {view === "people" && <PeopleView L={L} onBack={() => setView("menu")} />}
-      {view === "music" && <MusicView L={L} onBack={() => setView("menu")} />}
+      {view === "music" && <DemoMusicPlayer L={L} onBack={() => setView("menu")} />}
       {view === "selfcare" && (
         <SelfCareView
           L={L} t={t}
@@ -214,59 +215,6 @@ function PeopleView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
         <NavBtn icon={<ChevronLeft />} label={t("patient.prev")} onClick={() => setI((x) => (x - 1 + DEMO_PHOTOS.length) % DEMO_PHOTOS.length)} />
         <NavBtn icon={<ChevronRight />} label={t("patient.next")} onClick={() => setI((x) => (x + 1) % DEMO_PHOTOS.length)} />
       </div>
-    </div>
-  );
-}
-
-function MusicView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
-  const { t } = useT();
-  const [playing, setPlaying] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  function toggle(id: string, url: string) {
-    const a = audioRef.current;
-    if (!a) return;
-    if (playing === id) {
-      a.pause();
-      setPlaying(null);
-      return;
-    }
-    a.src = url;
-    a.play().then(() => setPlaying(id)).catch(() => setPlaying(null));
-  }
-
-  useEffect(() => {
-    return () => { audioRef.current?.pause(); };
-  }, []);
-
-  return (
-    <div className="px-4 py-6 max-w-2xl mx-auto">
-      <BackBar onBack={onBack} label={t("patient.music")} />
-      <audio ref={audioRef} onEnded={() => setPlaying(null)} preload="none" />
-      <ul className="space-y-3">
-        {DEMO_MUSIC.map((m) => (
-          <li key={m.id}>
-            <button
-              type="button"
-              onClick={() => toggle(m.id, m.url)}
-              className={`w-full text-left rounded-2xl border p-4 flex items-center gap-4 ${playing === m.id ? "border-primary bg-primary/10" : "border-border bg-card"}`}
-            >
-              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center">
-                {playing === m.id ? <Pause size={22} /> : <Play size={22} />}
-              </div>
-              <div>
-                <p className="text-lg font-semibold">{m.title}</p>
-                <p className="text-muted-foreground">{m.artist}</p>
-              </div>
-            </button>
-          </li>
-        ))}
-      </ul>
-      {playing && (
-        <p className="mt-4 text-center text-muted-foreground inline-flex items-center justify-center gap-2 w-full">
-          <Volume2 size={16} /> {L === "es" ? "Reproduciendo música de muestra" : "Playing sample track"}…
-        </p>
-      )}
     </div>
   );
 }

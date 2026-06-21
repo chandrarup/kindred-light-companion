@@ -23,13 +23,59 @@ export const DEMO_PHOTOS: DemoPhoto[] = [
   { id: "garden",  caption: { en: "Her garden in spring", es: "Su jardín en primavera" }, gradient: "from-emerald-200 via-green-100 to-teal-200", emoji: "🌷" },
 ];
 
-export const DEMO_MUSIC: { id: string; title: string; artist: string; url: string }[] = [
-  // Royalty-free instrumental samples (SoundHelix) used as demo audio so judges
-  // can actually hear playback without licensing real recordings.
-  { id: "el-rey",  title: "El Rey",          artist: "Vicente Fernández",   url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { id: "volver",  title: "Volver, Volver",  artist: "Vicente Fernández",   url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-  { id: "cielito", title: "Cielito Lindo",   artist: "Pedro Infante",       url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-  { id: "besame",  title: "Bésame Mucho",    artist: "Consuelo Velázquez",  url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+export type DemoTrack = {
+  id: string;
+  title: string;
+  artist: string;
+  /** Royalty-free fallback (always plays). */
+  url: string;
+  /** Apple Music catalog song ID (US storefront). */
+  appleId?: string;
+  /** YouTube video ID — prefer verified-artist Topic channel uploads. */
+  ytId?: string;
+};
+
+export const DEMO_MUSIC: DemoTrack[] = [
+  {
+    id: "el-rey",
+    title: "El Rey",
+    artist: "Vicente Fernández",
+    appleId: "322076425",
+    ytId: "U6qMQnNst9U",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  },
+  {
+    id: "volver",
+    title: "Volver, Volver",
+    artist: "Vicente Fernández",
+    appleId: "638203364",
+    ytId: "NPg_jbGYzgA", // Vicente Fernández - Topic
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+  },
+  {
+    id: "maldito",
+    title: "Por Tu Maldito Amor",
+    artist: "Vicente Fernández",
+    appleId: "289636500",
+    ytId: "gfm2zSgQ8cQ",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+  },
+  {
+    id: "cien-anos",
+    title: "Cien Años",
+    artist: "Pedro Infante",
+    appleId: "1443014653",
+    ytId: "uMY71QLyQgI", // Pedro Infante - Topic
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+  },
+  {
+    id: "besame",
+    title: "Bésame Mucho",
+    artist: "Trio Los Panchos",
+    appleId: "1443014321",
+    ytId: "pwRiKDcrjz0",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+  },
 ];
 
 export const DEMO_PEOPLE = [
