@@ -9,7 +9,7 @@ import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoRemi
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
 import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
-import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
+import { DemoCaregiverDailyLogForm } from "@/components/demo/DemoCaregiverDailyLogForm";
 import { DemoCareHandoffButton } from "@/components/demo/DemoCareHandoff";
 import { DemoFamiliarVoiceCard } from "@/components/demo/DemoFamiliarVoiceCard";
 import { DemoRedFlagBanner, DemoEmergencyButton, DemoWhereIsRosa } from "@/components/demo/DemoSafety";
@@ -101,7 +101,12 @@ function DemoCaregiver() {
       <DemoReminder mode="caregiver" />
       <DemoAsk mode="caregiver" context={tab === "summary" ? "physician" : "caregiver"} />
       {episodeOpen && <DemoEpisodeForm source="caregiver" onClose={() => setEpisodeOpen(false)} />}
-      {noteOpen && <DemoPatientLogForm onClose={() => setNoteOpen(false)} />}
+      {noteOpen && (
+        <DemoCaregiverDailyLogForm
+          onClose={() => setNoteOpen(false)}
+          onOpenEpisode={() => setEpisodeOpen(true)}
+        />
+      )}
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:border-r lg:border-border lg:bg-card">
@@ -211,8 +216,8 @@ function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es";
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.actions")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <ActionTile icon={<MessageCircle />} label={L === "es" ? "Anotación rápida" : "Quick note"} onClick={openNote} />
-          <ActionTile icon={<AlertCircle />} label={L === "es" ? "Momento difícil" : "Difficult moment"} onClick={openEpisode} />
+          <ActionTile icon={<MessageCircle />} label={L === "es" ? "Anotar el día" : "Add daily log"} onClick={openNote} />
+          <ActionTile icon={<AlertCircle />} label={L === "es" ? "Registrar episodio" : "Log an episode"} onClick={openEpisode} />
           <ActionTile icon={<Camera />} label={L === "es" ? "Fotos" : "Photos"} onClick={() => setPreview(COMING_SOON.photos)} />
           <ActionTile icon={<BookOpen />} label={L === "es" ? "Aprender" : "Learn"} onClick={() => setPreview(COMING_SOON.learn)} />
         </div>
