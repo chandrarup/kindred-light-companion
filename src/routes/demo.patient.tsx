@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
-import { ROSA, DEMO_PHOTOS, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
+import { ROSA, DEMO_PHOTOS, DEMO_PEOPLE } from "@/lib/demo/data";
+import { demoTalkReply } from "@/lib/demo-talk.functions";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
@@ -302,12 +303,22 @@ function SelfChoice({ prompt, options, onPick }: { prompt: string; options: stri
   );
 }
 
+type TalkTurn = { role: "user" | "assistant"; content: string };
+
 function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
+  const greeting =
+    L === "es"
+      ? `Hola Rosa, qué bonito escuchar tu voz. ¿Qué tienes en el corazón hoy?`
+      : `Hello Rosa, it's so good to hear your voice. What's on your mind today?`;
+
+  const [turns, setTurns] = useState<TalkTurn[]>([{ role: "assistant", content: greeting }]);
   const [listening, setListening] = useState(false);
-  const [heard, setHeard] = useState("");
-  const [reply, setReply] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const [interim, setInterim] = useState("");
+  const [thinking, setThinking] = useState(false);
+  const [textMode, setTextMode] = useState(false);
+  const [draft, setDraft] = useState("");
   const recRef = useRef<any>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const SR =
     typeof window !== "undefined"
@@ -321,61 +332,83 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = L === "es" ? "es-ES" : "en-US";
-      u.rate = 0.95;
-      u.pitch = 1;
+      u.rate = 0.92;
+      u.pitch = 1.02;
       window.speechSynthesis.speak(u);
-    } catch {}
+    } catch {/*noop*/}
   }
 
-  function handleTranscript(q: string) {
-    setHeard(q);
-    const r = askCanned(q, "patient");
-    const text = r.text[L];
-    setReply(text);
-    speak(text);
-  }
+  // Greet aloud on open (after a small delay so dialog animation is in).
+  useEffect(() => {
+    const id = setTimeout(() => speak(greeting), 350);
+    return () => clearTimeout(id);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function start() {
-    setErr(null);
-    setReply(null);
-    setHeard("");
-    if (!supported) {
-      setErr(L === "es" ? "Tu navegador no permite la voz. Probaremos con texto." : "Voice isn't available in this browser.");
-      return;
+  // Auto-scroll on new turn
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [turns, thinking, interim]);
+
+  async function sendUserText(userText: string) {
+    const trimmed = userText.trim();
+    if (!trimmed) return;
+    const history = turns.slice(-12); // keep context manageable
+    const nextTurns = [...turns, { role: "user" as const, content: trimmed }];
+    setTurns(nextTurns);
+    setInterim("");
+    setThinking(true);
+    try {
+      const r = await demoTalkReply({ data: { lang: L, history, userText: trimmed } });
+      const reply = r.reply;
+      setTurns((t) => [...t, { role: "assistant", content: reply }]);
+      speak(reply);
+    } catch {
+      const fb = L === "es"
+        ? "Qué bonito escucharte. Cuéntame más, querida."
+        : "It's so nice to hear you. Tell me more, dear.";
+      setTurns((t) => [...t, { role: "assistant", content: fb }]);
+      speak(fb);
+    } finally {
+      setThinking(false);
     }
+  }
+
+  function startListening() {
+    if (!supported) { setTextMode(true); return; }
+    try { window.speechSynthesis?.cancel(); } catch {/*noop*/}
     const rec = new SR();
     rec.lang = L === "es" ? "es-ES" : "en-US";
     rec.interimResults = true;
     rec.continuous = false;
     let finalText = "";
     rec.onresult = (e: any) => {
-      let interim = "";
+      let interimText = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const r = e.results[i];
         if (r.isFinal) finalText += r[0].transcript;
-        else interim += r[0].transcript;
+        else interimText += r[0].transcript;
       }
-      setHeard((finalText + interim).trim());
+      setInterim((finalText + " " + interimText).trim());
     };
-    rec.onerror = () => { setListening(false); };
+    rec.onerror = () => setListening(false);
     rec.onend = () => {
       setListening(false);
       const q = finalText.trim();
-      if (q) handleTranscript(q);
+      if (q) void sendUserText(q);
     };
     recRef.current = rec;
     try { rec.start(); setListening(true); } catch { setListening(false); }
   }
 
-  function stop() {
-    try { recRef.current?.stop(); } catch {}
+  function stopListening() {
+    try { recRef.current?.stop(); } catch {/*noop*/}
     setListening(false);
   }
 
   useEffect(() => {
     return () => {
-      try { recRef.current?.stop(); } catch {}
-      try { window.speechSynthesis?.cancel(); } catch {}
+      try { recRef.current?.stop(); } catch {/*noop*/}
+      try { window.speechSynthesis?.cancel(); } catch {/*noop*/}
     };
   }, []);
 
@@ -384,66 +417,117 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
     : (L === "es" ? "Toca para hablar" : "Tap to talk");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
-      <div className="w-full max-w-md rounded-2xl bg-white text-stone-900 shadow-2xl p-6 relative">
-        <button onClick={() => { stop(); onClose(); }} aria-label="Close" className="absolute right-3 top-3 p-1 rounded hover:bg-stone-100">
-          <X size={18} />
+    <div className="fixed inset-0 z-50 bg-gradient-to-br from-rose-50 via-amber-50 to-orange-50 flex flex-col" role="dialog" aria-modal="true">
+      {/* Header */}
+      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+        <span className="text-sm text-stone-500">
+          {L === "es" ? "Conversación con COMPANION" : "Conversation with COMPANION"}
+        </span>
+        <button
+          onClick={() => { stopListening(); try { window.speechSynthesis?.cancel(); } catch {/*noop*/} onClose(); }}
+          aria-label={L === "es" ? "Cerrar" : "Close"}
+          className="p-2 rounded-full hover:bg-white/60 text-stone-600"
+        >
+          <X size={22} />
         </button>
-        <h3 className="text-xl font-semibold text-center">
-          {L === "es" ? "Hablar con COMPANION" : "Talk with COMPANION"}
-        </h3>
-        <p className="mt-1 text-center text-sm text-stone-500">
-          {L === "es" ? "Habla en español o inglés." : "Speak in English or Spanish."}
-        </p>
+      </div>
 
-        <div className="mt-6 flex flex-col items-center gap-3">
-          <button
-            type="button"
-            onClick={listening ? stop : start}
-            className={`h-24 w-24 rounded-full inline-flex items-center justify-center shadow-lg transition ${
-              listening ? "bg-red-500 text-white animate-pulse" : "bg-primary text-primary-foreground hover:scale-105"
-            }`}
-            aria-pressed={listening}
+      {/* Conversation */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 pb-4 space-y-4 max-w-2xl w-full mx-auto">
+        {turns.map((t, i) => (
+          <div key={i} className={t.role === "assistant" ? "" : "flex justify-end"}>
+            {t.role === "assistant" ? (
+              <div className="rounded-3xl bg-white/85 shadow-sm px-5 py-4 max-w-[90%]">
+                <p className="text-[11px] uppercase tracking-wider font-semibold text-rose-500 mb-1 inline-flex items-center gap-1">
+                  <Volume2 size={12} /> COMPANION
+                </p>
+                <p className="text-2xl leading-relaxed text-stone-800">{t.content}</p>
+              </div>
+            ) : (
+              <div className="rounded-3xl bg-rose-500 text-white shadow-sm px-5 py-3 max-w-[85%]">
+                <p className="text-xl leading-relaxed">{t.content}</p>
+              </div>
+            )}
+          </div>
+        ))}
+        {interim && listening && (
+          <div className="flex justify-end">
+            <div className="rounded-3xl bg-rose-200 text-rose-900 px-5 py-3 max-w-[85%] italic">
+              <p className="text-xl">{interim}…</p>
+            </div>
+          </div>
+        )}
+        {thinking && (
+          <div>
+            <div className="rounded-3xl bg-white/70 px-5 py-3 inline-flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-rose-400 animate-bounce" />
+              <span className="h-2 w-2 rounded-full bg-rose-400 animate-bounce" style={{ animationDelay: "0.15s" }} />
+              <span className="h-2 w-2 rounded-full bg-rose-400 animate-bounce" style={{ animationDelay: "0.3s" }} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mic / input */}
+      <div className="px-4 pb-6 pt-2 bg-white/40 backdrop-blur">
+        {!textMode && (
+          <div className="flex flex-col items-center gap-2 max-w-2xl mx-auto">
+            <button
+              type="button"
+              onClick={listening ? stopListening : startListening}
+              disabled={thinking}
+              className={`h-24 w-24 rounded-full inline-flex items-center justify-center shadow-xl transition ${
+                listening
+                  ? "bg-red-500 text-white animate-pulse"
+                  : "bg-rose-500 text-white hover:scale-105 disabled:opacity-50"
+              }`}
+              aria-pressed={listening}
+              aria-label={tapLabel}
+            >
+              {listening ? <MicOff size={40} /> : <Mic size={40} />}
+            </button>
+            <p className="text-base text-stone-600">{tapLabel}</p>
+            {supported && (
+              <button
+                onClick={() => setTextMode(true)}
+                className="text-xs text-stone-500 underline"
+              >
+                {L === "es" ? "Escribir en su lugar" : "Type instead"}
+              </button>
+            )}
+          </div>
+        )}
+        {textMode && (
+          <form
+            onSubmit={(e) => { e.preventDefault(); const v = draft; setDraft(""); void sendUserText(v); }}
+            className="flex gap-2 max-w-2xl mx-auto"
           >
-            {listening ? <MicOff size={36} /> : <Mic size={36} />}
-          </button>
-          <p className="text-sm text-stone-600">{tapLabel}</p>
-        </div>
-
-        {heard && (
-          <div className="mt-5 rounded-xl bg-stone-100 px-4 py-3">
-            <p className="text-[11px] uppercase tracking-wide font-semibold text-stone-500 mb-1">
-              {L === "es" ? "Tú dijiste" : "You said"}
-            </p>
-            <p className="text-base">{heard}</p>
-          </div>
-        )}
-
-        {reply && (
-          <div className="mt-3 rounded-xl bg-violet-50 border border-violet-200 text-violet-900 px-4 py-3">
-            <p className="text-[11px] uppercase tracking-wide font-semibold opacity-70 mb-1 inline-flex items-center gap-1">
-              <Volume2 size={12} /> COMPANION
-            </p>
-            <p className="text-base">{reply}</p>
-          </div>
-        )}
-
-        {err && <p className="mt-3 text-sm text-amber-700">{err}</p>}
-
-        {!supported && (
-          <div className="mt-4 flex gap-2">
             <input
+              autoFocus
               type="text"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
               placeholder={L === "es" ? "Escribe lo que quieras decir…" : "Type what you'd like to say…"}
-              className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const v = (e.target as HTMLInputElement).value.trim();
-                  if (v) { handleTranscript(v); (e.target as HTMLInputElement).value = ""; }
-                }
-              }}
+              className="flex-1 rounded-2xl border border-stone-300 bg-white px-4 py-3 text-lg"
             />
-          </div>
+            <button
+              type="submit"
+              disabled={!draft.trim() || thinking}
+              className="rounded-2xl bg-rose-500 text-white px-5 font-semibold disabled:opacity-50"
+            >
+              {L === "es" ? "Enviar" : "Send"}
+            </button>
+            {supported && (
+              <button
+                type="button"
+                onClick={() => setTextMode(false)}
+                aria-label={L === "es" ? "Usar micrófono" : "Use mic"}
+                className="rounded-2xl border border-stone-300 px-3"
+              >
+                <Mic size={20} />
+              </button>
+            )}
+          </form>
         )}
       </div>
     </div>
