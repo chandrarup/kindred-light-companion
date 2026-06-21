@@ -215,7 +215,7 @@ export function DemoVoicePanel({
       else if (/(hard|bad|mal|dif[ií]cil)/.test(lower)) ext.mood = 1;
       if (/(slept well|durmi[oó] bien|sleep well)/.test(lower)) ext.sleep = "well";
       else if (/(slept okay|slept ok|durmi[oó] regular)/.test(lower)) ext.sleep = "okay";
-      else if (/(didn'?t sleep|poor sleep|no durmi|mal/.test(lower)) ext.sleep = "poorly";
+      else if (/(didn'?t sleep|poor sleep|no durmi[oó]|durmi[oó] mal)/.test(lower)) ext.sleep = "poorly";
       if (/confus|confundid/.test(lower)) ext.symptom = "Confused";
       else if (/restless|inquiet|agitad/.test(lower)) ext.symptom = "Restless";
       else if (/sad|trist/.test(lower)) ext.symptom = "Sad";
