@@ -13,6 +13,7 @@ import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
 import { DemoCareHandoffButton } from "@/components/demo/DemoCareHandoff";
 import { DemoFamiliarVoiceCard } from "@/components/demo/DemoFamiliarVoiceCard";
 import { DemoRedFlagBanner, DemoEmergencyButton, DemoWhereIsRosa } from "@/components/demo/DemoSafety";
+import { DemoResources } from "@/components/demo/DemoResources";
 import { useDemoEntries, type DemoEntry } from "@/lib/demo/log-store";
 
 export const Route = createFileRoute("/demo/caregiver")({
@@ -334,6 +335,7 @@ function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
       <DemoEmergencyButton L={L} />
       <DemoWhereIsRosa L={L} />
       <DemoFamiliarVoiceCard L={L} />
+      <DemoResources L={L} />
     </div>
   );
 }
