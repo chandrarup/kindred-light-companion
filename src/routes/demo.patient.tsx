@@ -219,59 +219,6 @@ function PeopleView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
   );
 }
 
-function MusicView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
-  const { t } = useT();
-  const [playing, setPlaying] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  function toggle(id: string, url: string) {
-    const a = audioRef.current;
-    if (!a) return;
-    if (playing === id) {
-      a.pause();
-      setPlaying(null);
-      return;
-    }
-    a.src = url;
-    a.play().then(() => setPlaying(id)).catch(() => setPlaying(null));
-  }
-
-  useEffect(() => {
-    return () => { audioRef.current?.pause(); };
-  }, []);
-
-  return (
-    <div className="px-4 py-6 max-w-2xl mx-auto">
-      <BackBar onBack={onBack} label={t("patient.music")} />
-      <audio ref={audioRef} onEnded={() => setPlaying(null)} preload="none" />
-      <ul className="space-y-3">
-        {DEMO_MUSIC.map((m) => (
-          <li key={m.id}>
-            <button
-              type="button"
-              onClick={() => toggle(m.id, m.url)}
-              className={`w-full text-left rounded-2xl border p-4 flex items-center gap-4 ${playing === m.id ? "border-primary bg-primary/10" : "border-border bg-card"}`}
-            >
-              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center">
-                {playing === m.id ? <Pause size={22} /> : <Play size={22} />}
-              </div>
-              <div>
-                <p className="text-lg font-semibold">{m.title}</p>
-                <p className="text-muted-foreground">{m.artist}</p>
-              </div>
-            </button>
-          </li>
-        ))}
-      </ul>
-      {playing && (
-        <p className="mt-4 text-center text-muted-foreground inline-flex items-center justify-center gap-2 w-full">
-          <Volume2 size={16} /> {L === "es" ? "Reproduciendo música de muestra" : "Playing sample track"}…
-        </p>
-      )}
-    </div>
-  );
-}
-
 function NavBtn({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-lg">
