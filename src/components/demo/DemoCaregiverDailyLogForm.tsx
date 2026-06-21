@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Check } from "lucide-react";
 import { addDemoNote } from "@/lib/demo/log-store";
 import { useT } from "@/i18n/I18nProvider";
+import { DemoVoicePanel, VoiceToggleButton } from "./DemoVoicePanel";
 
 const T = {
   en: {
@@ -58,6 +59,7 @@ export function DemoCaregiverDailyLogForm({
   const [hasSymptoms, setHasSymptoms] = useState<boolean | null>(null);
   const [note, setNote] = useState("");
   const [done, setDone] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
 
   const canSave = mood != null || sleep != null || hasSymptoms != null || note.trim().length > 0;
 
@@ -93,6 +95,20 @@ export function DemoCaregiverDailyLogForm({
           <>
             <h2 className="text-2xl font-semibold pr-8">{txt.title}</h2>
             <p className="mt-1 text-sm text-stone-600">{txt.subtitle}</p>
+
+            {voiceMode ? (
+              <DemoVoicePanel
+                mode="caregiverDaily"
+                source="caregiver"
+                onBack={() => setVoiceMode(false)}
+                onClose={onClose}
+              />
+            ) : (
+              <>
+            <VoiceToggleButton
+              onClick={() => setVoiceMode(true)}
+              label={L === "es" ? "🎤 Hablar en vez de tocar" : "🎤 Use voice instead"}
+            />
 
             <section className="mt-5">
               <p className="text-lg font-medium">{txt.moodQ}</p>
@@ -161,6 +177,8 @@ export function DemoCaregiverDailyLogForm({
                 className="mt-6 w-full rounded-2xl bg-primary text-primary-foreground py-4 text-lg font-semibold disabled:opacity-50">
                 {txt.save}
               </button>
+            )}
+              </>
             )}
           </>
         ) : (
