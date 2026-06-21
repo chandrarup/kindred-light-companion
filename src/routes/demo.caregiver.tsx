@@ -5,9 +5,12 @@ import { Sun, Image as ImageIcon, PlayCircle, Users, ClipboardList, Settings as 
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_LOGS, DEMO_INSIGHTS, DEMO_CUES, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
-import { DemoReminder } from "@/components/demo/DemoReminder";
+import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
+import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
+import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
+import { useDemoEntries, type DemoEntry } from "@/lib/demo/log-store";
 
 export const Route = createFileRoute("/demo/caregiver")({
   component: DemoCaregiver,
@@ -77,6 +80,8 @@ function DemoCaregiver() {
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
   const [preview, setPreview] = useState<ComingSoonFeature | null>(null);
   const [tab, setTab] = useState<TabKey>("today");
+  const [episodeOpen, setEpisodeOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
 
   const tabs: { key: TabKey; label: string; Icon: any }[] = [
     { key: "today",    label: t("nav.today"),    Icon: Sun },
@@ -91,6 +96,8 @@ function DemoCaregiver() {
     <div className="flex flex-col lg:flex-row min-h-[calc(100dvh-90px)]">
       <DemoReminder mode="caregiver" />
       <DemoAsk mode="caregiver" context={tab === "summary" ? "physician" : "caregiver"} />
+      {episodeOpen && <DemoEpisodeForm source="caregiver" onClose={() => setEpisodeOpen(false)} />}
+      {noteOpen && <DemoPatientLogForm onClose={() => setNoteOpen(false)} />}
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:border-r lg:border-border lg:bg-card">
@@ -122,7 +129,12 @@ function DemoCaregiver() {
       </aside>
 
       <main className="flex-1 mx-auto w-full max-w-4xl px-4 sm:px-6 py-6 pb-28 lg:pb-10">
-        {tab === "today" && <TodayTab L={L} t={t} setPreview={setPreview} />}
+        {tab === "today" && (
+          <TodayTab L={L} t={t} setPreview={setPreview}
+            openEpisode={() => setEpisodeOpen(true)}
+            openNote={() => setNoteOpen(true)}
+          />
+        )}
         {tab === "photos" && <PhotosTab L={L} setPreview={setPreview} />}
         {tab === "learn" && <LearnTab L={L} setPreview={setPreview} />}
         {tab === "circle" && <CircleTab L={L} setPreview={setPreview} />}
@@ -160,8 +172,9 @@ function DemoCaregiver() {
   );
 }
 
-function TodayTab({ L, t, setPreview }: { L: "en" | "es"; t: (k: string) => string; setPreview: (f: ComingSoonFeature) => void }) {
+function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es"; t: (k: string) => string; setPreview: (f: ComingSoonFeature) => void; openEpisode: () => void; openNote: () => void }) {
   const today = DEMO_LOGS[0];
+  const liveEntries = useDemoEntries();
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3 lg:hidden">
@@ -193,12 +206,33 @@ function TodayTab({ L, t, setPreview }: { L: "en" | "es"; t: (k: string) => stri
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.actions")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <ActionTile icon={<MessageCircle />} label={L === "es" ? "Anotación rápida" : "Quick note"} onClick={() => setPreview(COMING_SOON.voice)} />
-          <ActionTile icon={<AlertCircle />} label={L === "es" ? "Momento difícil" : "Difficult moment"} onClick={() => setPreview(COMING_SOON.episode)} />
+          <ActionTile icon={<MessageCircle />} label={L === "es" ? "Anotación rápida" : "Quick note"} onClick={openNote} />
+          <ActionTile icon={<AlertCircle />} label={L === "es" ? "Momento difícil" : "Difficult moment"} onClick={openEpisode} />
           <ActionTile icon={<Camera />} label={L === "es" ? "Fotos" : "Photos"} onClick={() => setPreview(COMING_SOON.photos)} />
           <ActionTile icon={<BookOpen />} label={L === "es" ? "Aprender" : "Learn"} onClick={() => setPreview(COMING_SOON.learn)} />
         </div>
+        <div className="mt-3 flex justify-end">
+          <DemoShowReminderButton
+            label={L === "es" ? "Mostrar recordatorio" : "Show reminder"}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40"
+          />
+        </div>
       </section>
+
+      {liveEntries.length > 0 && (
+        <section>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            {L === "es" ? "Añadido hoy" : "Added today"}
+          </h2>
+          <ul className="space-y-2">
+            {liveEntries.slice(0, 5).map((e) => (
+              <li key={e.id} className="rounded-xl border border-border bg-card p-3 text-sm">
+                <LiveEntry e={e} L={L} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.insights")}</h2>
@@ -483,6 +517,33 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div className="rounded-xl bg-muted/40 p-3 text-center">
       <p className="text-2xl font-semibold">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function LiveEntry({ e, L }: { e: DemoEntry; L: "en" | "es" }) {
+  const time = new Date(e.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const sourceLabel = e.source === "patient"
+    ? (L === "es" ? "Rosa" : "Rosa")
+    : (L === "es" ? "Cuidadora" : "Caregiver");
+  if (e.kind === "episode") {
+    const sym = e.symptom ? e.symptom.replace(/_/g, " ") : (L === "es" ? "Episodio" : "Episode");
+    const detail = [e.timeOfDay, e.antecedent && (L === "es" ? `antes: ${e.antecedent.replace(/_/g, " ")}` : `before: ${e.antecedent.replace(/_/g, " ")}`), e.outcome && (L === "es" ? `resultado: ${e.outcome.replace(/_/g, " ")}` : `result: ${e.outcome.replace(/_/g, " ")}`)].filter(Boolean).join(" · ");
+    return (
+      <div>
+        <div className="flex justify-between text-xs text-muted-foreground"><span>{sourceLabel} · {time}</span><span className="capitalize">{sym}</span></div>
+        {detail && <p className="mt-1 text-sm capitalize">{detail}</p>}
+        {e.intervention && <p className="mt-1 text-sm italic">"{e.intervention}"</p>}
+      </div>
+    );
+  }
+  const mood = e.mood ? `${L === "es" ? "Ánimo" : "Mood"} ${e.mood}/5` : "";
+  const sleep = e.sleep ? `${L === "es" ? "Sueño" : "Sleep"}: ${e.sleep}` : "";
+  return (
+    <div>
+      <div className="flex justify-between text-xs text-muted-foreground"><span>{sourceLabel} · {time}</span><span>{[mood, sleep].filter(Boolean).join(" · ")}</span></div>
+      {e.symptom && <p className="mt-1 text-sm">{e.symptom}</p>}
+      {e.note && <p className="mt-1 text-sm italic">"{e.note}"</p>}
     </div>
   );
 }

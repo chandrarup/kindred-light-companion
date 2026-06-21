@@ -1,10 +1,27 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check } from "lucide-react";
+import { Bell, Check } from "lucide-react";
 import { DEMO_REMINDERS } from "@/lib/demo/data";
 import { useT } from "@/i18n/I18nProvider";
 
 const INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+
+// Tiny module-level pub/sub so a "Show reminder" button anywhere in the demo can
+// fire the reminder mounted by <DemoReminder /> without prop-drilling.
+const triggerListeners = new Set<() => void>();
+export function triggerDemoReminder() { for (const fn of triggerListeners) fn(); }
+
+export function DemoShowReminderButton({ label, className }: { label: string; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={triggerDemoReminder}
+      className={className ?? "inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1.5 text-xs text-white/90 hover:bg-black/35 backdrop-blur"}
+    >
+      <Bell size={12} /> {label}
+    </button>
+  );
+}
 
 function playChime(soft: boolean) {
   try {
@@ -27,70 +44,78 @@ function playChime(soft: boolean) {
 export function DemoReminder({ mode }: { mode: "patient" | "caregiver" }) {
   const { lang } = useT();
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
+  const idxRef = useRef(0);
   const [idx, setIdx] = useState(0);
   const [open, setOpen] = useState(false);
 
+  const fire = useCallback(() => {
+    idxRef.current = (idxRef.current + 1) % DEMO_REMINDERS.length;
+    setIdx(idxRef.current);
+    setOpen(true);
+    playChime(mode === "patient");
+  }, [mode]);
+
   useEffect(() => {
-    const fire = () => {
-      setIdx((i) => (i + 1) % DEMO_REMINDERS.length);
-      setOpen(true);
-      playChime(mode === "patient");
-    };
+    triggerListeners.add(fire);
     const t = window.setTimeout(fire, INTERVAL_MS);
     const iv = window.setInterval(fire, INTERVAL_MS);
-    return () => { window.clearTimeout(t); window.clearInterval(iv); };
-  }, [mode]);
+    return () => {
+      triggerListeners.delete(fire);
+      window.clearTimeout(t);
+      window.clearInterval(iv);
+    };
+  }, [fire]);
 
   const r = useMemo(() => DEMO_REMINDERS[idx], [idx]);
 
   if (mode === "caregiver") {
     return (
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}
-            className="fixed top-3 right-3 z-40 w-80 max-w-[90vw] rounded-xl border border-border bg-card shadow-lg p-4"
-            role="status"
-          >
-            <div className="flex items-start gap-3">
-              <span className="text-2xl" aria-hidden>{r.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold">{r.title[L]}</p>
-                <p className="text-sm text-muted-foreground">{r.body[L]}</p>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}
+              className="fixed top-3 right-3 z-40 w-80 max-w-[90vw] rounded-xl border border-border bg-card shadow-lg p-4"
+              role="status"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl" aria-hidden>{r.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold">{r.title[L]}</p>
+                  <p className="text-sm text-muted-foreground">{r.body[L]}</p>
+                </div>
+                <button type="button" onClick={() => setOpen(false)} className="text-sm text-muted-foreground hover:text-foreground" aria-label="Dismiss">✕</button>
               </div>
-              <button type="button" onClick={() => setOpen(false)} className="text-sm text-muted-foreground hover:text-foreground" aria-label="Dismiss">✕</button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
     );
   }
 
   return (
     <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-gradient-to-br from-amber-100/95 via-rose-100/95 to-orange-100/95"
-        >
-          <motion.div
-            initial={{ scale: 0.9, y: 10 }} animate={{ scale: 1, y: 0 }}
-            className="w-full max-w-md rounded-3xl bg-white/90 backdrop-blur shadow-2xl p-8 text-center text-stone-800"
-          >
-            <div className="text-7xl mb-4" aria-hidden>{r.emoji}</div>
-            <h2 className="text-3xl font-semibold">{r.title[L]}</h2>
-            <p className="mt-3 text-lg text-stone-600">{r.body[L]}</p>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="mt-8 w-full rounded-2xl bg-emerald-600 text-white text-2xl font-medium py-5 inline-flex items-center justify-center gap-3 shadow-lg active:scale-[0.99]"
+          {open && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-gradient-to-br from-amber-100/95 via-rose-100/95 to-orange-100/95"
             >
-              <Check size={28} strokeWidth={2.5} />
-              {L === "es" ? "Listo" : "Done"}
-            </button>
-          </motion.div>
-        </motion.div>
-      )}
+              <motion.div
+                initial={{ scale: 0.9, y: 10 }} animate={{ scale: 1, y: 0 }}
+                className="w-full max-w-md rounded-3xl bg-white/90 backdrop-blur shadow-2xl p-8 text-center text-stone-800"
+              >
+                <div className="text-7xl mb-4" aria-hidden>{r.emoji}</div>
+                <h2 className="text-3xl font-semibold">{r.title[L]}</h2>
+                <p className="mt-3 text-lg text-stone-600">{r.body[L]}</p>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="mt-8 w-full rounded-2xl bg-emerald-600 text-white text-2xl font-medium py-5 inline-flex items-center justify-center gap-3 shadow-lg active:scale-[0.99]"
+                >
+                  <Check size={28} strokeWidth={2.5} />
+                  {L === "es" ? "Listo" : "Done"}
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
     </AnimatePresence>
   );
 }
