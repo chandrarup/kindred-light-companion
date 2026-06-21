@@ -90,7 +90,7 @@ function DemoCaregiver() {
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100dvh-90px)]">
       <DemoReminder mode="caregiver" />
-      <DemoAsk mode="caregiver" />
+      <DemoAsk mode="caregiver" context={tab === "summary" ? "physician" : "caregiver"} />
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:border-r lg:border-border lg:bg-card">
