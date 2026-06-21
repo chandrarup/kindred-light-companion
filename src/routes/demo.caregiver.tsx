@@ -520,3 +520,30 @@ function Stat({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function LiveEntry({ e, L }: { e: DemoEntry; L: "en" | "es" }) {
+  const time = new Date(e.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const sourceLabel = e.source === "patient"
+    ? (L === "es" ? "Rosa" : "Rosa")
+    : (L === "es" ? "Cuidadora" : "Caregiver");
+  if (e.kind === "episode") {
+    const sym = e.symptom ? e.symptom.replace(/_/g, " ") : (L === "es" ? "Episodio" : "Episode");
+    const detail = [e.timeOfDay, e.antecedent && (L === "es" ? `antes: ${e.antecedent.replace(/_/g, " ")}` : `before: ${e.antecedent.replace(/_/g, " ")}`), e.outcome && (L === "es" ? `resultado: ${e.outcome.replace(/_/g, " ")}` : `result: ${e.outcome.replace(/_/g, " ")}`)].filter(Boolean).join(" · ");
+    return (
+      <div>
+        <div className="flex justify-between text-xs text-muted-foreground"><span>{sourceLabel} · {time}</span><span className="capitalize">{sym}</span></div>
+        {detail && <p className="mt-1 text-sm capitalize">{detail}</p>}
+        {e.intervention && <p className="mt-1 text-sm italic">"{e.intervention}"</p>}
+      </div>
+    );
+  }
+  const mood = e.mood ? `${L === "es" ? "Ánimo" : "Mood"} ${e.mood}/5` : "";
+  const sleep = e.sleep ? `${L === "es" ? "Sueño" : "Sleep"}: ${e.sleep}` : "";
+  return (
+    <div>
+      <div className="flex justify-between text-xs text-muted-foreground"><span>{sourceLabel} · {time}</span><span>{[mood, sleep].filter(Boolean).join(" · ")}</span></div>
+      {e.symptom && <p className="mt-1 text-sm">{e.symptom}</p>}
+      {e.note && <p className="mt-1 text-sm italic">"{e.note}"</p>}
+    </div>
+  );
+}
