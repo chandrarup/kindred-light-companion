@@ -83,17 +83,24 @@ function DemoPatient() {
             </button>
           </div>
 
-          {/* Greeting */}
-          <div className="relative px-6 pt-3 text-white max-w-3xl mx-auto w-full">
-            <div className="inline-flex flex-col rounded-2xl bg-black/35 backdrop-blur px-5 py-3 shadow-md max-w-full">
-              <h1 className="text-3xl sm:text-5xl font-semibold leading-tight">
-                {t("patient.greeting", { name: ROSA.preferredName })}
-              </h1>
-              <p className="mt-1 text-base sm:text-xl text-white/90">
+          {/* Header: caption as a top title, greeting and date split to clear the photo center */}
+          <div className="relative px-4 pt-3 sm:px-6">
+            {/* Photo caption as a separate top title */}
+            <div className="text-center mb-4 sm:mb-6">
+              <span className="inline-block text-xs sm:text-sm md:text-base font-light tracking-[0.2em] text-white/90 uppercase drop-shadow-sm px-3 py-1.5 rounded-full bg-black/20 backdrop-blur">
                 {photo.caption[L]}
-              </p>
+              </span>
             </div>
-            <DateTimeDisplay L={L} />
+
+            {/* Greeting left, date right */}
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="rounded-2xl bg-black/30 backdrop-blur px-4 sm:px-5 py-3 shadow-md border border-white/10">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white leading-tight">
+                  {t("patient.greeting", { name: ROSA.preferredName })}
+                </h1>
+              </div>
+              <DateTimeDisplay L={L} />
+            </div>
           </div>
 
           {/* Spacer so the photo stays visible in the middle */}
@@ -535,18 +542,24 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
 }
 
 function DateTimeDisplay({ L }: { L: "en" | "es" }) {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(id);
   }, []);
+  if (!now) {
+    return (
+      <div className="rounded-2xl bg-black/30 backdrop-blur px-4 sm:px-5 py-3 shadow-md border border-white/10 min-w-[8rem] sm:min-w-[10rem] h-[3.25rem] sm:h-[3.5rem]" />
+    );
+  }
   const locale = L === "es" ? "es-ES" : "en-US";
   const dateStr = now.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric" });
   const timeStr = now.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
   return (
-    <div className="mt-4 inline-flex flex-col rounded-2xl bg-black/30 backdrop-blur px-5 py-3 shadow-md">
-      <span className="text-2xl sm:text-3xl font-semibold leading-tight capitalize">{dateStr}</span>
-      <span className="text-lg sm:text-xl text-white/90">{timeStr}</span>
+    <div className="rounded-2xl bg-black/30 backdrop-blur px-4 sm:px-5 py-3 shadow-md border border-white/10 text-right flex flex-col gap-0">
+      <span className="text-lg sm:text-xl font-medium leading-tight capitalize text-white">{dateStr}</span>
+      <span className="text-base sm:text-lg text-white/80">{timeStr}</span>
     </div>
   );
 }
