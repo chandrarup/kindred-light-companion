@@ -172,8 +172,9 @@ function DemoCaregiver() {
   );
 }
 
-function TodayTab({ L, t, setPreview }: { L: "en" | "es"; t: (k: string) => string; setPreview: (f: ComingSoonFeature) => void }) {
+function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es"; t: (k: string) => string; setPreview: (f: ComingSoonFeature) => void; openEpisode: () => void; openNote: () => void }) {
   const today = DEMO_LOGS[0];
+  const liveEntries = useDemoEntries();
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3 lg:hidden">
@@ -205,12 +206,33 @@ function TodayTab({ L, t, setPreview }: { L: "en" | "es"; t: (k: string) => stri
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.actions")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <ActionTile icon={<MessageCircle />} label={L === "es" ? "Anotación rápida" : "Quick note"} onClick={() => setPreview(COMING_SOON.voice)} />
-          <ActionTile icon={<AlertCircle />} label={L === "es" ? "Momento difícil" : "Difficult moment"} onClick={() => setPreview(COMING_SOON.episode)} />
+          <ActionTile icon={<MessageCircle />} label={L === "es" ? "Anotación rápida" : "Quick note"} onClick={openNote} />
+          <ActionTile icon={<AlertCircle />} label={L === "es" ? "Momento difícil" : "Difficult moment"} onClick={openEpisode} />
           <ActionTile icon={<Camera />} label={L === "es" ? "Fotos" : "Photos"} onClick={() => setPreview(COMING_SOON.photos)} />
           <ActionTile icon={<BookOpen />} label={L === "es" ? "Aprender" : "Learn"} onClick={() => setPreview(COMING_SOON.learn)} />
         </div>
+        <div className="mt-3 flex justify-end">
+          <DemoShowReminderButton
+            label={L === "es" ? "Mostrar recordatorio" : "Show reminder"}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40"
+          />
+        </div>
       </section>
+
+      {liveEntries.length > 0 && (
+        <section>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            {L === "es" ? "Añadido hoy" : "Added today"}
+          </h2>
+          <ul className="space-y-2">
+            {liveEntries.slice(0, 5).map((e) => (
+              <li key={e.id} className="rounded-xl border border-border bg-card p-3 text-sm">
+                <LiveEntry e={e} L={L} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.insights")}</h2>
