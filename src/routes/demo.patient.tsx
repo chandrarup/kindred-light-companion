@@ -85,12 +85,14 @@ function DemoPatient() {
 
           {/* Greeting */}
           <div className="relative px-6 pt-3 text-white max-w-3xl mx-auto w-full">
-            <h1 className="text-3xl sm:text-5xl font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
-              {t("patient.greeting", { name: ROSA.preferredName })}
-            </h1>
-            <p className="mt-1.5 text-base sm:text-xl text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
-              {photo.caption[L]}
-            </p>
+            <div className="inline-flex flex-col rounded-2xl bg-black/35 backdrop-blur px-5 py-3 shadow-md max-w-full">
+              <h1 className="text-3xl sm:text-5xl font-semibold leading-tight">
+                {t("patient.greeting", { name: ROSA.preferredName })}
+              </h1>
+              <p className="mt-1 text-base sm:text-xl text-white/90">
+                {photo.caption[L]}
+              </p>
+            </div>
             <DateTimeDisplay L={L} />
           </div>
 
