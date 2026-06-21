@@ -5,9 +5,12 @@ import { Sun, Image as ImageIcon, PlayCircle, Users, ClipboardList, Settings as 
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_LOGS, DEMO_INSIGHTS, DEMO_CUES, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
-import { DemoReminder } from "@/components/demo/DemoReminder";
+import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
+import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
+import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
+import { useDemoEntries, type DemoEntry } from "@/lib/demo/log-store";
 
 export const Route = createFileRoute("/demo/caregiver")({
   component: DemoCaregiver,
@@ -77,6 +80,8 @@ function DemoCaregiver() {
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
   const [preview, setPreview] = useState<ComingSoonFeature | null>(null);
   const [tab, setTab] = useState<TabKey>("today");
+  const [episodeOpen, setEpisodeOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
 
   const tabs: { key: TabKey; label: string; Icon: any }[] = [
     { key: "today",    label: t("nav.today"),    Icon: Sun },
@@ -91,6 +96,8 @@ function DemoCaregiver() {
     <div className="flex flex-col lg:flex-row min-h-[calc(100dvh-90px)]">
       <DemoReminder mode="caregiver" />
       <DemoAsk mode="caregiver" context={tab === "summary" ? "physician" : "caregiver"} />
+      {episodeOpen && <DemoEpisodeForm source="caregiver" onClose={() => setEpisodeOpen(false)} />}
+      {noteOpen && <DemoPatientLogForm onClose={() => setNoteOpen(false)} />}
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:border-r lg:border-border lg:bg-card">
@@ -122,7 +129,12 @@ function DemoCaregiver() {
       </aside>
 
       <main className="flex-1 mx-auto w-full max-w-4xl px-4 sm:px-6 py-6 pb-28 lg:pb-10">
-        {tab === "today" && <TodayTab L={L} t={t} setPreview={setPreview} />}
+        {tab === "today" && (
+          <TodayTab L={L} t={t} setPreview={setPreview}
+            openEpisode={() => setEpisodeOpen(true)}
+            openNote={() => setNoteOpen(true)}
+          />
+        )}
         {tab === "photos" && <PhotosTab L={L} setPreview={setPreview} />}
         {tab === "learn" && <LearnTab L={L} setPreview={setPreview} />}
         {tab === "circle" && <CircleTab L={L} setPreview={setPreview} />}
