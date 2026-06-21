@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Check } from "lucide-react";
 import { DEMO_REMINDERS } from "@/lib/demo/data";
 import { useT } from "@/i18n/I18nProvider";
+import { useFamiliarVoice, playFamiliarReminder, stopFamiliarVoice } from "@/lib/demo/familiar-voice";
 
 const INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 
@@ -44,16 +45,25 @@ function playChime(soft: boolean) {
 export function DemoReminder({ mode }: { mode: "patient" | "caregiver" }) {
   const { lang } = useT();
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
+  const { clipUrl, caregiverName, enabled: voiceEnabled } = useFamiliarVoice();
   const idxRef = useRef(0);
   const [idx, setIdx] = useState(0);
   const [open, setOpen] = useState(false);
 
   const fire = useCallback(() => {
     idxRef.current = (idxRef.current + 1) % DEMO_REMINDERS.length;
-    setIdx(idxRef.current);
+    const next = idxRef.current;
+    setIdx(next);
     setOpen(true);
     playChime(mode === "patient");
-  }, [mode]);
+    if (mode === "patient") {
+      const r = DEMO_REMINDERS[next];
+      const spoken = L === "es"
+        ? `Hola Rosa, soy ${caregiverName}. ${r.title.es}. ${r.body.es}`
+        : `Hi Rosa, it's ${caregiverName}. ${r.title.en}. ${r.body.en}`;
+      playFamiliarReminder({ text: spoken, lang: L, clipUrl, enabled: voiceEnabled });
+    }
+  }, [mode, L, caregiverName, clipUrl, voiceEnabled]);
 
   useEffect(() => {
     triggerListeners.add(fire);
@@ -82,6 +92,9 @@ export function DemoReminder({ mode }: { mode: "patient" | "caregiver" }) {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold">{r.title[L]}</p>
                   <p className="text-sm text-muted-foreground">{r.body[L]}</p>
+                  <p className="text-xs text-muted-foreground mt-1 italic">
+                    {L === "es" ? `Se reproduce con la voz de ${caregiverName}` : `Plays in ${caregiverName}'s voice`}
+                  </p>
                 </div>
                 <button type="button" onClick={() => setOpen(false)} className="text-sm text-muted-foreground hover:text-foreground" aria-label="Dismiss">✕</button>
               </div>
@@ -105,9 +118,12 @@ export function DemoReminder({ mode }: { mode: "patient" | "caregiver" }) {
                 <div className="text-7xl mb-4" aria-hidden>{r.emoji}</div>
                 <h2 className="text-3xl font-semibold">{r.title[L]}</h2>
                 <p className="mt-3 text-lg text-stone-600">{r.body[L]}</p>
+                <p className="mt-2 text-sm text-stone-500 italic">
+                  {L === "es" ? `— ${caregiverName}` : `— ${caregiverName}`}
+                </p>
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={() => { stopFamiliarVoice(); setOpen(false); }}
                   className="mt-8 w-full rounded-2xl bg-emerald-600 text-white text-2xl font-medium py-5 inline-flex items-center justify-center gap-3 shadow-lg active:scale-[0.99]"
                 >
                   <Check size={28} strokeWidth={2.5} />
