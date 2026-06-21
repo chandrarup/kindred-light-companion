@@ -550,12 +550,13 @@ function DateTimeDisplay({ L }: { L: "en" | "es" }) {
 }
 
 function MoreToolsModal({
-  L, view, setView, onClose,
+  L, view, setView, onClose, openSelfCare,
 }: {
   L: "en" | "es";
   view: null | "fullLog" | "reminders" | "visitPrep";
   setView: (v: null | "fullLog" | "reminders" | "visitPrep") => void;
   onClose: () => void;
+  openSelfCare: () => void;
 }) {
   if (view === "fullLog") {
     return <DemoEpisodeForm source="patient" onClose={onClose} />;
@@ -582,6 +583,12 @@ function MoreToolsModal({
                 : "Things you can do on your own."}
             </p>
             <ToolRow
+              icon={<Smile size={20} />}
+              title={L === "es" ? "¿Cómo estoy hoy?" : "How am I today"}
+              desc={L === "es" ? "Sueño, ánimo, lo que me molesta." : "Sleep, mood, what's bothering me."}
+              onClick={openSelfCare}
+            />
+            <ToolRow
               icon={<ClipboardList size={20} />}
               title={L === "es" ? "Apuntar un episodio (completo)" : "Add a full log entry"}
               desc={L === "es" ? "Paso a paso, como lo hace tu cuidador." : "Step-by-step, the way your caregiver does it."}
@@ -599,6 +606,9 @@ function MoreToolsModal({
               desc={L === "es" ? "Lo que debo llevar y contar." : "What to bring and share."}
               onClick={() => setView("visitPrep")}
             />
+            <div className="pt-2 flex justify-center">
+              <DemoEmergencyButton L={L} variant="pill" />
+            </div>
           </div>
         )}
 
