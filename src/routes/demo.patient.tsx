@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Moon, Smile, MessageCircle, Bell, ArrowRight, Check } from "lucide-react";
+import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2 } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
-import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
+import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
@@ -27,6 +27,7 @@ function DemoPatient() {
   const [switchOpen, setSwitchOpen] = useState(false);
   const [switchStep, setSwitchStep] = useState<0 | 1>(0);
   const [switchA1, setSwitchA1] = useState<boolean | null>(null);
+  const [talkOpen, setTalkOpen] = useState(false);
 
   useEffect(() => {
     if (view !== "menu") return;
@@ -79,7 +80,7 @@ function DemoPatient() {
           {/* Actions pinned to the bottom */}
           <div className="relative px-4 pb-6 pt-4">
             <div className="grid grid-cols-3 gap-3 max-w-3xl mx-auto">
-              <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => ack("talk")} />
+              <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => setTalkOpen(true)} />
               <BigButton icon={<Users />} label={t("patient.people")} onClick={() => setView("people")} />
               <BigButton icon={<MusicIcon />} label={t("patient.music")} onClick={() => setView("music")} />
             </div>
@@ -95,11 +96,7 @@ function DemoPatient() {
             </div>
           </div>
 
-          {savedKey === "talk" && (
-            <div className="absolute top-1/3 inset-x-4 z-10 rounded-2xl bg-white/95 text-stone-800 p-6 text-center shadow-2xl max-w-sm mx-auto">
-              <p className="text-xl">{t("patient.talkPrompt")}</p>
-            </div>
-          )}
+          {talkOpen && <TalkModal L={L} onClose={() => setTalkOpen(false)} />}
 
           {switchOpen && (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
