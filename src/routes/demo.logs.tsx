@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { DEMO_LOGS } from "@/lib/demo/data";
+import { useDemoEntries } from "@/lib/demo/log-store";
 
 export const Route = createFileRoute("/demo/logs")({
   component: DemoLogs,
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/demo/logs")({
 function DemoLogs() {
   const { t, lang } = useT();
   const L = (lang as "en" | "es") === "es" ? "es" : "en";
+  const live = useDemoEntries();
 
   // Group by date
   const byDate = DEMO_LOGS.reduce<Record<string, typeof DEMO_LOGS>>((acc, l) => {
@@ -23,6 +25,28 @@ function DemoLogs() {
       <Link to="/demo/caregiver" className="inline-flex items-center text-sm text-muted-foreground hover:underline"><ChevronLeft size={16} />{L === "es" ? "Atrás" : "Back"}</Link>
       <h1 className="text-2xl font-semibold">{t("demo.caregiver.pastLogs")}</h1>
       <p className="text-sm text-muted-foreground">{t("demo.caregiver.pastLogsHint")}</p>
+
+      {live.length > 0 && (
+        <section className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-primary mb-2">
+            {L === "es" ? "Añadido en este demo" : "Added in this demo"}
+          </h2>
+          <ul className="space-y-2">
+            {live.map((e) => (
+              <li key={e.id} className="text-sm">
+                <span className="font-medium">
+                  {new Date(e.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+                </span>{" "}
+                · {e.source === "patient" ? "Rosa" : (L === "es" ? "Cuidadora" : "Caregiver")}
+                {" — "}
+                {e.kind === "episode"
+                  ? <span className="capitalize">{e.symptom?.replace(/_/g, " ") || "—"}{e.outcome ? ` · ${e.outcome.replace(/_/g, " ")}` : ""}</span>
+                  : <span>{e.mood ? `${L === "es" ? "Ánimo" : "Mood"} ${e.mood}/5` : ""}{e.sleep ? ` · ${L === "es" ? "sueño" : "sleep"} ${e.sleep}` : ""}{e.note ? ` — "${e.note}"` : ""}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="space-y-6 mt-4">
         {dates.map((d) => (
