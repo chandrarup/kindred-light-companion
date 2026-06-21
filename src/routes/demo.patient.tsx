@@ -316,3 +316,151 @@ function SelfChoice({ prompt, options, onPick }: { prompt: string; options: stri
     </div>
   );
 }
+
+function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
+  const [listening, setListening] = useState(false);
+  const [heard, setHeard] = useState("");
+  const [reply, setReply] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const recRef = useRef<any>(null);
+
+  const SR =
+    typeof window !== "undefined"
+      ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      : null;
+  const supported = !!SR;
+
+  function speak(text: string) {
+    try {
+      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = L === "es" ? "es-ES" : "en-US";
+      u.rate = 0.95;
+      u.pitch = 1;
+      window.speechSynthesis.speak(u);
+    } catch {}
+  }
+
+  function handleTranscript(q: string) {
+    setHeard(q);
+    const r = askCanned(q, "patient");
+    const text = r.text[L];
+    setReply(text);
+    speak(text);
+  }
+
+  function start() {
+    setErr(null);
+    setReply(null);
+    setHeard("");
+    if (!supported) {
+      setErr(L === "es" ? "Tu navegador no permite la voz. Probaremos con texto." : "Voice isn't available in this browser.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = L === "es" ? "es-ES" : "en-US";
+    rec.interimResults = true;
+    rec.continuous = false;
+    let finalText = "";
+    rec.onresult = (e: any) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalText += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      setHeard((finalText + interim).trim());
+    };
+    rec.onerror = () => { setListening(false); };
+    rec.onend = () => {
+      setListening(false);
+      const q = finalText.trim();
+      if (q) handleTranscript(q);
+    };
+    recRef.current = rec;
+    try { rec.start(); setListening(true); } catch { setListening(false); }
+  }
+
+  function stop() {
+    try { recRef.current?.stop(); } catch {}
+    setListening(false);
+  }
+
+  useEffect(() => {
+    return () => {
+      try { recRef.current?.stop(); } catch {}
+      try { window.speechSynthesis?.cancel(); } catch {}
+    };
+  }, []);
+
+  const tapLabel = listening
+    ? (L === "es" ? "Escuchando…" : "Listening…")
+    : (L === "es" ? "Toca para hablar" : "Tap to talk");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md rounded-2xl bg-white text-stone-900 shadow-2xl p-6 relative">
+        <button onClick={() => { stop(); onClose(); }} aria-label="Close" className="absolute right-3 top-3 p-1 rounded hover:bg-stone-100">
+          <X size={18} />
+        </button>
+        <h3 className="text-xl font-semibold text-center">
+          {L === "es" ? "Hablar con COMPANION" : "Talk with COMPANION"}
+        </h3>
+        <p className="mt-1 text-center text-sm text-stone-500">
+          {L === "es" ? "Habla en español o inglés." : "Speak in English or Spanish."}
+        </p>
+
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={listening ? stop : start}
+            className={`h-24 w-24 rounded-full inline-flex items-center justify-center shadow-lg transition ${
+              listening ? "bg-red-500 text-white animate-pulse" : "bg-primary text-primary-foreground hover:scale-105"
+            }`}
+            aria-pressed={listening}
+          >
+            {listening ? <MicOff size={36} /> : <Mic size={36} />}
+          </button>
+          <p className="text-sm text-stone-600">{tapLabel}</p>
+        </div>
+
+        {heard && (
+          <div className="mt-5 rounded-xl bg-stone-100 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wide font-semibold text-stone-500 mb-1">
+              {L === "es" ? "Tú dijiste" : "You said"}
+            </p>
+            <p className="text-base">{heard}</p>
+          </div>
+        )}
+
+        {reply && (
+          <div className="mt-3 rounded-xl bg-violet-50 border border-violet-200 text-violet-900 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wide font-semibold opacity-70 mb-1 inline-flex items-center gap-1">
+              <Volume2 size={12} /> COMPANION
+            </p>
+            <p className="text-base">{reply}</p>
+          </div>
+        )}
+
+        {err && <p className="mt-3 text-sm text-amber-700">{err}</p>}
+
+        {!supported && (
+          <div className="mt-4 flex gap-2">
+            <input
+              type="text"
+              placeholder={L === "es" ? "Escribe lo que quieras decir…" : "Type what you'd like to say…"}
+              className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const v = (e.target as HTMLInputElement).value.trim();
+                  if (v) { handleTranscript(v); (e.target as HTMLInputElement).value = ""; }
+                }
+              }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
