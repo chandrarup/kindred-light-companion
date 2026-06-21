@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2 } from "lucide-react";
+import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
-import { DemoReminder } from "@/components/demo/DemoReminder";
+import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
+import { DemoPatientLogForm } from "@/components/demo/DemoPatientLogForm";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
 
 export const Route = createFileRoute("/demo/patient")({
@@ -28,6 +29,7 @@ function DemoPatient() {
   const [switchStep, setSwitchStep] = useState<0 | 1>(0);
   const [switchA1, setSwitchA1] = useState<boolean | null>(null);
   const [talkOpen, setTalkOpen] = useState(false);
+  const [logOpen, setLogOpen] = useState(false);
 
   useEffect(() => {
     if (view !== "menu") return;
@@ -57,8 +59,9 @@ function DemoPatient() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </div>
 
-          {/* Small top switch link */}
-          <div className="relative px-4 pt-3 flex justify-end">
+          {/* Small top utility row: show reminder + switch link */}
+          <div className="relative px-4 pt-3 flex justify-between items-center gap-2">
+            <DemoShowReminderButton label={L === "es" ? "Mostrar recordatorio" : "Show reminder"} />
             <button
               type="button"
               onClick={() => { setSwitchStep(0); setSwitchA1(null); setSwitchOpen(true); }}
@@ -94,9 +97,20 @@ function DemoPatient() {
                 <Smile size={22} /> {t("demo.patient.selfCareOpen")}
               </button>
             </div>
+
+            <div className="mt-3 max-w-3xl mx-auto">
+              <button
+                type="button"
+                onClick={() => setLogOpen(true)}
+                className="w-full rounded-2xl bg-white/80 text-stone-800 p-3 font-medium shadow-md inline-flex items-center justify-center gap-2"
+              >
+                <NotebookPen size={20} /> {L === "es" ? "Apuntar cómo me siento" : "Note how I feel"}
+              </button>
+            </div>
           </div>
 
           {talkOpen && <TalkModal L={L} onClose={() => setTalkOpen(false)} />}
+          {logOpen && <DemoPatientLogForm onClose={() => setLogOpen(false)} />}
 
           {switchOpen && (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
