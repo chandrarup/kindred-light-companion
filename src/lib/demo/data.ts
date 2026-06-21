@@ -13,14 +13,20 @@ export const ROSA = {
   notableRoutine: "Left work every day at 3:00 PM for 31 years.",
 };
 
-export type DemoPhoto = { id: string; caption: { en: string; es: string }; gradient: string; emoji: string };
+import photoSchool from "@/assets/demo/photo-school.jpg";
+import photoWedding from "@/assets/demo/photo-wedding.jpg";
+import photoMaria from "@/assets/demo/photo-maria.jpg";
+import photoGrandkids from "@/assets/demo/photo-grandkids.jpg";
+import photoGarden from "@/assets/demo/photo-garden.jpg";
+
+export type DemoPhoto = { id: string; caption: { en: string; es: string }; gradient: string; emoji: string; image: string };
 
 export const DEMO_PHOTOS: DemoPhoto[] = [
-  { id: "wedding", caption: { en: "Wedding day, 1962", es: "Día de boda, 1962" }, gradient: "from-rose-200 via-amber-100 to-orange-200", emoji: "💐" },
-  { id: "maria",   caption: { en: "Daughter María", es: "Hija María" }, gradient: "from-sky-200 via-indigo-100 to-purple-200", emoji: "👩" },
-  { id: "grandkids", caption: { en: "Grandchildren at the beach", es: "Nietos en la playa" }, gradient: "from-cyan-200 via-teal-100 to-emerald-200", emoji: "👧🧒" },
-  { id: "school",  caption: { en: "First day at school, 1971", es: "Primer día en la escuela, 1971" }, gradient: "from-amber-200 via-yellow-100 to-lime-200", emoji: "🍎" },
-  { id: "garden",  caption: { en: "Her garden in spring", es: "Su jardín en primavera" }, gradient: "from-emerald-200 via-green-100 to-teal-200", emoji: "🌷" },
+  { id: "school",   caption: { en: "First day at school, 1971", es: "Primer día en la escuela, 1971" }, gradient: "from-amber-200 via-yellow-100 to-lime-200", emoji: "🍎", image: photoSchool },
+  { id: "wedding",  caption: { en: "Wedding day, 1962", es: "Día de boda, 1962" }, gradient: "from-rose-200 via-amber-100 to-orange-200", emoji: "💐", image: photoWedding },
+  { id: "maria",    caption: { en: "Daughter María", es: "Hija María" }, gradient: "from-sky-200 via-indigo-100 to-purple-200", emoji: "👩", image: photoMaria },
+  { id: "grandkids",caption: { en: "Grandchildren at the beach", es: "Nietos en la playa" }, gradient: "from-cyan-200 via-teal-100 to-emerald-200", emoji: "👧🧒", image: photoGrandkids },
+  { id: "garden",   caption: { en: "Her garden in spring", es: "Su jardín en primavera" }, gradient: "from-emerald-200 via-green-100 to-teal-200", emoji: "🌷", image: photoGarden },
 ];
 
 export type DemoTrack = {
