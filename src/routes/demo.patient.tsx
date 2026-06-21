@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Moon, Smile, MessageCircle, Bell, ArrowRight, Check } from "lucide-react";
+import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2 } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
-import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
+import { ROSA, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE, askCanned } from "@/lib/demo/data";
 import { PhotoCard } from "@/components/demo/PhotoCard";
 import { DemoReminder } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
@@ -27,6 +27,7 @@ function DemoPatient() {
   const [switchOpen, setSwitchOpen] = useState(false);
   const [switchStep, setSwitchStep] = useState<0 | 1>(0);
   const [switchA1, setSwitchA1] = useState<boolean | null>(null);
+  const [talkOpen, setTalkOpen] = useState(false);
 
   useEffect(() => {
     if (view !== "menu") return;
@@ -79,7 +80,7 @@ function DemoPatient() {
           {/* Actions pinned to the bottom */}
           <div className="relative px-4 pb-6 pt-4">
             <div className="grid grid-cols-3 gap-3 max-w-3xl mx-auto">
-              <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => ack("talk")} />
+              <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => setTalkOpen(true)} />
               <BigButton icon={<Users />} label={t("patient.people")} onClick={() => setView("people")} />
               <BigButton icon={<MusicIcon />} label={t("patient.music")} onClick={() => setView("music")} />
             </div>
@@ -95,11 +96,7 @@ function DemoPatient() {
             </div>
           </div>
 
-          {savedKey === "talk" && (
-            <div className="absolute top-1/3 inset-x-4 z-10 rounded-2xl bg-white/95 text-stone-800 p-6 text-center shadow-2xl max-w-sm mx-auto">
-              <p className="text-xl">{t("patient.talkPrompt")}</p>
-            </div>
-          )}
+          {talkOpen && <TalkModal L={L} onClose={() => setTalkOpen(false)} />}
 
           {switchOpen && (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
@@ -187,18 +184,39 @@ function PeopleView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
 function MusicView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
   const { t } = useT();
   const [playing, setPlaying] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  function toggle(id: string, url: string) {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing === id) {
+      a.pause();
+      setPlaying(null);
+      return;
+    }
+    a.src = url;
+    a.play().then(() => setPlaying(id)).catch(() => setPlaying(null));
+  }
+
+  useEffect(() => {
+    return () => { audioRef.current?.pause(); };
+  }, []);
+
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto">
       <BackBar onBack={onBack} label={t("patient.music")} />
+      <audio ref={audioRef} onEnded={() => setPlaying(null)} preload="none" />
       <ul className="space-y-3">
         {DEMO_MUSIC.map((m) => (
           <li key={m.id}>
             <button
               type="button"
-              onClick={() => setPlaying(m.id)}
+              onClick={() => toggle(m.id, m.url)}
               className={`w-full text-left rounded-2xl border p-4 flex items-center gap-4 ${playing === m.id ? "border-primary bg-primary/10" : "border-border bg-card"}`}
             >
-              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center"><Play size={22} /></div>
+              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center">
+                {playing === m.id ? <Pause size={22} /> : <Play size={22} />}
+              </div>
               <div>
                 <p className="text-lg font-semibold">{m.title}</p>
                 <p className="text-muted-foreground">{m.artist}</p>
@@ -207,7 +225,11 @@ function MusicView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
           </li>
         ))}
       </ul>
-      {playing && <p className="mt-4 text-center text-muted-foreground">{L === "es" ? "Reproduciendo (demo)" : "Playing (demo)"}…</p>}
+      {playing && (
+        <p className="mt-4 text-center text-muted-foreground inline-flex items-center justify-center gap-2 w-full">
+          <Volume2 size={16} /> {L === "es" ? "Reproduciendo música de muestra" : "Playing sample track"}…
+        </p>
+      )}
     </div>
   );
 }
@@ -290,6 +312,154 @@ function SelfChoice({ prompt, options, onPick }: { prompt: string; options: stri
         {options.map((o, i) => (
           <button key={i} onClick={onPick} className="rounded-2xl border border-border bg-card py-4 text-lg font-medium hover:border-primary/40">{o}</button>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
+  const [listening, setListening] = useState(false);
+  const [heard, setHeard] = useState("");
+  const [reply, setReply] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const recRef = useRef<any>(null);
+
+  const SR =
+    typeof window !== "undefined"
+      ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      : null;
+  const supported = !!SR;
+
+  function speak(text: string) {
+    try {
+      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = L === "es" ? "es-ES" : "en-US";
+      u.rate = 0.95;
+      u.pitch = 1;
+      window.speechSynthesis.speak(u);
+    } catch {}
+  }
+
+  function handleTranscript(q: string) {
+    setHeard(q);
+    const r = askCanned(q, "patient");
+    const text = r.text[L];
+    setReply(text);
+    speak(text);
+  }
+
+  function start() {
+    setErr(null);
+    setReply(null);
+    setHeard("");
+    if (!supported) {
+      setErr(L === "es" ? "Tu navegador no permite la voz. Probaremos con texto." : "Voice isn't available in this browser.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = L === "es" ? "es-ES" : "en-US";
+    rec.interimResults = true;
+    rec.continuous = false;
+    let finalText = "";
+    rec.onresult = (e: any) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalText += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      setHeard((finalText + interim).trim());
+    };
+    rec.onerror = () => { setListening(false); };
+    rec.onend = () => {
+      setListening(false);
+      const q = finalText.trim();
+      if (q) handleTranscript(q);
+    };
+    recRef.current = rec;
+    try { rec.start(); setListening(true); } catch { setListening(false); }
+  }
+
+  function stop() {
+    try { recRef.current?.stop(); } catch {}
+    setListening(false);
+  }
+
+  useEffect(() => {
+    return () => {
+      try { recRef.current?.stop(); } catch {}
+      try { window.speechSynthesis?.cancel(); } catch {}
+    };
+  }, []);
+
+  const tapLabel = listening
+    ? (L === "es" ? "Escuchando…" : "Listening…")
+    : (L === "es" ? "Toca para hablar" : "Tap to talk");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md rounded-2xl bg-white text-stone-900 shadow-2xl p-6 relative">
+        <button onClick={() => { stop(); onClose(); }} aria-label="Close" className="absolute right-3 top-3 p-1 rounded hover:bg-stone-100">
+          <X size={18} />
+        </button>
+        <h3 className="text-xl font-semibold text-center">
+          {L === "es" ? "Hablar con COMPANION" : "Talk with COMPANION"}
+        </h3>
+        <p className="mt-1 text-center text-sm text-stone-500">
+          {L === "es" ? "Habla en español o inglés." : "Speak in English or Spanish."}
+        </p>
+
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={listening ? stop : start}
+            className={`h-24 w-24 rounded-full inline-flex items-center justify-center shadow-lg transition ${
+              listening ? "bg-red-500 text-white animate-pulse" : "bg-primary text-primary-foreground hover:scale-105"
+            }`}
+            aria-pressed={listening}
+          >
+            {listening ? <MicOff size={36} /> : <Mic size={36} />}
+          </button>
+          <p className="text-sm text-stone-600">{tapLabel}</p>
+        </div>
+
+        {heard && (
+          <div className="mt-5 rounded-xl bg-stone-100 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wide font-semibold text-stone-500 mb-1">
+              {L === "es" ? "Tú dijiste" : "You said"}
+            </p>
+            <p className="text-base">{heard}</p>
+          </div>
+        )}
+
+        {reply && (
+          <div className="mt-3 rounded-xl bg-violet-50 border border-violet-200 text-violet-900 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-wide font-semibold opacity-70 mb-1 inline-flex items-center gap-1">
+              <Volume2 size={12} /> COMPANION
+            </p>
+            <p className="text-base">{reply}</p>
+          </div>
+        )}
+
+        {err && <p className="mt-3 text-sm text-amber-700">{err}</p>}
+
+        {!supported && (
+          <div className="mt-4 flex gap-2">
+            <input
+              type="text"
+              placeholder={L === "es" ? "Escribe lo que quieras decir…" : "Type what you'd like to say…"}
+              className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const v = (e.target as HTMLInputElement).value.trim();
+                  if (v) { handleTranscript(v); (e.target as HTMLInputElement).value = ""; }
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

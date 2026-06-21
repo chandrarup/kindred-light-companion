@@ -23,11 +23,13 @@ export const DEMO_PHOTOS: DemoPhoto[] = [
   { id: "garden",  caption: { en: "Her garden in spring", es: "Su jardín en primavera" }, gradient: "from-emerald-200 via-green-100 to-teal-200", emoji: "🌷" },
 ];
 
-export const DEMO_MUSIC = [
-  { id: "el-rey", title: "El Rey", artist: "Vicente Fernández" },
-  { id: "volver", title: "Volver, Volver", artist: "Vicente Fernández" },
-  { id: "cielito", title: "Cielito Lindo", artist: "Pedro Infante" },
-  { id: "besame", title: "Bésame Mucho", artist: "Consuelo Velázquez" },
+export const DEMO_MUSIC: { id: string; title: string; artist: string; url: string }[] = [
+  // Royalty-free instrumental samples (SoundHelix) used as demo audio so judges
+  // can actually hear playback without licensing real recordings.
+  { id: "el-rey",  title: "El Rey",          artist: "Vicente Fernández",   url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { id: "volver",  title: "Volver, Volver",  artist: "Vicente Fernández",   url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { id: "cielito", title: "Cielito Lindo",   artist: "Pedro Infante",       url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+  { id: "besame",  title: "Bésame Mucho",    artist: "Consuelo Velázquez",  url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
 ];
 
 export const DEMO_PEOPLE = [
