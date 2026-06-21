@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope } from "lucide-react";
+import { Mic, MicOff, Users, Music as MusicIcon, ChevronLeft, ChevronRight, Play, Pause, Moon, Smile, MessageCircle, Bell, ArrowRight, Check, X, Volume2, NotebookPen, Sparkles, ClipboardList, Stethoscope, ShieldAlert, HeartPulse } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
 import { ROSA, DEMO_PHOTOS, DEMO_PEOPLE } from "@/lib/demo/data";
 import { demoTalkReply } from "@/lib/demo-talk.functions";
@@ -58,12 +58,17 @@ function DemoPatient() {
 
       {view === "menu" && (
         <div className="relative min-h-[calc(100dvh-110px)] overflow-hidden flex flex-col">
-          {/* Background photo */}
+          {/* Background photo — the emotional centerpiece */}
           <div className={`absolute inset-0 bg-gradient-to-br ${photo.gradient}`}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[12rem] opacity-90" aria-hidden>{photo.emoji}</span>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+            <img
+              key={photo.id}
+              src={photo.image}
+              alt={photo.caption[L]}
+              className="absolute inset-0 h-full w-full object-cover animate-[fadeIn_900ms_ease-out]"
+            />
+            {/* Soft scrim only at top and bottom — middle stays clear */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-44 sm:h-56 bg-gradient-to-b from-black/55 via-black/20 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 sm:h-80 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
           </div>
 
           {/* Small top utility row: show reminder + switch link */}
@@ -79,55 +84,42 @@ function DemoPatient() {
           </div>
 
           {/* Greeting */}
-          <div className="relative px-6 pt-4 text-white">
-            <h1 className="text-4xl sm:text-5xl font-semibold drop-shadow">{t("patient.greeting", { name: ROSA.preferredName })}</h1>
-            <p className="mt-2 text-lg sm:text-xl drop-shadow text-white/90">{photo.caption[L]}</p>
+          <div className="relative px-6 pt-3 text-white max-w-3xl mx-auto w-full">
+            <h1 className="text-3xl sm:text-5xl font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
+              {t("patient.greeting", { name: ROSA.preferredName })}
+            </h1>
+            <p className="mt-1.5 text-base sm:text-xl text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
+              {photo.caption[L]}
+            </p>
             <DateTimeDisplay L={L} />
           </div>
 
           {/* Spacer so the photo stays visible in the middle */}
           <div className="relative flex-1" />
 
-          {/* Actions pinned to the bottom */}
+          {/* Actions pinned to the bottom — just three primary buttons + one small link */}
           <div className="relative px-4 pb-6 pt-4">
-            <div className="grid grid-cols-3 gap-3 max-w-3xl mx-auto">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-3xl mx-auto">
               <BigButton icon={<Mic />} label={t("patient.talk")} onClick={() => setTalkOpen(true)} />
               <BigButton icon={<Users />} label={t("patient.people")} onClick={() => setView("people")} />
               <BigButton icon={<MusicIcon />} label={t("patient.music")} onClick={() => setView("music")} />
             </div>
 
-            <div className="mt-4 max-w-3xl mx-auto">
-              <button
-                type="button"
-                onClick={() => setView("selfcare")}
-                className="w-full rounded-2xl bg-white/90 text-stone-800 p-4 font-medium text-lg shadow-md inline-flex items-center justify-center gap-2"
-              >
-                <Smile size={22} /> {t("demo.patient.selfCareOpen")}
-              </button>
-            </div>
-
-            <div className="mt-3 max-w-3xl mx-auto">
+            <div className="mt-4 max-w-3xl mx-auto flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
               <button
                 type="button"
                 onClick={() => setLogOpen(true)}
-                className="w-full rounded-2xl bg-white/80 text-stone-800 p-3 font-medium shadow-md inline-flex items-center justify-center gap-2"
+                className="text-sm sm:text-base text-white/95 inline-flex items-center gap-1.5 rounded-full bg-black/30 hover:bg-black/45 px-4 py-2 backdrop-blur"
               >
-                <NotebookPen size={20} /> {L === "es" ? "Apuntar cómo me siento" : "Note how I feel"}
+                <NotebookPen size={15} /> {L === "es" ? "Apuntar cómo me siento" : "Note how I feel"}
               </button>
-            </div>
-
-            <div className="mt-3 max-w-3xl mx-auto flex justify-center">
               <button
                 type="button"
                 onClick={() => { setMoreView(null); setMoreOpen(true); }}
-                className="text-sm text-white/95 inline-flex items-center gap-1.5 rounded-full bg-black/30 hover:bg-black/40 px-4 py-2 backdrop-blur"
+                className="text-sm text-white/85 inline-flex items-center gap-1.5 rounded-full bg-black/25 hover:bg-black/40 px-3.5 py-1.5 backdrop-blur"
               >
-                <Sparkles size={14} /> {L === "es" ? "Más herramientas" : "More tools"}
+                <Sparkles size={13} /> {L === "es" ? "Más herramientas" : "More tools"}
               </button>
-            </div>
-
-            <div className="mt-3 max-w-3xl mx-auto">
-              <DemoEmergencyButton L={L} variant="patient" />
             </div>
           </div>
 
@@ -139,6 +131,7 @@ function DemoPatient() {
               view={moreView}
               setView={setMoreView}
               onClose={() => { setMoreOpen(false); setMoreView(null); }}
+              openSelfCare={() => { setMoreOpen(false); setMoreView(null); setView("selfcare"); }}
             />
           )}
 
