@@ -13,6 +13,7 @@ import { DemoEpisodeForm } from "@/components/demo/DemoEpisodeForm";
 import { DemoMusicPlayer } from "@/components/demo/DemoMusicPlayer";
 import { useDemoEntries } from "@/lib/demo/log-store";
 import { DemoComingSoon, type ComingSoonFeature } from "@/components/demo/DemoComingSoon";
+import { DemoEmergencyButton } from "@/components/demo/DemoSafety";
 
 export const Route = createFileRoute("/demo/patient")({
   component: DemoPatient,
@@ -123,6 +124,10 @@ function DemoPatient() {
               >
                 <Sparkles size={14} /> {L === "es" ? "Más herramientas" : "More tools"}
               </button>
+            </div>
+
+            <div className="mt-3 max-w-3xl mx-auto">
+              <DemoEmergencyButton L={L} variant="patient" />
             </div>
           </div>
 
