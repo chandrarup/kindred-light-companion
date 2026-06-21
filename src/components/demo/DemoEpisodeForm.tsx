@@ -4,6 +4,7 @@ import { ANTECEDENT_OPTIONS, OUTCOME_OPTIONS, SYMPTOM_OPTIONS } from "@/lib/dail
 import { RED_FLAGS } from "@/lib/episodes.functions";
 import { addDemoEpisode } from "@/lib/demo/log-store";
 import { useT } from "@/i18n/I18nProvider";
+import { DemoVoicePanel, VoiceToggleButton } from "./DemoVoicePanel";
 
 const TIMES_OF_DAY = ["morning", "afternoon", "evening", "night"] as const;
 type Step = "symptom" | "when" | "antecedent" | "intervention" | "outcome" | "distress" | "flags" | "review" | "done";
@@ -68,6 +69,7 @@ export function DemoEpisodeForm({ source, onClose }: { source: "caregiver" | "pa
   const [outcome, setOutcome] = useState<string>("");
   const [distress, setDistress] = useState<number | null>(null);
   const [flags, setFlags] = useState<string[]>([]);
+  const [voiceMode, setVoiceMode] = useState(false);
 
   const order: Step[] = ["symptom", "when", "antecedent", "intervention", "outcome", "distress", "flags", "review"];
   const idx = order.indexOf(step);
@@ -109,7 +111,25 @@ export function DemoEpisodeForm({ source, onClose }: { source: "caregiver" | "pa
           <X size={18} />
         </button>
         <h2 className="text-xl font-semibold pr-8">{txt.title}</h2>
-        {step !== "done" && <p className="mt-1 text-xs text-muted-foreground">{txt.step(idx + 1, order.length)}</p>}
+        {step !== "done" && !voiceMode && <p className="mt-1 text-xs text-muted-foreground">{txt.step(idx + 1, order.length)}</p>}
+
+        {voiceMode ? (
+          <div className="mt-4">
+            <DemoVoicePanel
+              mode="episode"
+              source={source}
+              onBack={() => setVoiceMode(false)}
+              onClose={onClose}
+            />
+          </div>
+        ) : (
+          <>
+        {step !== "done" && (
+          <VoiceToggleButton
+            onClick={() => setVoiceMode(true)}
+            label={L === "es" ? "🎤 Hablar en vez de tocar" : "🎤 Use voice instead"}
+          />
+        )}
 
         <div className="mt-5 space-y-5">
           {step === "symptom" && (
@@ -202,6 +222,8 @@ export function DemoEpisodeForm({ source, onClose }: { source: "caregiver" | "pa
               <button type="button" onClick={next} className="rounded-md border-2 border-border px-4 py-3 min-h-12">{txt.skip}</button>
             )}
           </div>
+        )}
+          </>
         )}
       </div>
     </div>
