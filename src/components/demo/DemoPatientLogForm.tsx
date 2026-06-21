@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Check } from "lucide-react";
 import { addDemoNote } from "@/lib/demo/log-store";
 import { useT } from "@/i18n/I18nProvider";
+import { DemoVoicePanel, VoiceToggleButton } from "./DemoVoicePanel";
 
 const T = {
   en: {
@@ -46,6 +47,7 @@ export function DemoPatientLogForm({ onClose }: { onClose: () => void }) {
   const [symptom, setSymptom] = useState<string>("");
   const [note, setNote] = useState("");
   const [done, setDone] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
 
   function save() {
     addDemoNote({ source: "patient", mood, sleep, symptom: symptom || undefined, note });
@@ -62,6 +64,20 @@ export function DemoPatientLogForm({ onClose }: { onClose: () => void }) {
         {!done ? (
           <>
             <h2 className="text-2xl font-semibold pr-8">{txt.title}</h2>
+
+            {voiceMode ? (
+              <DemoVoicePanel
+                mode="patientNote"
+                source="patient"
+                onBack={() => setVoiceMode(false)}
+                onClose={onClose}
+              />
+            ) : (
+              <>
+            <VoiceToggleButton
+              onClick={() => setVoiceMode(true)}
+              label={L === "es" ? "🎤 Hablar en vez de tocar" : "🎤 Use voice instead"}
+            />
 
             <section className="mt-5">
               <p className="text-lg font-medium">{txt.moodQ}</p>
@@ -119,6 +135,8 @@ export function DemoPatientLogForm({ onClose }: { onClose: () => void }) {
               className="mt-6 w-full rounded-2xl bg-primary text-primary-foreground py-4 text-lg font-semibold disabled:opacity-50">
               {txt.save}
             </button>
+              </>
+            )}
           </>
         ) : (
           <div className="text-center py-8">
