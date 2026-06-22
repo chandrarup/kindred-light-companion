@@ -542,24 +542,18 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
 }
 
 function DateTimeDisplay({ L }: { L: "en" | "es" }) {
-  const [now, setNow] = useState<Date | null>(null);
+  const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(id);
   }, []);
-  if (!now) {
-    return (
-      <div className="rounded-2xl bg-black/30 backdrop-blur px-4 sm:px-5 py-3 shadow-md border border-white/10 min-w-[8rem] sm:min-w-[10rem] h-[3.25rem] sm:h-[3.5rem]" />
-    );
-  }
   const locale = L === "es" ? "es-ES" : "en-US";
   const dateStr = now.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric" });
   const timeStr = now.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
   return (
     <div className="rounded-2xl bg-black/30 backdrop-blur px-4 sm:px-5 py-3 shadow-md border border-white/10 text-right flex flex-col gap-0">
-      <span className="text-lg sm:text-xl font-medium leading-tight capitalize text-white">{dateStr}</span>
-      <span className="text-base sm:text-lg text-white/80">{timeStr}</span>
+      <span className="text-lg sm:text-xl font-medium leading-tight capitalize text-white" suppressHydrationWarning>{dateStr}</span>
+      <span className="text-base sm:text-lg text-white/80" suppressHydrationWarning>{timeStr}</span>
     </div>
   );
 }
