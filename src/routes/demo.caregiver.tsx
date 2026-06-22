@@ -385,6 +385,17 @@ function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingS
   const totalEpisodes = DEMO_LOGS.reduce((n, l) => n + l.symptoms.length, 0);
   const poorSleepNights = sleepCounts.poorly || 0;
 
+  // Plain-language summary inputs (observations only, derived from logged data)
+  const dayCount = 12;
+  const afternoonEpisodes = tod.afternoon || 0;
+  const easedCount = DEMO_LOGS.reduce((n, l) => n + l.symptoms.filter((s) => {
+    const o = (s.outcome?.en || "").toLowerCase();
+    return o.includes("music") || o.includes("dim") || o.includes("eased") || o.includes("helped") || o.includes("redirected") || o.includes("warm light");
+  }).length, 0);
+  const easedDen = totalEpisodes;
+  const summaryEn = `Over the last ${dayCount} days, Rosa logged ${totalEpisodes} difficult ${totalEpisodes === 1 ? "episode" : "episodes"}. Most happened in the afternoon, between 2:30 and 3:30 PM, which lines up with her old 3 PM routine of leaving school. Music and dim light eased the episode ${easedCount} out of ${easedDen} times. She slept poorly on ${poorSleepNights} ${poorSleepNights === 1 ? "night" : "nights"} and her overall mood averaged ${avgMood} out of 5. No falls and no medication changes during this period.`;
+  const summaryEs = `En los últimos ${dayCount} días, Rosa registró ${totalEpisodes} ${totalEpisodes === 1 ? "episodio difícil" : "episodios difíciles"}. La mayoría ocurrió por la tarde, entre las 2:30 y las 3:30 PM, lo que coincide con su antigua rutina de salir de la escuela a las 3 PM. La música y la luz tenue aliviaron el episodio ${easedCount} de ${easedDen} veces. Durmió mal ${poorSleepNights} ${poorSleepNights === 1 ? "noche" : "noches"} y su ánimo general promedió ${avgMood} de 5. Sin caídas y sin cambios de medicación en este periodo.`;
+
   return (
     <div className="space-y-5">
       <section className="rounded-2xl border border-border bg-card p-5">
@@ -404,6 +415,12 @@ function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingS
           <Stat label={L === "es" ? "Ánimo promedio" : "Avg. mood"} value={avgMood} />
           <Stat label={L === "es" ? "Noches mal sueño" : "Poor sleep nights"} value={String(poorSleepNights)} />
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-semibold">{L === "es" ? "Resumen" : "Summary"}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-foreground/90">{L === "es" ? summaryEs : summaryEn}</p>
+        <p className="mt-3 text-xs italic text-muted-foreground">{L === "es" ? "Solo observaciones — no es un diagnóstico." : "Observations only — not a diagnosis."}</p>
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-5">
