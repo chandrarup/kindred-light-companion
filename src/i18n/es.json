@@ -8,10 +8,10 @@
     "banner": "Demo · datos de ejemplo de Rosa Herrera",
     "exit": "Salir del demo",
     "chooser": {
-      "title": "¿Eres paciente o cuidador?",
+      "title": "¿Eres la persona con un diagnóstico, o un cuidador?",
       "subtitle": "Sin registro. Todo lo que ves son datos sintéticos de Rosa Herrera.",
-      "patient": "Soy la paciente",
-      "patientDesc": "Mira el espacio tranquilo de Rosa.",
+      "patient": "Soy la persona",
+      "patientDesc": "Mira el espacio tranquilo y personal de Rosa.",
       "caregiver": "Soy cuidador(a)",
       "caregiverDesc": "Mira la vista completa del cuidador con registros, patrones y resumen médico.",
       "foot": "Puedes cambiar entre las dos vistas en cualquier momento."
@@ -40,7 +40,7 @@
       "cues": "Recordatorios de hoy",
       "circle": "Círculo de cuidado",
       "summaryTitle": "Resumen médico",
-      "openPatient": "Abrir vista de paciente",
+      "openPatient": "Abrir vista personal",
       "pastLogs": "Registros pasados",
       "pastLogsHint": "Agrupados por fecha. Toca un día para ver los detalles."
     },
@@ -95,8 +95,8 @@
   },
   "mode": {
     "caregiver": "Modo cuidador",
-    "patient": "Modo paciente",
-    "switchToPatient": "Cambiar a Modo paciente",
+    "patient": "Modo personal",
+    "switchToPatient": "Cambiar a Modo personal",
     "switchToCaregiver": "Cambiar a Modo cuidador",
     "enterPin": "Ingrese el PIN del cuidador",
     "pinPrompt": "Ingrese el PIN de 4 dígitos para volver al Modo cuidador.",
@@ -123,9 +123,9 @@
     "pinConfirm": "Confirme el PIN",
     "pinMismatch": "Los PIN no coinciden.",
     "pinFormat": "El PIN debe tener exactamente 4 dígitos.",
-    "patientHeading": "Sobre el paciente",
-    "patientName": "Nombre del paciente",
-    "patientLanguage": "Idioma principal del paciente",
+    "patientHeading": "Sobre la persona",
+    "patientName": "Nombre",
+    "patientLanguage": "Idioma principal",
     "biography": "Biografía breve",
     "biographyHelp": "Algunas frases sobre su vida, familia y trabajo.",
     "dailyRoutines": "Rutinas diarias",
@@ -153,7 +153,7 @@
     "placeholder": "Biblioteca de fotos familiares próximamente."
   },
   "profile": {
-    "title": "Perfil del paciente",
+    "title": "Perfil personal",
     "biography": "Biografía",
     "dailyRoutines": "Rutinas diarias",
     "music": "Música",

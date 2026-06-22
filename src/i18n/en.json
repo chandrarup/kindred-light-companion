@@ -2,16 +2,16 @@
   "app": {
     "name": "COMPANION",
     "tagline": "Adaptive companion for caregivers",
-    "demoBanner": "Synthetic data only — do not enter real patient information."
+    "demoBanner": "Synthetic data only — do not enter real personal health information."
   },
   "demo": {
     "banner": "Demo · sample data for Rosa Herrera",
     "exit": "Exit demo",
     "chooser": {
-      "title": "Are you a patient, or a caregiver?",
+      "title": "Are you the person with a diagnosis, or a caregiver?",
       "subtitle": "No sign-up. Everything you see is synthetic data for Rosa Herrera.",
-      "patient": "I'm the patient",
-      "patientDesc": "See Rosa's calm patient space.",
+      "patient": "I'm the person",
+      "patientDesc": "See Rosa's calm personal space.",
       "caregiver": "I'm a caregiver",
       "caregiverDesc": "See the full caregiver view with logs, patterns, and the physician summary.",
       "foot": "You can switch between the two views any time."
@@ -40,7 +40,7 @@
       "cues": "Today's cues",
       "circle": "Care circle",
       "summaryTitle": "Physician summary",
-      "openPatient": "Open patient view",
+      "openPatient": "Open personal view",
       "pastLogs": "Past logs",
       "pastLogsHint": "Grouped by date. Tap a day to see the details."
     },
@@ -95,8 +95,8 @@
   },
   "mode": {
     "caregiver": "Caregiver mode",
-    "patient": "Patient mode",
-    "switchToPatient": "Switch to Patient mode",
+    "patient": "Personal mode",
+    "switchToPatient": "Switch to Personal mode",
     "switchToCaregiver": "Switch to Caregiver mode",
     "enterPin": "Enter caregiver PIN",
     "pinPrompt": "Enter the 4-digit PIN to return to Caregiver mode.",
@@ -123,9 +123,9 @@
     "pinConfirm": "Confirm PIN",
     "pinMismatch": "PINs do not match.",
     "pinFormat": "PIN must be exactly 4 digits.",
-    "patientHeading": "About the patient",
-    "patientName": "Patient display name",
-    "patientLanguage": "Patient's primary language",
+    "patientHeading": "About the person",
+    "patientName": "Display name",
+    "patientLanguage": "Primary language",
     "biography": "Short biography",
     "biographyHelp": "A few sentences about their life, family, and work.",
     "dailyRoutines": "Daily routines",
@@ -153,7 +153,7 @@
     "placeholder": "Family photo library coming next."
   },
   "profile": {
-    "title": "Patient profile",
+    "title": "Personal profile",
     "biography": "Biography",
     "dailyRoutines": "Daily routines",
     "music": "Music",
