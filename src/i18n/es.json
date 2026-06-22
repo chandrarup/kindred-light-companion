@@ -50,8 +50,8 @@
       "fullVersion": "Esta vista previa muestra cómo se ve la versión completa — el demo es intencionalmente limitado."
     },
     "ask": {
-      "open": "Preguntar a COMPANION",
-      "title": "Preguntar a COMPANION",
+      "open": "Preguntar",
+      "title": "Preguntar",
       "patientMode": "Solo recuerdos cálidos",
       "caregiverMode": "Asistente para el cuidador",
       "placeholder": "Escribe una pregunta…",
