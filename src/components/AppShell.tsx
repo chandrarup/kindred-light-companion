@@ -15,6 +15,7 @@ import { useMode } from "@/lib/mode-context";
 import { LanguageToggle } from "./LanguageToggle";
 import { DemoBanner } from "./DemoBanner";
 import { PinDialog } from "./PinDialog";
+import { Logo } from "./Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { verifyHouseholdPin } from "@/lib/household.functions";

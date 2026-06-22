@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/i18n/I18nProvider";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { DemoBanner } from "@/components/DemoBanner";
+import { Logo } from "@/components/Logo";
 import { setIntendedRole, getIntendedRole } from "@/lib/intended-role.functions";
 
 export const Route = createFileRoute("/auth")({
@@ -97,7 +98,7 @@ function AuthPage() {
       <header className="border-b border-border bg-card">
         <div className="mx-auto max-w-xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <LogoMark />
+            <Logo size={24} />
             <span className="font-semibold truncate">{t("app.name")}</span>
           </div>
           <LanguageToggle />
