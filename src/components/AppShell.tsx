@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="border-b border-border bg-card lg:hidden" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
-            <Heart aria-hidden size={22} strokeWidth={1.75} className="text-primary" />
+            <Logo size={26} />
             <span className="font-semibold tracking-tight truncate">{t("app.name")}</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -107,7 +107,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
         <div className="px-5 py-5 flex items-center gap-2 border-b border-border">
-          <Heart aria-hidden size={22} strokeWidth={1.75} className="text-primary" />
+          <Logo size={28} />
           <span className="font-semibold tracking-tight">{t("app.name")}</span>
         </div>
         <ul className="flex-1 px-3 py-4 space-y-1">

@@ -53,12 +53,12 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
         onClick={() => setOpen(true)}
         whileTap={{ scale: 0.94 }}
         whileHover={{ y: -2 }}
-        aria-label="Ask COMPANION"
+        aria-label="Ask"
         className="fixed right-4 lg:right-6 z-[60] inline-flex items-center gap-2 rounded-full px-4 sm:px-5 h-12 sm:h-14 font-medium text-white shadow-[0_10px_30px_-8px_rgba(79,70,229,0.65)] bg-[var(--c-indigo)] hover:bg-[var(--c-indigo-hover)] focus:outline-none focus:ring-4 focus:ring-indigo-300/40"
         style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}
       >
         <MessageCircleQuestion size={22} strokeWidth={1.9} />
-        <span className="hidden sm:inline">Ask COMPANION</span>
+        <span className="hidden sm:inline">Ask</span>
       </motion.button>
 
       <AnimatePresence>
@@ -77,7 +77,7 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
             <motion.div
               role="dialog"
               aria-modal="true"
-              aria-label="Ask COMPANION"
+              aria-label="Ask"
               initial={{ y: 40, opacity: 0, scale: 0.98 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 40, opacity: 0 }}
@@ -90,7 +90,7 @@ export function FloatingAsk({ mode = "caregiver" }: { mode?: "caregiver" | "pati
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
                     <MessageCircleQuestion size={18} strokeWidth={2} />
                   </span>
-                  <h2 className="text-base font-semibold">Ask COMPANION</h2>
+                  <h2 className="text-base font-semibold">Ask</h2>
                 </div>
                 <button
                   onClick={() => setOpen(false)}

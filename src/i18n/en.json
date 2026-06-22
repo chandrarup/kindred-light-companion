@@ -50,8 +50,8 @@
       "fullVersion": "This preview shows what shipping looks like — the demo is intentionally limited."
     },
     "ask": {
-      "open": "Ask COMPANION",
-      "title": "Ask COMPANION",
+      "open": "Ask",
+      "title": "Ask",
       "patientMode": "Warm reminiscence only",
       "caregiverMode": "Caregiver assistant",
       "placeholder": "Type a question…",

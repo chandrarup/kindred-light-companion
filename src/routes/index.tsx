@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Heart, User, Sparkles } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/i18n/I18nProvider";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -57,13 +58,17 @@ function Welcome() {
     <div className="min-h-dvh flex flex-col bg-background text-foreground">
       <header className="border-b border-border bg-card">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
-          <span className="font-semibold tracking-wide">{t("app.name")}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <Logo size={28} />
+            <span className="font-semibold tracking-wide truncate">{t("app.name")}</span>
+          </div>
           <LanguageToggle />
         </div>
       </header>
       <main className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-2xl">
           <div className="text-center mb-10">
+            <Logo size={96} className="mx-auto mb-5" />
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">{t("welcome.title")}</h1>
             <p className="mt-3 text-lg text-muted-foreground">{t("welcome.tagline")}</p>
           </div>
