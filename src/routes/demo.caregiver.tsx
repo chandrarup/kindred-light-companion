@@ -509,16 +509,88 @@ function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingS
 }
 
 function SettingsTab({ L }: { L: "en" | "es" }) {
+  const es = L === "es";
+  const sections: { title: string; items: { label: string; value: string }[] }[] = [
+    {
+      title: es ? "Quién es ella" : "Who she is",
+      items: [
+        { label: es ? "Nombre" : "Name", value: `${ROSA.name} (${es ? "prefiere" : "prefers"} "${ROSA.preferredName}")` },
+        { label: es ? "Edad" : "Age", value: `${ROSA.age}` },
+        { label: es ? "Ciudad natal" : "Hometown", value: "Guadalajara, México" },
+        { label: es ? "Idioma" : "Language", value: es ? "Bilingüe — español primero" : "Bilingual — Spanish first" },
+        { label: es ? "Fe" : "Faith", value: es ? "Católica" : "Catholic" },
+        { label: es ? "Vida" : "Life", value: es ? "Maestra de kínder jubilada (31 años)" : "Retired kindergarten teacher (31 years)" },
+      ],
+    },
+    {
+      title: es ? "Historia y rutinas que aún importan" : "Life history & routines that still matter",
+      items: [
+        { label: "3:00 PM", value: es ? "Salió del trabajo a las 3:00 PM cada día durante 31 años — por eso la tarde la inquieta." : "Left work every day at 3:00 PM for 31 years — this is why afternoons unsettle her." },
+        { label: es ? "Familia" : "Family", value: es ? "Crió a sus hijos en esta ciudad; la casa es el centro de su mundo." : "Raised her children in this city; home is the center of her world." },
+        { label: es ? "Jardín" : "Garden", value: es ? "Cuidó un jardín de rosas cada primavera durante décadas." : "Tended a rose garden every spring for decades." },
+        { label: es ? "Iglesia" : "Church", value: es ? "Misa los domingos — un ancla semanal." : "Sunday mass — a weekly anchor." },
+      ],
+    },
+    {
+      title: es ? "Lo que la calma" : "What calms her",
+      items: [
+        { label: es ? "Música" : "Music", value: "Vicente Fernández, Pedro Infante" },
+        { label: es ? "Fotos" : "Photos", value: es ? "Mirar fotos familiares — boda, nietos, jardín" : "Looking at family photos — wedding, grandchildren, garden" },
+        { label: es ? "Voz" : "Voice", value: es ? "La voz de su hija María" : "Her daughter María's voice" },
+        { label: es ? "Luz" : "Lighting", value: es ? "Luz cálida y tenue al final de la tarde" : "Dim warm lighting in the late afternoon" },
+      ],
+    },
+    {
+      title: es ? "Disparadores conocidos" : "Known triggers",
+      items: [
+        { label: "3:00 PM", value: es ? "Subestimulación a media tarde alrededor de las 3 PM" : "Late-afternoon understimulation around 3 PM" },
+        { label: es ? "Atardecer" : "Sundown", value: es ? "Atardecer (sundowning)" : "Sunset (sundowning)" },
+        { label: es ? "Prisa" : "Being rushed", value: es ? "Sentirse apurada o presionada" : "Being rushed or hurried" },
+        { label: es ? "Ruido" : "Noise", value: es ? "Entornos ruidosos o llenos de gente" : "Loud or crowded environments" },
+      ],
+    },
+    {
+      title: es ? "Lo que la app ha aprendido" : "What the app has learned",
+      items: [
+        { label: es ? "Patrón" : "Pattern", value: es ? "Agitación vespertina ligada a su rutina de las 3 PM — 5 de los últimos 8 episodios." : "Afternoon agitation linked to her 3 PM routine — 5 of the last 8 episodes." },
+        { label: es ? "Música" : "Music", value: es ? "La música ha aliviado 6 de 8 momentos de angustia." : "Music has eased 6 of 8 distress moments." },
+        { label: es ? "Sueño" : "Sleep", value: es ? "Las caídas de sueño preceden a días más difíciles." : "Sleep dips precede harder days." },
+      ],
+    },
+  ];
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">{L === "es" ? "Configuración" : "Settings"}</h2>
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-3 text-sm">
-        <Row label={L === "es" ? "Idioma" : "Language"} value={L === "es" ? "Español (usa el botón arriba)" : "English (use toggle above)"} />
-        <Row label={L === "es" ? "Paciente" : "Patient"} value={ROSA.name} />
-        <Row label={L === "es" ? "Diagnóstico" : "Diagnosis"} value={ROSA.diagnosis} />
-        <Row label={L === "es" ? "Música preferida" : "Preferred music"} value={DEMO_MUSIC.map((m) => m.title).join(", ")} />
-        <p className="text-xs text-muted-foreground italic pt-2">{L === "es" ? "Demo — los cambios no se guardan." : "Demo — changes are not saved."}</p>
+      <div>
+        <h2 className="text-lg font-semibold">{es ? "Huella personal" : "Patient Fingerprint"}</h2>
+        <p className="text-sm text-muted-foreground">
+          {es
+            ? `Todo lo que COMPANION Care ha aprendido sobre ${ROSA.preferredName} — quién es, qué la calma y qué la altera. Léelo en dos minutos.`
+            : `Everything COMPANION Care has learned about ${ROSA.preferredName} — who she is, what calms her, what unsettles her. A two-minute read.`}
+        </p>
       </div>
+
+      {sections.map((s) => (
+        <section key={s.title} className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{s.title}</h3>
+          <div className="space-y-2 text-sm">
+            {s.items.map((it) => (
+              <div key={it.label} className="grid grid-cols-[7rem_1fr] gap-3 sm:grid-cols-[9rem_1fr]">
+                <span className="text-muted-foreground">{it.label}</span>
+                <span className="text-foreground">{it.value}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <p className="text-xs text-muted-foreground italic px-1">
+        {es
+          ? "Este es un perfil de demostración — en la versión completa, esta huella se construye desde la admisión y todo lo registrado con el tiempo."
+          : "This is a demo profile — in the full version, this fingerprint is built from intake plus everything logged over time."}
+      </p>
+      <p className="text-xs text-muted-foreground italic px-1">
+        {es ? "Demo — los cambios no se guardan." : "Demo — changes are not saved."}
+      </p>
     </div>
   );
 }
