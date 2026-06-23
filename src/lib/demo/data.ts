@@ -18,6 +18,10 @@ import photoWedding from "@/assets/demo/photo-wedding.jpg";
 import photoMaria from "@/assets/demo/photo-maria.jpg";
 import photoGrandkids from "@/assets/demo/photo-grandkids.jpg";
 import photoGarden from "@/assets/demo/photo-garden.jpg";
+import personMaria from "@/assets/demo/person-maria.jpg";
+import personCarlos from "@/assets/demo/person-carlos.jpg";
+import personAlvarez from "@/assets/demo/person-alvarez.jpg";
+import personElena from "@/assets/demo/person-elena.jpg";
 
 export type DemoPhoto = { id: string; caption: { en: string; es: string }; gradient: string; emoji: string; image: string };
 
@@ -85,10 +89,10 @@ export const DEMO_MUSIC: DemoTrack[] = [
 ];
 
 export const DEMO_PEOPLE = [
-  { id: "maria", name: "María", relationship: { en: "Daughter", es: "Hija" }, phone: "555-0144" },
-  { id: "carlos", name: "Carlos", relationship: { en: "Son", es: "Hijo" }, phone: "555-0177" },
-  { id: "alvarez", name: "Dr. Alvarez", relationship: { en: "Neurologist", es: "Neurólogo" }, phone: "555-0102" },
-  { id: "elena", name: "Elena", relationship: { en: "Sister", es: "Hermana" }, phone: "555-0188" },
+  { id: "maria", name: "María", relationship: { en: "Daughter", es: "Hija" }, phone: "555-0144", portrait: personMaria },
+  { id: "carlos", name: "Carlos", relationship: { en: "Son", es: "Hijo" }, phone: "555-0177", portrait: personCarlos },
+  { id: "alvarez", name: "Dr. Alvarez", relationship: { en: "Neurologist", es: "Neurólogo" }, phone: "555-0102", portrait: personAlvarez },
+  { id: "elena", name: "Elena", relationship: { en: "Sister", es: "Hermana" }, phone: "555-0188", portrait: personElena },
 ];
 
 export type DemoLog = {

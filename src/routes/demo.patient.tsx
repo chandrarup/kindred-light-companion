@@ -211,17 +211,25 @@ function BigButton({ icon, label, onClick }: { icon: React.ReactNode; label: str
 function PeopleView({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
   const { t } = useT();
   const [i, setI] = useState(0);
-  const photo = DEMO_PHOTOS[i % DEMO_PHOTOS.length];
   const person = DEMO_PEOPLE[i % DEMO_PEOPLE.length];
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto">
       <BackBar onBack={onBack} label={t("patient.people")} />
-      <PhotoCard photo={photo} lang={L} />
+      <div className="relative rounded-2xl overflow-hidden bg-stone-100 h-72 sm:h-96 shadow-md">
+        <img
+          src={person.portrait}
+          alt={person.name}
+          loading="lazy"
+          width={1024}
+          height={1024}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      </div>
       <p className="mt-4 text-center text-2xl font-semibold">{person.name}</p>
       <p className="text-center text-muted-foreground">{person.relationship[L]}</p>
       <div className="mt-6 flex justify-between">
-        <NavBtn icon={<ChevronLeft />} label={t("patient.prev")} onClick={() => setI((x) => (x - 1 + DEMO_PHOTOS.length) % DEMO_PHOTOS.length)} />
-        <NavBtn icon={<ChevronRight />} label={t("patient.next")} onClick={() => setI((x) => (x + 1) % DEMO_PHOTOS.length)} />
+        <NavBtn icon={<ChevronLeft />} label={t("patient.prev")} onClick={() => setI((x) => (x - 1 + DEMO_PEOPLE.length) % DEMO_PEOPLE.length)} />
+        <NavBtn icon={<ChevronRight />} label={t("patient.next")} onClick={() => setI((x) => (x + 1) % DEMO_PEOPLE.length)} />
       </div>
     </div>
   );
