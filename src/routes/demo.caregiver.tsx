@@ -313,7 +313,10 @@ function PhotosTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{L === "es" ? "Galería" : "Photos"}</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-1.5">
+          {L === "es" ? "Galería" : "Photos"}
+          <InfoDot label={L === "es" ? "Galería" : "Photos"}><p>{TAB_INFO.photos[L]}</p></InfoDot>
+        </h2>
         <button onClick={() => setPreview(COMING_SOON.photos)} className="text-sm text-primary hover:underline">{L === "es" ? "Subir" : "Upload"}</button>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -336,7 +339,10 @@ function LearnTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoo
   ];
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">{L === "es" ? "Biblioteca de aprendizaje" : "Learn library"}</h2>
+      <h2 className="text-lg font-semibold inline-flex items-center gap-1.5">
+        {L === "es" ? "Biblioteca de aprendizaje" : "Learn library"}
+        <InfoDot label={L === "es" ? "Aprender" : "Learn"}><p>{TAB_INFO.learn[L]}</p></InfoDot>
+      </h2>
       <ul className="space-y-3">
         {cards.map((c, i) => (
           <li key={i} className="rounded-2xl border border-border bg-card p-4 flex items-start gap-3">
@@ -357,7 +363,10 @@ function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{L === "es" ? "Círculo de cuidado" : "Care circle"}</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-1.5">
+          {L === "es" ? "Círculo de cuidado" : "Care circle"}
+          <InfoDot label={L === "es" ? "Círculo" : "Circle"}><p>{TAB_INFO.circle[L]}</p></InfoDot>
+        </h2>
         <button onClick={() => setPreview(COMING_SOON.circle)} className="text-sm text-primary hover:underline">{L === "es" ? "Invitar" : "Invite"}</button>
       </div>
       <ul className="grid sm:grid-cols-2 gap-2">
