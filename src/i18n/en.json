@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "COMPANION",
+    "name": "COMPANION Care",
     "tagline": "Adaptive companion for caregivers",
     "demoBanner": "Synthetic data only — do not enter real personal health information."
   },
@@ -104,7 +104,7 @@
     "unlock": "Unlock"
   },
   "auth": {
-    "signInTitle": "Sign in to COMPANION",
+    "signInTitle": "Sign in to COMPANION Care",
     "signInSubtitle": "We will email you a secure sign-in link.",
     "emailLabel": "Email address",
     "sendLink": "Send sign-in link",
@@ -199,7 +199,7 @@
     "next": "Next"
   },
   "welcome": {
-    "title": "COMPANION",
+    "title": "COMPANION Care",
     "tagline": "A calm companion for people living with a diagnosis — and the people who love them.",
     "caregiverTitle": "I'm a caregiver",
     "caregiverDesc": "Track days, spot patterns, and support someone you love.",
