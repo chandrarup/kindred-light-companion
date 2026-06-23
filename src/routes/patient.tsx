@@ -16,7 +16,7 @@ import { completePatientSelfOnboarding } from "@/lib/patient-self.functions";
 import { getIntendedRole } from "@/lib/intended-role.functions";
 
 export const Route = createFileRoute("/patient")({
-  head: () => ({ meta: [{ title: "Patient — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Personal — COMPANION Care" }] }),
   component: PatientPage,
 });
 

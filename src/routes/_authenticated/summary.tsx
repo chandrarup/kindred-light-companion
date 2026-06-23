@@ -19,7 +19,7 @@ import { listConcerns, addConcern, resolveConcern, deleteConcern } from "@/lib/c
 import { getMyRole } from "@/lib/role.functions";
 
 export const Route = createFileRoute("/_authenticated/summary")({
-  head: () => ({ meta: [{ title: "Physician summary — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Physician summary — COMPANION Care" }] }),
   component: SummaryPage,
 });
 

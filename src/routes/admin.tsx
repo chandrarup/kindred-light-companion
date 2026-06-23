@@ -5,7 +5,7 @@ import { loadDemoData, resetDemoData, createDemoSession } from "@/lib/demo.funct
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — COMPANION" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Admin — COMPANION Care" }, { name: "robots", content: "noindex" }] }),
   component: AdminPage,
 });
 
