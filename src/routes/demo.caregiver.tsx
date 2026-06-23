@@ -210,6 +210,10 @@ function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es";
   const liveEntries = useDemoEntries();
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <span>{t("nav.today")}</span>
+        <InfoDot label={t("nav.today")}><p>{TAB_INFO.today[L]}</p></InfoDot>
+      </div>
       <DemoRedFlagBanner L={L} />
       <div className="flex flex-wrap items-end justify-between gap-3 lg:hidden">
         <div>
@@ -269,7 +273,14 @@ function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es";
       )}
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.insights")}</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 inline-flex items-center gap-1.5">
+          {t("demo.caregiver.insights")}
+          <InfoDot label={t("demo.caregiver.insights")}>
+            <p>{L === "es"
+              ? "Estos patrones se detectan automáticamente a partir de los registros, una vez que hay suficientes entradas."
+              : "These patterns are detected automatically from logged data, once there are enough entries."}</p>
+          </InfoDot>
+        </h2>
         <div className="grid md:grid-cols-2 gap-3">
           {DEMO_INSIGHTS.map((ins) => (
             <motion.div key={ins.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-violet-200 bg-violet-50 text-violet-900 p-5">
