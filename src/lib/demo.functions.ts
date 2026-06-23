@@ -52,7 +52,7 @@ export const resetDemoData = createServerFn({ method: "POST" })
     return { ok: true, wiped };
   });
 
-/** Ask COMPANION — checks the demo_responses cache first. */
+/** Ask Companion Care — checks the demo_responses cache first. */
 const askSchema = z.object({
   question: z.string().min(1).max(2000),
   mode: z.enum(["caregiver", "patient"]).default("caregiver"),

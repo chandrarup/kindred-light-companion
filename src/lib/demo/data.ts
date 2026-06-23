@@ -1,4 +1,4 @@
-// Synthetic data for COMPANION Demo Mode. No backend, no PHI.
+// Synthetic data for Companion Care Demo Mode. No backend, no PHI.
 
 export const ROSA = {
   name: "Rosa Herrera",

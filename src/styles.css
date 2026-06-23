@@ -66,7 +66,7 @@
 
 :root {
   --radius: 0.875rem;
-  /* COMPANION design tokens — Apple-tier. Indigo primary, semantic accents,
+  /* Companion Care design tokens — Apple-tier. Indigo primary, semantic accents,
    * Inter type, generous 8px spacing system, 20/14px radii. */
   --c-indigo: #4F46E5;
   --c-indigo-hover: #6366F1;
@@ -116,7 +116,7 @@
   --sidebar-border: var(--c-line);
   --sidebar-ring: var(--c-indigo);
 
-  /* COMPANION typography & touch sizing tokens */
+  /* Companion Care typography & touch sizing tokens */
   /* Fluid patient text: 22pt on phones, up to ~34pt on TV/desktop. */
   --text-caregiver-min: 16pt;
   --text-patient-min: clamp(20pt, 3.4vw + 10pt, 34pt);
