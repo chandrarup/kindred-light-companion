@@ -5,6 +5,7 @@ import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/i18n/I18nProvider";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { InfoDot } from "@/components/InfoDot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -90,6 +91,13 @@ function Welcome() {
               title={t("welcome.demoTitle")}
               desc={t("welcome.demoDesc")}
               onClick={() => navigate({ to: "/demo" })}
+              info={
+                <InfoDot label={t("welcome.demoTitle")}>
+                  <p>
+                    {t("welcome.demoInfo")}
+                  </p>
+                </InfoDot>
+              }
             />
           </div>
         </div>
@@ -105,7 +113,7 @@ function Welcome() {
   );
 }
 
-function RoleCard({ icon, title, desc, onClick, muted }: { icon: React.ReactNode; title: string; desc: string; onClick: () => void; muted?: boolean }) {
+function RoleCard({ icon, title, desc, onClick, muted, info }: { icon: React.ReactNode; title: string; desc: string; onClick: () => void; muted?: boolean; info?: React.ReactNode }) {
   return (
     <button
       type="button"
@@ -116,7 +124,10 @@ function RoleCard({ icon, title, desc, onClick, muted }: { icon: React.ReactNode
       <div className="flex items-start gap-4">
         <div className="rounded-xl bg-primary/10 text-primary p-3">{icon}</div>
         <div className="flex-1">
-          <h2 className="text-xl font-semibold">{title}</h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-xl font-semibold">{title}</h2>
+            {info}
+          </div>
           <p className="mt-1 text-muted-foreground">{desc}</p>
         </div>
       </div>
