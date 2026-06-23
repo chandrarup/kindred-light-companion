@@ -27,7 +27,7 @@ export function AskCompanion({ mode = "caregiver" }: { mode?: "caregiver" | "pat
 
   return (
     <section className="rounded-2xl border border-border bg-card p-4 space-y-3">
-      <h2 className="text-lg font-semibold">Ask COMPANION</h2>
+      <h2 className="text-lg font-semibold">Ask COMPANION Care</h2>
       <form onSubmit={submit} className="flex gap-2">
         <input
           type="text"
