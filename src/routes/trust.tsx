@@ -6,17 +6,17 @@ import { useT } from "@/i18n/I18nProvider";
 export const Route = createFileRoute("/trust")({
   head: () => ({
     meta: [
-      { title: "Trust & Privacy — COMPANION" },
+      { title: "Trust & Privacy — COMPANION Care" },
       {
         name: "description",
         content:
-          "How COMPANION handles your data, authentication, and privacy. Maintained by the COMPANION team.",
+          "How COMPANION Care handles your data, authentication, and privacy. Maintained by the COMPANION Care team.",
       },
-      { property: "og:title", content: "Trust & Privacy — COMPANION" },
+      { property: "og:title", content: "Trust & Privacy — COMPANION Care" },
       {
         property: "og:description",
         content:
-          "How COMPANION handles your data, authentication, and privacy.",
+          "How COMPANION Care handles your data, authentication, and privacy.",
       },
     ],
   }),
