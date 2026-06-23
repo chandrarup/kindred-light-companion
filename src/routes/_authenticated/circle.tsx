@@ -14,7 +14,7 @@ import {
 } from "@/lib/circle.functions";
 
 export const Route = createFileRoute("/_authenticated/circle")({
-  head: () => ({ meta: [{ title: "Family circle — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Family circle — COMPANION Care" }] }),
   component: CirclePage,
 });
 

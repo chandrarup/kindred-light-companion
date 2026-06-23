@@ -28,7 +28,7 @@ import {
 } from "@/components/intake/IntakeFields";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  head: () => ({ meta: [{ title: "Set up — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Set up — COMPANION Care" }] }),
   component: OnboardingPage,
 });
 

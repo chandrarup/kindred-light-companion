@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { useT } from "@/i18n/I18nProvider";
 
 export const Route = createFileRoute("/_authenticated/photos")({
-  head: () => ({ meta: [{ title: "Photos — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Photos — COMPANION Care" }] }),
   component: () => {
     const { t } = useT();
     return (
