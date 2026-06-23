@@ -49,7 +49,7 @@ const T = {
     en: [
       "Full profile and medical context",
       "All logs and notes (last 2 years)",
-      "Trigger fingerprint — patterns COMPANION Care learned",
+      "Trigger fingerprint — patterns Companion Care learned",
       "Insights, summaries, and physician reports",
       "Photos, music, routines, and care circle",
       "Ongoing reminders and care plan",
@@ -57,7 +57,7 @@ const T = {
     es: [
       "Perfil completo y contexto médico",
       "Todos los registros y notas (últimos 2 años)",
-      "Huella de desencadenantes — patrones que COMPANION Care aprendió",
+      "Huella de desencadenantes — patrones que Companion Care aprendió",
       "Resúmenes, ideas e informes médicos",
       "Fotos, música, rutinas y círculo de cuidado",
       "Recordatorios y plan de cuidado continuos",
@@ -72,8 +72,8 @@ const T = {
       ? `El cuidado de Rosa está listo para ${name}.`
       : `Rosa's care is ready for ${name}.`,
   doneSub: {
-    en: "Everything COMPANION Care learned about her goes with her.",
-    es: "Todo lo que COMPANION Care aprendió sobre ella va con ella.",
+    en: "Everything Companion Care learned about her goes with her.",
+    es: "Todo lo que Companion Care aprendió sobre ella va con ella.",
   },
   openBtn: { en: "Hand off care", es: "Transferir cuidado" },
 };

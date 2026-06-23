@@ -11,8 +11,8 @@ import { setIntendedRole, getIntendedRole } from "@/lib/intended-role.functions"
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — COMPANION Care" },
-      { name: "description", content: "Sign in to COMPANION Care." },
+      { title: "Sign in — Companion Care" },
+      { name: "description", content: "Sign in to Companion Care." },
     ],
   }),
   component: AuthPage,

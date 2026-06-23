@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "COMPANION Care",
+    "name": "Companion Care",
     "tagline": "Acompañante adaptativo para cuidadores",
     "demoBanner": "Solo datos sintéticos — no ingrese información real de salud personal."
   },
@@ -104,7 +104,7 @@
     "unlock": "Desbloquear"
   },
   "auth": {
-    "signInTitle": "Iniciar sesión en COMPANION Care",
+    "signInTitle": "Iniciar sesión en Companion Care",
     "signInSubtitle": "Le enviaremos un enlace seguro por correo electrónico.",
     "emailLabel": "Correo electrónico",
     "sendLink": "Enviar enlace",
@@ -199,7 +199,7 @@
     "next": "Siguiente"
   },
   "welcome": {
-    "title": "COMPANION Care",
+    "title": "Companion Care",
     "tagline": "Un acompañante tranquilo para quienes viven con Alzheimer o demencia en etapas tempranas a moderadas — y para las familias que los cuidan.",
     "caregiverTitle": "Soy cuidador(a)",
     "caregiverDesc": "Registre los días, observe patrones y apoye a quien ama.",

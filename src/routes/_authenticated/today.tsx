@@ -18,7 +18,7 @@ import { RedFlagCard } from "@/components/RedFlagCard";
 import { isLockedClient } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/today")({
-  head: () => ({ meta: [{ title: "Today — COMPANION Care" }] }),
+  head: () => ({ meta: [{ title: "Today — Companion Care" }] }),
   component: Today,
 });
 

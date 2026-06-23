@@ -7,7 +7,7 @@ import { useT } from "@/i18n/I18nProvider";
 import { listAllTraining, recordTrainingFeedback } from "@/lib/training.functions";
 
 export const Route = createFileRoute("/_authenticated/learn")({
-  head: () => ({ meta: [{ title: "Learn — COMPANION Care" }] }),
+  head: () => ({ meta: [{ title: "Learn — Companion Care" }] }),
   validateSearch: (s: Record<string, unknown>) => ({
     tag: typeof s.tag === "string" ? s.tag : undefined,
   }),
