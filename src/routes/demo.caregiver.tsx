@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sun, Image as ImageIcon, PlayCircle, Users, ClipboardList, Settings as SettingsIcon, FileText, Phone, ChevronRight, Sparkles, AlertCircle, MessageCircle, Camera, BookOpen } from "lucide-react";
 import { useT } from "@/i18n/I18nProvider";
-import { ROSA, DEMO_LOGS, DEMO_INSIGHTS, DEMO_CUES, DEMO_PHOTOS, DEMO_MUSIC, DEMO_PEOPLE } from "@/lib/demo/data";
+import { ROSA, DEMO_LOGS, DEMO_INSIGHTS, DEMO_CUES, DEMO_PHOTOS, DEMO_PEOPLE } from "@/lib/demo/data";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
 import { DemoReminder, DemoShowReminderButton } from "@/components/demo/DemoReminder";
 import { DemoAsk } from "@/components/demo/DemoAsk";
@@ -591,15 +591,6 @@ function SettingsTab({ L }: { L: "en" | "es" }) {
       <p className="text-xs text-muted-foreground italic px-1">
         {es ? "Demo — los cambios no se guardan." : "Demo — changes are not saved."}
       </p>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right">{value}</span>
     </div>
   );
 }
