@@ -15,6 +15,30 @@ import { DemoFamiliarVoiceCard } from "@/components/demo/DemoFamiliarVoiceCard";
 import { DemoRedFlagBanner, DemoEmergencyButton, DemoWhereIsRosa } from "@/components/demo/DemoSafety";
 import { DemoResources } from "@/components/demo/DemoResources";
 import { useDemoEntries, type DemoEntry } from "@/lib/demo/log-store";
+import { InfoDot } from "@/components/InfoDot";
+
+const TAB_INFO: Record<"today" | "photos" | "learn" | "circle" | "summary", { en: string; es: string }> = {
+  today: {
+    en: "Today is the daily hub — mood, sleep, what helped, and any difficult moments worth logging.",
+    es: "Hoy es el centro diario — ánimo, sueño, qué ayudó y cualquier momento difícil para registrar.",
+  },
+  photos: {
+    en: "Familiar faces and places that calm the person — they appear in Patient Mode and in memory cues.",
+    es: "Caras y lugares familiares que calman a la persona — aparecen en el Modo Paciente y como pistas.",
+  },
+  learn: {
+    en: "Short, evidence-informed lessons picked from the patterns we see in your logs.",
+    es: "Lecciones breves basadas en evidencia, elegidas según los patrones de tus registros.",
+  },
+  circle: {
+    en: "The people around the person — family, friends, clinicians — each with the right level of access.",
+    es: "Las personas alrededor — familia, amigos, médicos — cada uno con el acceso adecuado.",
+  },
+  summary: {
+    en: "A clinician-ready snapshot you can print or share before the next visit.",
+    es: "Un resumen listo para el médico — puedes imprimirlo o compartirlo antes de la próxima visita.",
+  },
+};
 
 export const Route = createFileRoute("/demo/caregiver")({
   component: DemoCaregiver,
@@ -186,6 +210,10 @@ function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es";
   const liveEntries = useDemoEntries();
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <span>{t("nav.today")}</span>
+        <InfoDot label={t("nav.today")}><p>{TAB_INFO.today[L]}</p></InfoDot>
+      </div>
       <DemoRedFlagBanner L={L} />
       <div className="flex flex-wrap items-end justify-between gap-3 lg:hidden">
         <div>
@@ -245,7 +273,14 @@ function TodayTab({ L, t, setPreview, openEpisode, openNote }: { L: "en" | "es";
       )}
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{t("demo.caregiver.insights")}</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3 inline-flex items-center gap-1.5">
+          {t("demo.caregiver.insights")}
+          <InfoDot label={t("demo.caregiver.insights")}>
+            <p>{L === "es"
+              ? "Estos patrones se detectan automáticamente a partir de los registros, una vez que hay suficientes entradas."
+              : "These patterns are detected automatically from logged data, once there are enough entries."}</p>
+          </InfoDot>
+        </h2>
         <div className="grid md:grid-cols-2 gap-3">
           {DEMO_INSIGHTS.map((ins) => (
             <motion.div key={ins.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-violet-200 bg-violet-50 text-violet-900 p-5">
@@ -278,7 +313,10 @@ function PhotosTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{L === "es" ? "Galería" : "Photos"}</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-1.5">
+          {L === "es" ? "Galería" : "Photos"}
+          <InfoDot label={L === "es" ? "Galería" : "Photos"}><p>{TAB_INFO.photos[L]}</p></InfoDot>
+        </h2>
         <button onClick={() => setPreview(COMING_SOON.photos)} className="text-sm text-primary hover:underline">{L === "es" ? "Subir" : "Upload"}</button>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -301,7 +339,10 @@ function LearnTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSoo
   ];
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">{L === "es" ? "Biblioteca de aprendizaje" : "Learn library"}</h2>
+      <h2 className="text-lg font-semibold inline-flex items-center gap-1.5">
+        {L === "es" ? "Biblioteca de aprendizaje" : "Learn library"}
+        <InfoDot label={L === "es" ? "Aprender" : "Learn"}><p>{TAB_INFO.learn[L]}</p></InfoDot>
+      </h2>
       <ul className="space-y-3">
         {cards.map((c, i) => (
           <li key={i} className="rounded-2xl border border-border bg-card p-4 flex items-start gap-3">
@@ -322,7 +363,10 @@ function CircleTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingSo
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{L === "es" ? "Círculo de cuidado" : "Care circle"}</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-1.5">
+          {L === "es" ? "Círculo de cuidado" : "Care circle"}
+          <InfoDot label={L === "es" ? "Círculo" : "Circle"}><p>{TAB_INFO.circle[L]}</p></InfoDot>
+        </h2>
         <button onClick={() => setPreview(COMING_SOON.circle)} className="text-sm text-primary hover:underline">{L === "es" ? "Invitar" : "Invite"}</button>
       </div>
       <ul className="grid sm:grid-cols-2 gap-2">
@@ -401,7 +445,14 @@ function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingS
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <h2 className="text-lg font-semibold inline-flex items-center gap-2"><FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}</h2>
+            <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+              <FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}
+              <InfoDot label={L === "es" ? "Resumen médico" : "Physician summary"}>
+                <p>{L === "es"
+                  ? "Generado a partir de las observaciones registradas — solo conteos y fechas. Nunca es un diagnóstico."
+                  : "Generated from logged observations — counts and dates only. Never a diagnosis."}</p>
+              </InfoDot>
+            </h2>
             <p className="text-xs text-muted-foreground mt-1">{L === "es" ? "Últimos 12 días · listo para imprimir o compartir" : "Last 12 days · ready to print or share"}</p>
           </div>
           <div className="flex gap-2">
