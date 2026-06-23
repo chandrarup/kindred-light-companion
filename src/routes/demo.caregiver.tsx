@@ -15,6 +15,30 @@ import { DemoFamiliarVoiceCard } from "@/components/demo/DemoFamiliarVoiceCard";
 import { DemoRedFlagBanner, DemoEmergencyButton, DemoWhereIsRosa } from "@/components/demo/DemoSafety";
 import { DemoResources } from "@/components/demo/DemoResources";
 import { useDemoEntries, type DemoEntry } from "@/lib/demo/log-store";
+import { InfoDot } from "@/components/InfoDot";
+
+const TAB_INFO: Record<"today" | "photos" | "learn" | "circle" | "summary", { en: string; es: string }> = {
+  today: {
+    en: "Today is the daily hub — mood, sleep, what helped, and any difficult moments worth logging.",
+    es: "Hoy es el centro diario — ánimo, sueño, qué ayudó y cualquier momento difícil para registrar.",
+  },
+  photos: {
+    en: "Familiar faces and places that calm the person — they appear in Patient Mode and in memory cues.",
+    es: "Caras y lugares familiares que calman a la persona — aparecen en el Modo Paciente y como pistas.",
+  },
+  learn: {
+    en: "Short, evidence-informed lessons picked from the patterns we see in your logs.",
+    es: "Lecciones breves basadas en evidencia, elegidas según los patrones de tus registros.",
+  },
+  circle: {
+    en: "The people around the person — family, friends, clinicians — each with the right level of access.",
+    es: "Las personas alrededor — familia, amigos, médicos — cada uno con el acceso adecuado.",
+  },
+  summary: {
+    en: "A clinician-ready snapshot you can print or share before the next visit.",
+    es: "Un resumen listo para el médico — puedes imprimirlo o compartirlo antes de la próxima visita.",
+  },
+};
 
 export const Route = createFileRoute("/demo/caregiver")({
   component: DemoCaregiver,
