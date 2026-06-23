@@ -6,17 +6,17 @@ import { useT } from "@/i18n/I18nProvider";
 export const Route = createFileRoute("/trust")({
   head: () => ({
     meta: [
-      { title: "Trust & Privacy — COMPANION Care" },
+      { title: "Trust & Privacy — Companion Care" },
       {
         name: "description",
         content:
-          "How COMPANION Care handles your data, authentication, and privacy. Maintained by the COMPANION Care team.",
+          "How Companion Care handles your data, authentication, and privacy. Maintained by the Companion Care team.",
       },
-      { property: "og:title", content: "Trust & Privacy — COMPANION Care" },
+      { property: "og:title", content: "Trust & Privacy — Companion Care" },
       {
         property: "og:description",
         content:
-          "How COMPANION Care handles your data, authentication, and privacy.",
+          "How Companion Care handles your data, authentication, and privacy.",
       },
     ],
   }),
@@ -45,7 +45,7 @@ function TrustPage() {
               How we handle your data
             </h1>
             <p className="text-muted-foreground">
-              This page is maintained by the COMPANION Care team to answer common
+              This page is maintained by the Companion Care team to answer common
               security and privacy questions about the app. It describes
               controls currently enabled in the product; it is not an
               independent certification or third-party audit.
@@ -74,7 +74,7 @@ function TrustPage() {
 
           <Section
             icon={<Database className="h-5 w-5" aria-hidden />}
-            title="Data you put into COMPANION Care"
+            title="Data you put into Companion Care"
           >
             <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
               <li>
@@ -121,7 +121,7 @@ function TrustPage() {
             title="Subprocessors & hosting"
           >
             <p className="text-muted-foreground">
-              COMPANION Care runs on the Lovable Cloud platform, which provides
+              Companion Care runs on the Lovable Cloud platform, which provides
               hosting, managed Postgres, authentication, file storage, and
               edge serverless functions. These are platform capabilities and
               not an independent security certification.
@@ -147,7 +147,7 @@ function TrustPage() {
           >
             <p className="text-muted-foreground">
               If you believe you have found a security or privacy issue,
-              please email the COMPANION Care team and we will respond as soon as
+              please email the Companion Care team and we will respond as soon as
               possible. Please do not share specific vulnerability details in
               public channels until we have had a chance to investigate.
             </p>
@@ -157,7 +157,7 @@ function TrustPage() {
             This page is app-owned editable content. It is not a Lovable
             certification or third-party verification. Specific legal,
             regulatory, or compliance commitments require a separate written
-            agreement with the COMPANION Care team.
+            agreement with the Companion Care team.
           </p>
         </article>
       </main>

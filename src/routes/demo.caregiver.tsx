@@ -615,8 +615,8 @@ function SettingsTab({ L }: { L: "en" | "es" }) {
         <h2 className="text-lg font-semibold">{es ? "Huella personal" : "Patient Fingerprint"}</h2>
         <p className="text-sm text-muted-foreground">
           {es
-            ? `Todo lo que COMPANION Care ha aprendido sobre ${ROSA.preferredName} — quién es, qué la calma y qué la altera. Léelo en dos minutos.`
-            : `Everything COMPANION Care has learned about ${ROSA.preferredName} — who she is, what calms her, what unsettles her. A two-minute read.`}
+            ? `Todo lo que Companion Care ha aprendido sobre ${ROSA.preferredName} — quién es, qué la calma y qué la altera. Léelo en dos minutos.`
+            : `Everything Companion Care has learned about ${ROSA.preferredName} — who she is, what calms her, what unsettles her. A two-minute read.`}
         </p>
       </div>
 

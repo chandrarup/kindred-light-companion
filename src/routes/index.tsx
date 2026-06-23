@@ -10,9 +10,9 @@ import { InfoDot } from "@/components/InfoDot";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "COMPANION Care" },
+      { title: "Companion Care" },
       { name: "description", content: "A calm companion for people living with early-to-mid stage Alzheimer's or dementia — and the families who care for them." },
-      { property: "og:title", content: "COMPANION Care" },
+      { property: "og:title", content: "Companion Care" },
       { property: "og:description", content: "A calm companion for people living with early-to-mid stage Alzheimer's or dementia — and the families who care for them." },
     ],
   }),
