@@ -10,9 +10,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "COMPANION Care" },
-      { name: "description", content: "A calm companion for people living with a diagnosis and the people who love them." },
+      { name: "description", content: "A calm companion for people living with early-to-mid stage Alzheimer's or dementia — and the families who care for them." },
       { property: "og:title", content: "COMPANION Care" },
-      { property: "og:description", content: "A calm companion for people living with a diagnosis and the people who love them." },
+      { property: "og:description", content: "A calm companion for people living with early-to-mid stage Alzheimer's or dementia — and the families who care for them." },
     ],
   }),
   component: Welcome,
