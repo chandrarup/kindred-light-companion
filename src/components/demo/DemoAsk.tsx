@@ -115,8 +115,7 @@ export function DemoAsk({ mode, context }: { mode: "patient" | "caregiver"; cont
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed right-5 z-30 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition"
-        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}
+        className="ask-fab fixed right-5 z-30 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition"
         aria-label={t("demo.ask.open")}
       >
         <MessageCircle size={26} />

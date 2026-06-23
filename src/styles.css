@@ -472,3 +472,13 @@ select:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset;
   caret-color: var(--c-ink);
 }
+
+/* Ask Companion floating action button — keep it clear of the bottom action tiles on mobile. */
+.ask-fab {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 15rem);
+}
+@media (min-width: 768px) {
+  .ask-fab {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+  }
+}
