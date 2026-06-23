@@ -445,7 +445,14 @@ function SummaryTab({ L, setPreview }: { L: "en" | "es"; setPreview: (f: ComingS
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <h2 className="text-lg font-semibold inline-flex items-center gap-2"><FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}</h2>
+            <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+              <FileText size={18} /> {L === "es" ? "Resumen médico" : "Physician summary"}
+              <InfoDot label={L === "es" ? "Resumen médico" : "Physician summary"}>
+                <p>{L === "es"
+                  ? "Generado a partir de las observaciones registradas — solo conteos y fechas. Nunca es un diagnóstico."
+                  : "Generated from logged observations — counts and dates only. Never a diagnosis."}</p>
+              </InfoDot>
+            </h2>
             <p className="text-xs text-muted-foreground mt-1">{L === "es" ? "Últimos 12 días · listo para imprimir o compartir" : "Last 12 days · ready to print or share"}</p>
           </div>
           <div className="flex gap-2">
