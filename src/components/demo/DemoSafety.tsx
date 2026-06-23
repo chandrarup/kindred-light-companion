@@ -31,8 +31,8 @@ export function DemoRedFlagBanner({ L }: { L: Lang }) {
           </h3>
           <p className="text-sm text-rose-900/80 mt-1">
             {L === "es"
-              ? `Por favor contacta al médico de ${ROSA.preferredName}. COMPANION no diagnostica — solo te avisa.`
-              : `Please contact ${ROSA.preferredName}'s doctor. COMPANION never diagnoses — it only flags.`}
+              ? `Por favor contacta al médico de ${ROSA.preferredName}. COMPANION Care no diagnostica — solo te avisa.`
+              : `Please contact ${ROSA.preferredName}'s doctor. COMPANION Care never diagnoses — it only flags.`}
           </p>
           <ul className="mt-3 space-y-1">
             {matches.map((m) => (

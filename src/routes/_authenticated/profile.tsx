@@ -6,7 +6,7 @@ import { useT } from "@/i18n/I18nProvider";
 import { getMyHousehold } from "@/lib/household.functions";
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "Profile — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Profile — COMPANION Care" }] }),
   component: ProfilePage,
 });
 

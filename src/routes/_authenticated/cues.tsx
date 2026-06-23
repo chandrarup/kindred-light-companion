@@ -5,7 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { CUE_TYPES, deleteCue, listCues, upsertCue } from "@/lib/cues.functions";
 
 export const Route = createFileRoute("/_authenticated/cues")({
-  head: () => ({ meta: [{ title: "Cues — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Cues — COMPANION Care" }] }),
   component: CuesPage,
 });
 

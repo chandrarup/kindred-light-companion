@@ -9,9 +9,9 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "COMPANION" },
+      { title: "COMPANION Care" },
       { name: "description", content: "A calm companion for people living with a diagnosis and the people who love them." },
-      { property: "og:title", content: "COMPANION" },
+      { property: "og:title", content: "COMPANION Care" },
       { property: "og:description", content: "A calm companion for people living with a diagnosis and the people who love them." },
     ],
   }),

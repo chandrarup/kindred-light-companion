@@ -428,7 +428,7 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
       {/* Header */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <span className="text-sm text-stone-500">
-          {L === "es" ? "Conversación con COMPANION" : "Conversation with COMPANION"}
+          {L === "es" ? "Conversación con COMPANION Care" : "Conversation with COMPANION Care"}
         </span>
         <button
           onClick={() => { stopListening(); try { window.speechSynthesis?.cancel(); } catch {/*noop*/} onClose(); }}
@@ -446,7 +446,7 @@ function TalkModal({ L, onClose }: { L: "en" | "es"; onClose: () => void }) {
             {t.role === "assistant" ? (
               <div className="rounded-3xl bg-white/85 shadow-sm px-5 py-4 max-w-[90%]">
                 <p className="text-[11px] uppercase tracking-wider font-semibold text-rose-500 mb-1 inline-flex items-center gap-1">
-                  <Volume2 size={12} /> COMPANION
+                  <Volume2 size={12} /> COMPANION Care
                 </p>
                 <p className="text-2xl leading-relaxed text-stone-800">{t.content}</p>
               </div>
@@ -677,8 +677,8 @@ function VisitPrep({ L, onBack }: { L: "en" | "es"; onBack: () => void }) {
 
       <div className="rounded-xl bg-violet-50 border border-violet-200 p-3 text-sm text-violet-900">
         {L === "es"
-          ? "Lleva esto a tu cita. COMPANION lo preparó por ti."
-          : "Bring this to your appointment. COMPANION put it together for you."}
+          ? "Lleva esto a tu cita. COMPANION Care lo preparó por ti."
+          : "Bring this to your appointment. COMPANION Care put it together for you."}
       </div>
 
       <section>

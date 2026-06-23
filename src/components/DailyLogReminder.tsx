@@ -41,7 +41,7 @@ export function DailyLogReminder({
       if (hhmm < reminderTime || hhmm < windowStart || hhmm > windowEnd) return;
       if (firedKey.current === day) return;
       try {
-        const n = new Notification("COMPANION", {
+        const n = new Notification("COMPANION Care", {
           body: "Time for today's check-in.",
           tag: `companion-daily-${day}`,
           silent: false,

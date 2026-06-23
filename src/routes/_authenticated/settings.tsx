@@ -8,7 +8,7 @@ import { getMyHousehold, updateHouseholdSettings } from "@/lib/household.functio
 import { getMusicSettings, updateMusicProvider } from "@/lib/music.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Settings — COMPANION Care" }] }),
   component: SettingsPage,
 });
 

@@ -7,7 +7,7 @@ import { listRecentLogs } from "@/lib/daily-log.functions";
 import { isLockedClient } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/logs")({
-  head: () => ({ meta: [{ title: "Past logs — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Past logs — COMPANION Care" }] }),
   component: LogsPage,
 });
 

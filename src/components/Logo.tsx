@@ -10,7 +10,7 @@ type Props = {
  * COMPANION brand mark — tree formed by two people with a heart at the center.
  * Use as a small icon next to the wordmark, or larger as a hero mark.
  */
-export function Logo({ size = 28, className = "", alt = "COMPANION" }: Props) {
+export function Logo({ size = 28, className = "", alt = "COMPANION Care" }: Props) {
   return (
     <img
       src={logoAsset.url}
