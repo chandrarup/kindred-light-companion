@@ -1,8 +1,75 @@
 {
   "app": {
-    "name": "COMPANION",
+    "name": "Companion Care",
     "tagline": "Acompañante adaptativo para cuidadores",
-    "demoBanner": "Solo datos sintéticos — no ingrese información real del paciente."
+    "demoBanner": "Solo datos sintéticos — no ingrese información real de salud personal."
+  },
+  "demo": {
+    "banner": "Demo · datos de ejemplo de Rosa Herrera",
+    "exit": "Salir del demo",
+    "chooser": {
+      "title": "¿Eres la persona con un diagnóstico, o un cuidador?",
+      "subtitle": "Sin registro. Todo lo que ves son datos sintéticos de Rosa Herrera.",
+      "patient": "Soy la persona",
+      "patientDesc": "Mira el espacio tranquilo y personal de Rosa.",
+      "caregiver": "Soy cuidador(a)",
+      "caregiverDesc": "Mira la vista completa del cuidador con registros, patrones y resumen médico.",
+      "foot": "Puedes cambiar entre las dos vistas en cualquier momento."
+    },
+    "patient": {
+      "selfCare": "Cuidado personal",
+      "selfCareOpen": "¿Cómo estoy hoy?",
+      "switchToCaregiver": "Las necesidades de Rosa han crecido — cambia a la vista del cuidador",
+      "switchNote": "Al avanzar la demencia, todo lo que Rosa registró pasa al cuidador y se desbloquean más herramientas.",
+      "switchSmall": "Vista del cuidador",
+      "switchConfirm": {
+        "title": "¿Pasar al modo cuidador?",
+        "subtitle": "Un par de preguntas rápidas antes de transferir todo.",
+        "q1": "¿Rosa necesita más ayuda con las tareas diarias que hace seis meses?",
+        "q2": "¿Su cuidador debe manejar ahora sus registros, recordatorios y rutinas?",
+        "continue": "Sí — cambiar a cuidador",
+        "cancel": "Aún no"
+      }
+    },
+    "caregiver": {
+      "today": "Hoy",
+      "todayTitle": "Resumen de hoy",
+      "viewPast": "Ver registros pasados",
+      "actions": "Acciones rápidas",
+      "insights": "Lo que estamos notando",
+      "cues": "Recordatorios de hoy",
+      "circle": "Círculo de cuidado",
+      "summaryTitle": "Resumen médico",
+      "openPatient": "Abrir vista personal",
+      "pastLogs": "Registros pasados",
+      "pastLogsHint": "Agrupados por fecha. Toca un día para ver los detalles."
+    },
+    "preview": {
+      "tag": "En la versión completa",
+      "howItWorks": "Cómo funciona",
+      "fullVersion": "Esta vista previa muestra cómo se ve la versión completa — el demo es intencionalmente limitado."
+    },
+    "ask": {
+      "open": "Preguntar",
+      "title": "Preguntar",
+      "patientMode": "Solo recuerdos cálidos",
+      "caregiverMode": "Asistente para el cuidador",
+      "placeholder": "Escribe una pregunta…",
+      "tryAsking": "Prueba preguntando:",
+      "micStart": "Habla tu pregunta",
+      "micStop": "Dejar de escuchar",
+      "micUnsupported": "La entrada por voz no está disponible en este navegador.",
+      "micListening": "Escuchando…",
+      "tag": {
+        "personalized": "Personalizado",
+        "educational": "Educativo",
+        "grounded": "Fuente confiable",
+        "emergency": "Seguridad",
+        "guardrail": "Para tu médico",
+        "reminiscence": "Un recuerdo",
+        "fallback": "Nota"
+      }
+    }
   },
   "common": {
     "next": "Siguiente",
@@ -28,8 +95,8 @@
   },
   "mode": {
     "caregiver": "Modo cuidador",
-    "patient": "Modo paciente",
-    "switchToPatient": "Cambiar a Modo paciente",
+    "patient": "Modo personal",
+    "switchToPatient": "Cambiar a Modo personal",
     "switchToCaregiver": "Cambiar a Modo cuidador",
     "enterPin": "Ingrese el PIN del cuidador",
     "pinPrompt": "Ingrese el PIN de 4 dígitos para volver al Modo cuidador.",
@@ -37,12 +104,14 @@
     "unlock": "Desbloquear"
   },
   "auth": {
-    "signInTitle": "Iniciar sesión en COMPANION",
+    "signInTitle": "Iniciar sesión en Companion Care",
     "signInSubtitle": "Le enviaremos un enlace seguro por correo electrónico.",
     "emailLabel": "Correo electrónico",
     "sendLink": "Enviar enlace",
     "linkSent": "Revise su correo para el enlace de acceso.",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "caregiverTitle": "Inicie sesión como cuidador",
+    "patientTitle": "Inicie sesión en su espacio"
   },
   "onboarding": {
     "title": "Configurar el hogar",
@@ -54,9 +123,9 @@
     "pinConfirm": "Confirme el PIN",
     "pinMismatch": "Los PIN no coinciden.",
     "pinFormat": "El PIN debe tener exactamente 4 dígitos.",
-    "patientHeading": "Sobre el paciente",
-    "patientName": "Nombre del paciente",
-    "patientLanguage": "Idioma principal del paciente",
+    "patientHeading": "Sobre la persona",
+    "patientName": "Nombre",
+    "patientLanguage": "Idioma principal",
     "biography": "Biografía breve",
     "biographyHelp": "Algunas frases sobre su vida, familia y trabajo.",
     "dailyRoutines": "Rutinas diarias",
@@ -84,7 +153,7 @@
     "placeholder": "Biblioteca de fotos familiares próximamente."
   },
   "profile": {
-    "title": "Perfil del paciente",
+    "title": "Perfil personal",
     "biography": "Biografía",
     "dailyRoutines": "Rutinas diarias",
     "music": "Música",
@@ -129,6 +198,48 @@
     "prev": "Atrás",
     "next": "Siguiente"
   },
+  "welcome": {
+    "title": "Companion Care",
+    "tagline": "Un acompañante tranquilo para quienes viven con Alzheimer o demencia en etapas tempranas a moderadas — y para las familias que los cuidan.",
+    "caregiverTitle": "Soy cuidador(a)",
+    "caregiverDesc": "Registre los días, observe patrones y apoye a quien ama.",
+    "patientTitle": "Tengo un diagnóstico",
+    "patientDesc": "Un lugar sencillo y tranquilo, solo para usted.",
+    "demoTitle": "Probar la demostración",
+    "demoDesc": "Eche un vistazo — sin registrarse.",
+    "demoInfo": "Un recorrido sin registro con una paciente sintética llamada Rosa. Nada aquí son datos personales reales.",
+    "demoComingSoon": "La demostración llegará pronto.",
+    "changeRole": "Elegir otra opción"
+  },
+  "self": {
+    "sleep": "Cómo dormí",
+    "mood": "Cómo me siento hoy",
+    "bothering": "Qué me molesta",
+    "reminders": "Mis recordatorios",
+    "sleepPrompt": "¿Cómo durmió anoche?",
+    "moodPrompt": "¿Cómo se siente hoy?",
+    "botheringPrompt": "¿Algo en la mente?",
+    "botheringPlaceholder": "Con sus propias palabras…",
+    "useVoice": "Toque para hablar",
+    "stopRecording": "Detener",
+    "save": "Guardar",
+    "saved": "Gracias. Guardado.",
+    "savedAck": "Gracias. Se guardó.",
+    "well": "Dormí bien",
+    "okay": "Más o menos",
+    "poorly": "No dormí bien",
+    "good": "Bien",
+    "notGreat": "No muy bien",
+    "noReminders": "Aún no hay recordatorios.",
+    "setup": {
+      "title": "Bienvenido",
+      "lead": "Solo una pregunta rápida para configurar todo.",
+      "name": "Su nombre",
+      "language": "Su idioma",
+      "start": "Continuar",
+      "nameRequired": "Por favor, díganos su nombre."
+    }
+  },
   "music": {
     "playNameMusic": "Pon la música de {name}",
     "theirs": "su",
@@ -159,40 +270,40 @@
   "summary": {
     "title": "Resumen para el médico",
     "subtitle": "Una página con lo que la familia registró. Solo conteos y fechas — nunca un diagnóstico.",
-      "clinicianSubtitle": "Resumen de solo lectura. Solo conteos y fechas.",
+    "clinicianSubtitle": "Resumen de solo lectura. Solo conteos y fechas.",
     "from": "Desde",
     "to": "Hasta",
     "generate": "Generar resumen",
-      "oneTap": "Preparar visita al médico",
+    "oneTap": "Preparar visita al médico",
     "generating": "Generando…",
     "print": "Imprimir / Guardar PDF",
     "history": "Resúmenes anteriores",
     "cardTitle": "Resumen de visita",
     "logs": "registros",
-      "episodes": "episodios",
+    "episodes": "episodios",
     "symptomFreq": "Frecuencia de síntomas",
     "trend": "Tendencia vs periodo anterior",
     "topPatterns": "Principales patrones antecedente → síntoma",
     "adherence": "Cumplimiento de recordatorios",
     "narrative": "Resumen en lenguaje claro",
-      "disclaimer": "Solo conteos y observaciones de los registros de este hogar. No es consejo médico.",
-      "sinceLast": "Desde la última visita",
-      "behaviorTrends": "Tendencias de comportamiento",
-      "timeOfDay": "Hora del día",
-      "whatsWorking": "Qué está ayudando",
-      "sleepRoutine": "Sueño y rutina",
-      "sleep": "Sueño",
-      "caregiverWellbeing": "Bienestar del cuidador",
-      "concernsCard": "Temas para hablar",
-      "concernsTitle": "Preguntas para el médico",
-      "concernsHint": "Anote cualquier cosa que quiera mencionar en la próxima visita. La incluiremos en el resumen.",
-      "concernsPlaceholder": "Añadir una pregunta o inquietud…",
-      "noConcerns": "No hay preguntas añadidas.",
-      "markAsked": "Marcar como hecho",
-      "add": "Añadir",
-      "meds": "Medicamentos actuales (solo nombres)",
-      "activeCues": "Recordatorios activos",
-      "medsDisclaimer": "Los nombres se listan como referencia. La app nunca guarda ni muestra dosis."
+    "disclaimer": "Solo conteos y observaciones de los registros de este hogar. No es consejo médico.",
+    "sinceLast": "Desde la última visita",
+    "behaviorTrends": "Tendencias de comportamiento",
+    "timeOfDay": "Hora del día",
+    "whatsWorking": "Qué está ayudando",
+    "sleepRoutine": "Sueño y rutina",
+    "sleep": "Sueño",
+    "caregiverWellbeing": "Bienestar del cuidador",
+    "concernsCard": "Temas para hablar",
+    "concernsTitle": "Preguntas para el médico",
+    "concernsHint": "Anote cualquier cosa que quiera mencionar en la próxima visita. La incluiremos en el resumen.",
+    "concernsPlaceholder": "Añadir una pregunta o inquietud…",
+    "noConcerns": "No hay preguntas añadidas.",
+    "markAsked": "Marcar como hecho",
+    "add": "Añadir",
+    "meds": "Medicamentos actuales (solo nombres)",
+    "activeCues": "Recordatorios activos",
+    "medsDisclaimer": "Los nombres se listan como referencia. La app nunca guarda ni muestra dosis."
   },
   "intake": {
     "modeToggle": {

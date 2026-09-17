@@ -1,8 +1,75 @@
 {
   "app": {
-    "name": "COMPANION",
+    "name": "Companion Care",
     "tagline": "Adaptive companion for caregivers",
-    "demoBanner": "Synthetic data only — do not enter real patient information."
+    "demoBanner": "Synthetic data only — do not enter real personal health information."
+  },
+  "demo": {
+    "banner": "Demo · sample data for Rosa Herrera",
+    "exit": "Exit demo",
+    "chooser": {
+      "title": "Are you the person with a diagnosis, or a caregiver?",
+      "subtitle": "No sign-up. Everything you see is synthetic data for Rosa Herrera.",
+      "patient": "I'm the person",
+      "patientDesc": "See Rosa's calm personal space.",
+      "caregiver": "I'm a caregiver",
+      "caregiverDesc": "See the full caregiver view with logs, patterns, and the physician summary.",
+      "foot": "You can switch between the two views any time."
+    },
+    "patient": {
+      "selfCare": "Self-care",
+      "selfCareOpen": "How am I today?",
+      "switchToCaregiver": "Rosa's needs have grown — switch to caregiver view",
+      "switchNote": "As dementia progresses, everything Rosa logged moves to her caregiver, and more tools unlock.",
+      "switchSmall": "Caregiver view",
+      "switchConfirm": {
+        "title": "Move to caregiver mode?",
+        "subtitle": "A couple of quick questions before we hand things over.",
+        "q1": "Is Rosa needing more help with daily tasks than she did six months ago?",
+        "q2": "Should her caregiver now manage her logs, reminders, and routines?",
+        "continue": "Yes — switch to caregiver",
+        "cancel": "Not yet"
+      }
+    },
+    "caregiver": {
+      "today": "Today",
+      "todayTitle": "Today's snapshot",
+      "viewPast": "View past logs",
+      "actions": "Quick actions",
+      "insights": "What we're noticing",
+      "cues": "Today's cues",
+      "circle": "Care circle",
+      "summaryTitle": "Physician summary",
+      "openPatient": "Open personal view",
+      "pastLogs": "Past logs",
+      "pastLogsHint": "Grouped by date. Tap a day to see the details."
+    },
+    "preview": {
+      "tag": "In the full version",
+      "howItWorks": "How it works",
+      "fullVersion": "This preview shows what shipping looks like — the demo is intentionally limited."
+    },
+    "ask": {
+      "open": "Ask",
+      "title": "Ask",
+      "patientMode": "Warm reminiscence only",
+      "caregiverMode": "Caregiver assistant",
+      "placeholder": "Type a question…",
+      "tryAsking": "Try asking:",
+      "micStart": "Speak your question",
+      "micStop": "Stop listening",
+      "micUnsupported": "Voice input isn't available in this browser.",
+      "micListening": "Listening…",
+      "tag": {
+        "personalized": "Personalized",
+        "educational": "Educational",
+        "grounded": "Grounded source",
+        "emergency": "Safety",
+        "guardrail": "Routed to your doctor",
+        "reminiscence": "A memory",
+        "fallback": "Note"
+      }
+    }
   },
   "common": {
     "next": "Next",
@@ -28,8 +95,8 @@
   },
   "mode": {
     "caregiver": "Caregiver mode",
-    "patient": "Patient mode",
-    "switchToPatient": "Switch to Patient mode",
+    "patient": "Personal mode",
+    "switchToPatient": "Switch to Personal mode",
     "switchToCaregiver": "Switch to Caregiver mode",
     "enterPin": "Enter caregiver PIN",
     "pinPrompt": "Enter the 4-digit PIN to return to Caregiver mode.",
@@ -37,12 +104,14 @@
     "unlock": "Unlock"
   },
   "auth": {
-    "signInTitle": "Sign in to COMPANION",
+    "signInTitle": "Sign in to Companion Care",
     "signInSubtitle": "We will email you a secure sign-in link.",
     "emailLabel": "Email address",
     "sendLink": "Send sign-in link",
     "linkSent": "Check your email for a sign-in link.",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "caregiverTitle": "Sign in as a caregiver",
+    "patientTitle": "Sign in to your space"
   },
   "onboarding": {
     "title": "Set up your household",
@@ -54,9 +123,9 @@
     "pinConfirm": "Confirm PIN",
     "pinMismatch": "PINs do not match.",
     "pinFormat": "PIN must be exactly 4 digits.",
-    "patientHeading": "About the patient",
-    "patientName": "Patient display name",
-    "patientLanguage": "Patient's primary language",
+    "patientHeading": "About the person",
+    "patientName": "Display name",
+    "patientLanguage": "Primary language",
     "biography": "Short biography",
     "biographyHelp": "A few sentences about their life, family, and work.",
     "dailyRoutines": "Daily routines",
@@ -84,7 +153,7 @@
     "placeholder": "Family photo library coming next."
   },
   "profile": {
-    "title": "Patient profile",
+    "title": "Personal profile",
     "biography": "Biography",
     "dailyRoutines": "Daily routines",
     "music": "Music",
@@ -128,6 +197,48 @@
     "playTitle": "Play",
     "prev": "Back",
     "next": "Next"
+  },
+  "welcome": {
+    "title": "Companion Care",
+    "tagline": "A calm companion for people living with early-to-mid stage Alzheimer's or dementia — and the families who care for them.",
+    "caregiverTitle": "I'm a caregiver",
+    "caregiverDesc": "Track days, spot patterns, and support someone you love.",
+    "patientTitle": "I have a diagnosis",
+    "patientDesc": "A simple, calm place that's just for you.",
+    "demoTitle": "Try the demo",
+    "demoDesc": "Look around — no sign-up needed.",
+    "demoInfo": "A no-login walkthrough using a synthetic patient named Rosa. Nothing here is real personal data.",
+    "demoComingSoon": "Demo coming soon.",
+    "changeRole": "Choose a different option"
+  },
+  "self": {
+    "sleep": "How I slept",
+    "mood": "How I feel today",
+    "bothering": "What's bothering me",
+    "reminders": "My reminders",
+    "sleepPrompt": "How did you sleep last night?",
+    "moodPrompt": "How do you feel today?",
+    "botheringPrompt": "Is something on your mind?",
+    "botheringPlaceholder": "In your own words…",
+    "useVoice": "Tap to speak",
+    "stopRecording": "Stop",
+    "save": "Save",
+    "saved": "Thank you. Saved.",
+    "savedAck": "Thank you. That's saved.",
+    "well": "I slept well",
+    "okay": "Okay",
+    "poorly": "I didn't sleep well",
+    "good": "Good",
+    "notGreat": "Not great",
+    "noReminders": "No reminders yet.",
+    "setup": {
+      "title": "Welcome",
+      "lead": "Just one quick question so we can set things up.",
+      "name": "Your name",
+      "language": "Your language",
+      "start": "Continue",
+      "nameRequired": "Please tell us your name."
+    }
   },
   "music": {
     "playNameMusic": "Play {name}'s music",

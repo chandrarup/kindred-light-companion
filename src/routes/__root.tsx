@@ -7,13 +7,16 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ModeProvider } from "@/lib/mode-context";
+import { useMode } from "@/lib/mode-context";
 import { supabase } from "@/integrations/supabase/client";
+import { FloatingAsk } from "@/components/FloatingAsk";
+import { useRouterState } from "@tanstack/react-router";
 
 function NotFoundComponent() {
   return (
@@ -80,14 +83,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "COMPANION" },
-      { name: "description", content: "Adaptive AI companion for dementia caregivers." },
-      { name: "theme-color", content: "#5a3f2b" },
-      { property: "og:title", content: "COMPANION" },
-      { property: "og:description", content: "Adaptive AI companion for dementia caregivers." },
+      { title: "Companion Care" },
+      { name: "description", content: "Adaptive AI companion for early to middle-stage dementia patients and caregivers." },
+      { name: "theme-color", content: "#4F46E5" },
+      { property: "og:title", content: "Companion Care" },
+      { property: "og:description", content: "Adaptive AI companion for early to middle-stage dementia patients and caregivers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Companion Care" },
+      { name: "twitter:description", content: "Adaptive AI companion for early to middle-stage dementia patients and caregivers." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/615a9a92-f723-4bba-8f0d-fce4c2732817" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/615a9a92-f723-4bba-8f0d-fce4c2732817" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -121,12 +128,17 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
-    });
-    return () => sub.subscription.unsubscribe();
+    try {
+      const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+        if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+        router.invalidate();
+        if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      });
+      return () => sub.subscription.unsubscribe();
+    } catch (error) {
+      console.error(error);
+      return undefined;
+    }
   }, [router, queryClient]);
 
   return (
@@ -135,8 +147,20 @@ function RootComponent() {
         <ModeProvider>
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
+          <GlobalFloatingAsk />
         </ModeProvider>
       </I18nProvider>
     </QueryClientProvider>
   );
+}
+
+function GlobalFloatingAsk() {
+  const [mounted, setMounted] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { mode } = useMode();
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  // Hide on landing and auth screens
+  if (pathname === "/" || pathname.startsWith("/auth") || pathname.startsWith("/demo")) return null;
+  return <FloatingAsk mode={mode} />;
 }

@@ -7,7 +7,7 @@ export function LanguageToggle() {
     { value: "es", label: t("common.spanish") },
   ];
   return (
-    <div role="group" aria-label={t("settings.language")} className="inline-flex rounded-md border border-border overflow-hidden">
+    <div role="group" aria-label={t("settings.language")} className="inline-flex rounded-md border border-border overflow-hidden text-xs sm:text-sm">
       {options.map((o) => {
         const active = lang === o.value;
         return (
@@ -18,7 +18,7 @@ export function LanguageToggle() {
             aria-pressed={active}
             data-touch
             className={
-              "px-3 py-2 " +
+              "px-2 py-1 sm:px-3 sm:py-2 " +
               (active
                 ? "bg-primary text-primary-foreground"
                 : "bg-card text-foreground hover:bg-secondary")

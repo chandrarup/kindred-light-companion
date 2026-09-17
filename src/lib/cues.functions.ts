@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { safeDbError } from "./safe-errors";
 
 export const CUE_TYPES = ["hydration", "medication", "appointment", "custom"] as const;
 
@@ -37,7 +38,7 @@ export const listCues = createServerFn({ method: "GET" })
       .eq("household_id", householdId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { cues: data ?? [] };
   });
 
@@ -57,7 +58,7 @@ export const upsertCue = createServerFn({ method: "POST" })
     };
     if (data.id) {
       const { error } = await context.supabase.from("cues").update(row).eq("id", data.id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error);
       return { id: data.id };
     }
     const { data: ins, error } = await context.supabase
@@ -65,7 +66,7 @@ export const upsertCue = createServerFn({ method: "POST" })
       .insert(row)
       .select("id")
       .single();
-    if (error || !ins) throw new Error(error?.message ?? "Failed to create cue");
+    if (error || !ins) throw safeDbError(error, "Failed to create cue");
     return { id: ins.id as string };
   });
 
@@ -77,7 +78,7 @@ export const deleteCue = createServerFn({ method: "POST" })
       .from("cues")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 
@@ -98,7 +99,7 @@ export const logCueEvent = createServerFn({ method: "POST" })
       outcome: data.outcome,
       scheduled_for: data.scheduled_for ?? null,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return { ok: true };
   });
 

@@ -5,7 +5,7 @@ import { loadDemoData, resetDemoData, createDemoSession } from "@/lib/demo.funct
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — COMPANION" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Admin — Companion Care" }, { name: "robots", content: "noindex" }] }),
   component: AdminPage,
 });
 
@@ -20,7 +20,14 @@ function AdminPage() {
   const [demoFlag, setDemoFlag] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    try {
+      supabase.auth
+        .getUser()
+        .then(({ data }) => setSignedIn(!!data.user))
+        .catch(() => setSignedIn(false));
+    } catch {
+      setSignedIn(false);
+    }
     setDemoFlag(window.localStorage.getItem("companion.demo") === "1");
   }, []);
 

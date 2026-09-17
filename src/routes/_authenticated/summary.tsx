@@ -19,7 +19,7 @@ import { listConcerns, addConcern, resolveConcern, deleteConcern } from "@/lib/c
 import { getMyRole } from "@/lib/role.functions";
 
 export const Route = createFileRoute("/_authenticated/summary")({
-  head: () => ({ meta: [{ title: "Physician summary — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Physician summary — Companion Care" }] }),
   component: SummaryPage,
 });
 
@@ -99,6 +99,7 @@ function SummaryPage() {
 
   return (
     <AppShell>
+      <div data-surface="clinical" className="-mx-4 -my-6 px-4 py-6 min-h-screen">
       <div className="print:hidden">
         <h1 className="text-2xl font-semibold mb-2">{t("summary.title")}</h1>
         <p className="text-muted-foreground mb-4">
@@ -220,6 +221,7 @@ function SummaryPage() {
           </ul>
         </section>
       )}
+      </div>
     </AppShell>
   );
 }

@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { motion } from "framer-motion";
+import { Check, Plus, AlertTriangle, Mic, CalendarClock, Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useT } from "@/i18n/I18nProvider";
 import { getMyHousehold } from "@/lib/household.functions";
@@ -8,7 +10,6 @@ import { createDailyLog, hasLoggedToday, listRecentLogs } from "@/lib/daily-log.
 import { DailyLogForm, type DailyLogFormValue } from "@/components/DailyLogForm";
 import { VoiceLogger } from "@/components/VoiceLogger";
 import { InsightsList } from "@/components/InsightsList";
-import { AskCompanion } from "@/components/AskCompanion";
 import { CuesPanel } from "@/components/CuesPanel";
 import { TrainingCards } from "@/components/TrainingCards";
 import { DailyLogReminder } from "@/components/DailyLogReminder";
@@ -17,7 +18,7 @@ import { RedFlagCard } from "@/components/RedFlagCard";
 import { isLockedClient } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_authenticated/today")({
-  head: () => ({ meta: [{ title: "Today — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Today — Companion Care" }] }),
   component: Today,
 });
 
@@ -140,7 +141,12 @@ function Today() {
       )}
 
       {mode === "idle" && (
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
+        >
           <DailyLogReminder
             reminderTime={reminderTime}
             windowStart={notifyWindow.start}
@@ -154,87 +160,74 @@ function Today() {
 
           {/* Daily check-in: one-tap "good day" first */}
           {!loggedToday && (
-            <button
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={handleGoodDay}
               disabled={oneTapSaving}
-              className="w-full rounded-2xl bg-primary text-primary-foreground px-6 py-8 text-2xl font-semibold min-h-24 disabled:opacity-60"
+              className="w-full rounded-[20px] bg-primary text-primary-foreground px-6 py-7 text-xl font-medium min-h-24 disabled:opacity-60 shadow-[0_8px_24px_-8px_rgba(79,70,229,0.6)] inline-flex items-center justify-center gap-3"
             >
-              {oneTapSaving ? "Saving…" : "✓ Good day — nothing to report"}
-            </button>
+              <Check size={22} strokeWidth={2} />
+              {oneTapSaving ? "Saving…" : "Good day — nothing to report"}
+            </motion.button>
           )}
 
-          <div className="grid sm:grid-cols-2 gap-3">
-            <button
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => setMode("tap")}
-              className="rounded-lg border-2 border-primary text-primary px-6 py-6 text-xl font-semibold min-h-20"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 inline-flex items-center gap-3 text-left"
             >
-              ＋ Quick check-in
-            </button>
-            <button
+              <Plus size={22} strokeWidth={1.75} className="text-primary" />
+              Quick check-in
+            </motion.button>
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => setMode("episode")}
-              className="rounded-lg border-2 border-destructive/40 text-destructive px-6 py-6 text-xl font-semibold min-h-20"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 inline-flex items-center gap-3 text-left"
             >
-              ⚠ Log a symptom
-            </button>
-            <button
+              <AlertTriangle size={22} strokeWidth={1.75} style={{ color: "#D97706" }} />
+              Log a symptom
+            </motion.button>
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => setMode("voice")}
-              className="rounded-lg border-2 border-border px-6 py-6 text-xl font-semibold min-h-20"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 inline-flex items-center gap-3 text-left"
             >
-              🎤 Voice log
-            </button>
+              <Mic size={22} strokeWidth={1.75} className="text-primary" />
+              Voice log
+            </motion.button>
+            <motion.div variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} whileHover={{ y: -2 }}>
             <Link
               to="/cues"
-              className="rounded-lg border-2 border-border px-6 py-6 text-xl font-semibold min-h-20 flex items-center justify-center text-center"
+              className="glass-card px-6 py-6 text-lg font-medium min-h-20 flex items-center gap-3"
             >
-              ⏰ Cues & reminders
+              <CalendarClock size={22} strokeWidth={1.75} className="text-primary" />
+              Cues & reminders
             </Link>
+            </motion.div>
           </div>
 
           <TrainingCards refreshKey={insightsKey} />
 
-          <section aria-labelledby="recent-logs">
-            <h2 id="recent-logs" className="text-lg font-semibold mb-2">
-              Recent logs
-            </h2>
-            {logs.length === 0 ? (
-              <p className="text-muted-foreground">No logs yet today.</p>
-            ) : (
-              <ul className="space-y-2">
-                {logs.map((l) => (
-                  <li key={l.id} className="rounded border p-3">
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>logged at {new Date(l.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
-                      <span className="flex items-center gap-2">
-                        {l.mood && <span>Mood: {l.mood}/5</span>}
-                        {isLockedClient(l.created_at, editLockDays) && (
-                          <span title={`Locked after ${editLockDays} days — read-only`} aria-label="locked" className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs">
-                            🔒 locked
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    {l.notes && <p className="mt-1">{l.notes}</p>}
-                    {l.log_symptoms?.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {l.log_symptoms.map((s, i) => (
-                          <span
-                            key={i}
-                            className="rounded-full bg-muted px-2 py-1 text-xs capitalize"
-                          >
-                            {s.symptom.replace(/_/g, " ")}
-                            {s.outcome ? ` · ${s.outcome.replace(/_/g, " ")}` : ""}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
+          <section aria-labelledby="recent-logs" className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+            <div>
+              <h2 id="recent-logs" className="font-semibold">Past logs</h2>
+              <p className="text-sm text-muted-foreground">
+                {logs.length === 0 ? "Nothing logged yet." : `${logs.length} recent entr${logs.length === 1 ? "y" : "ies"}.`}
+              </p>
+            </div>
+            <Link to="/logs" className="text-sm font-medium text-primary hover:underline">View past logs →</Link>
           </section>
 
           <section aria-labelledby="insights">
@@ -246,9 +239,7 @@ function Today() {
             </p>
             <InsightsList refreshKey={insightsKey} />
           </section>
-
-          <AskCompanion mode="caregiver" />
-        </div>
+        </motion.div>
       )}
 
       {mode === "tap" && (

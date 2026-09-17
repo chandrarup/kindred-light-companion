@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { safeDbError } from "./safe-errors";
 
 /** Create a throwaway demo auth user and return credentials so the client can sign in. */
 export const createDemoSession = createServerFn({ method: "POST" }).handler(async () => {
@@ -14,7 +15,7 @@ export const createDemoSession = createServerFn({ method: "POST" }).handler(asyn
     email_confirm: true,
     user_metadata: { demo: true, display_name: "María Herrera" },
   });
-  if (error || !data?.user) throw new Error(error?.message ?? "createUser failed");
+  if (error || !data?.user) throw safeDbError(error, "createUser failed");
   await supabaseAdmin
     .from("users")
     .upsert({ id: data.user.id, email, display_name: "María Herrera" }, { onConflict: "id" });
@@ -36,7 +37,7 @@ export const loadDemoData = createServerFn({ method: "POST" })
       .delete()
       .eq("user_id", context.userId);
 
-    await wipeDemoHouseholds(supabaseAdmin);
+    await wipeDemoHouseholds(supabaseAdmin, context.userId);
     const out = await seedDemoHousehold(supabaseAdmin, context.userId);
     return { ok: true, householdId: out.householdId };
   });
@@ -47,17 +48,27 @@ export const resetDemoData = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { wipeDemoHouseholds } = await import("./demo.server");
     await supabaseAdmin.from("memberships").delete().eq("user_id", context.userId);
-    const wiped = await wipeDemoHouseholds(supabaseAdmin);
+    const wiped = await wipeDemoHouseholds(supabaseAdmin, context.userId);
     return { ok: true, wiped };
   });
 
-/** Ask COMPANION — checks the demo_responses cache first. */
+/** Ask Companion Care — checks the demo_responses cache first. */
 const askSchema = z.object({
   question: z.string().min(1).max(2000),
   mode: z.enum(["caregiver", "patient"]).default("caregiver"),
 });
 
+/** Maps cached-response labels to Learn video symptom_tags so the chat can offer "Watch (2 min)". */
+const LABEL_TO_VIDEO_TAG: Record<string, string> = {
+  afternoon_insight: "agitation",
+  what_to_do_now: "agitation",
+  repetition: "repetition",
+  appetite: "appetite_change",
+  sleep: "sleep",
+};
+
 export const askCompanion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => askSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -85,6 +96,7 @@ export const askCompanion = createServerFn({ method: "POST" })
         answer: hit.answer as string,
         tag: hit.tag as string,
         label: hit.label as string,
+        video_tag: LABEL_TO_VIDEO_TAG[hit.label as string] ?? null,
         cached: true,
       };
     }
@@ -97,6 +109,7 @@ export const askCompanion = createServerFn({ method: "POST" })
           : "I don't have an answer for that yet. For anything clinical, please ask Dr. Alvarez.",
       tag: "fallback",
       label: null,
+      video_tag: null,
       cached: false,
     };
   });

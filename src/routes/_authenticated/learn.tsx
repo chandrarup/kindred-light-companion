@@ -7,7 +7,10 @@ import { useT } from "@/i18n/I18nProvider";
 import { listAllTraining, recordTrainingFeedback } from "@/lib/training.functions";
 
 export const Route = createFileRoute("/_authenticated/learn")({
-  head: () => ({ meta: [{ title: "Learn — COMPANION" }] }),
+  head: () => ({ meta: [{ title: "Learn — Companion Care" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    tag: typeof s.tag === "string" ? s.tag : undefined,
+  }),
   component: LearnPage,
 });
 
@@ -27,7 +30,12 @@ function LearnPage() {
   const listFn = useServerFn(listAllTraining);
   const feedbackFn = useServerFn(recordTrainingFeedback);
   const [items, setItems] = useState<Item[]>([]);
-  const [filter, setFilter] = useState<string>("all");
+  const search = Route.useSearch();
+  const [filter, setFilter] = useState<string>(search.tag ?? "all");
+
+  useEffect(() => {
+    if (search.tag) setFilter(search.tag);
+  }, [search.tag]);
 
   useEffect(() => {
     (async () => {

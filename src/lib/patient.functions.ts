@@ -1,12 +1,29 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { getCallerMembership } from "./permissions";
+
+const EMPTY_PATIENT_BUNDLE = {
+  name: "",
+  language: "en",
+  music: [] as string[],
+  music_provider: null as string | null,
+  greeting_audio_url: null as string | null,
+  photos: [] as Array<{ id: string; caption: string | null; url: string; audio_url: string | null }>,
+};
 
 /** Returns ONLY patient-safe content: photos with signed URLs, music titles, greeting audio URL, patient name. No clinical/log content. */
 export const getPatientBundle = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const m = await getCallerMembership(context.supabase, context.userId);
+    const { data: m, error: membershipError } = await context.supabase
+      .from("memberships")
+      .select("household_id")
+      .eq("user_id", context.userId)
+      .is("deleted_at", null)
+      .limit(1)
+      .maybeSingle();
+    if (membershipError) throw new Error(membershipError.message);
+    if (!m?.household_id) return EMPTY_PATIENT_BUNDLE;
+
     const householdId = m.household_id;
 
     const [{ data: patient }, { data: photos }] = await Promise.all([
@@ -28,6 +45,8 @@ export const getPatientBundle = createServerFn({ method: "GET" })
     const bucket = context.supabase.storage.from("family-photos");
     const sign = async (path: string | null) => {
       if (!path) return null;
+      // Allow pre-resolved URLs (e.g. demo seed data using external image hosts).
+      if (/^https?:\/\//i.test(path)) return path;
       const { data } = await bucket.createSignedUrl(path, 60 * 60);
       return data?.signedUrl ?? null;
     };
@@ -57,7 +76,14 @@ export const getPatientBundle = createServerFn({ method: "GET" })
 export const getDueCues = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const m = await getCallerMembership(context.supabase, context.userId);
+    const { data: m } = await context.supabase
+      .from("memberships")
+      .select("household_id")
+      .eq("user_id", context.userId)
+      .is("deleted_at", null)
+      .limit(1)
+      .maybeSingle();
+    if (!m) return { cues: [] };
     const { data } = await context.supabase
       .from("cues")
       .select("id, label, cue_type, schedule_times, days_of_week")

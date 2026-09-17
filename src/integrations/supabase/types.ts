@@ -1031,6 +1031,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          intended_role: string | null
           preferred_language: Database["public"]["Enums"]["app_language"]
           updated_at: string
         }
@@ -1039,6 +1040,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          intended_role?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
           updated_at?: string
         }
@@ -1047,6 +1049,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          intended_role?: string | null
           preferred_language?: Database["public"]["Enums"]["app_language"]
           updated_at?: string
         }

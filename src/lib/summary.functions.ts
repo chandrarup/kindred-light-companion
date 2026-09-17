@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireSection } from "./permissions";
+import { safeDbError } from "./safe-errors";
 
 const inputSchema = z.object({
   period_start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -311,7 +312,7 @@ export const generatePhysicianSummary = createServerFn({ method: "POST" })
       })
       .select("id, summary, stats, period_start, period_end, created_at")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw safeDbError(error);
     return row;
   });
 

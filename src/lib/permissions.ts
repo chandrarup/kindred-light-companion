@@ -1,4 +1,5 @@
 import type { Database } from "@/integrations/supabase/types";
+import { safeDbError } from "./safe-errors";
 
 export type Section =
   | "photos"
@@ -21,7 +22,7 @@ export async function getCallerMembership(supabase: any, userId: string) {
     .is("deleted_at", null)
     .limit(1)
     .maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) throw safeDbError(error);
   if (!data) throw new Error("No household for user");
   return data as { household_id: string; role: Role; permissions: Record<string, "read" | "write"> };
 }
